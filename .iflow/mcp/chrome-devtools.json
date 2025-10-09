@@ -1,0 +1,7 @@
+{
+  "command": "npx",
+  "args": [
+    "-y",
+    "@iflow-mcp/chrome-devtools-mcp"
+  ]
+}

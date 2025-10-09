@@ -2,8 +2,8 @@ import axios from 'axios';
 
 // 创建Axios实例
 const apiClient = axios.create({
-  // 设置基础URL，使用后端API地址
-  baseURL: 'http://localhost:9001',
+  // 设置基础URL，使用代理路径
+  baseURL: '/api',
   // 设置请求超时时间
   timeout: 10000,
 });

@@ -1,16 +1,107 @@
-# React + Vite
+# 书签管理器
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一个现代化的书签管理应用，帮助您轻松上传、组织和管理您的书签。
 
-Currently, two official plugins are available:
+## 功能特性
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 📤 文件上传
+- 支持HTML格式书签文件上传
+- 可视化上传进度显示
+- 上传结果即时反馈
 
-## React Compiler
+### 📚 书签管理
+- 美观的卡片式书签展示
+- 智能分类和标签系统
+- 强大的搜索和筛选功能
+- 一键打开、编辑和删除书签
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🔍 重复检查
+- 智能检测重复书签
+- 分组展示重复项
+- 对比视图便于识别差异
+- 批量处理重复书签
 
-## Expanding the ESLint configuration
+### 🎨 现代化设计
+- 响应式设计，支持各种设备
+- 优雅的配色方案和字体选择
+- 流畅的动画和交互效果
+- 直观的用户界面
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 技术栈
+
+- **前端框架**: React 19 + Hooks
+- **状态管理**: Zustand
+- **路由管理**: React Router v7
+- **样式框架**: Tailwind CSS
+- **UI组件**: 自定义组件库
+- **HTTP客户端**: Axios
+- **构建工具**: Vite
+
+## 界面设计亮点
+
+### 配色方案
+- 主色调：摩卡慕斯柔和版 (#A68A64)
+- 辅助色：浅灰 (#F5F5F5) 和深灰 (#333333)
+- 强调色：珊瑚色 (#FF6B6B) 和薰衣草色 (#C3AED6)
+
+### 设计元素
+- 卡片式布局提升视觉层次
+- 粘性头部导航增强用户体验
+- 响应式设计适配各种屏幕尺寸
+- 微交互动画提升交互感受
+
+## 快速开始
+
+### 安装依赖
+```bash
+npm install
+```
+
+### 启动开发服务器
+```bash
+npm run dev
+```
+
+### 构建生产版本
+```bash
+npm run build
+```
+
+## 项目结构
+
+```
+src/
+├── assets/             # 静态资源文件
+├── components/         # 公共组件
+│   ├── Header.jsx     # 页面头部
+│   ├── Footer.jsx     # 页面底部
+│   └── Layout.jsx     # 页面布局
+├── lib/                # 工具库
+├── pages/              # 页面组件
+│   ├── UploadPage.jsx # 上传页面
+│   ├── BookmarkList.jsx # 书签列表页面
+│   └── DuplicateCheck.jsx # 重复书签检查页面
+├── router/             # 路由配置
+├── services/           # API服务
+└── store/              # 状态管理
+```
+
+## 开发计划
+
+### 已实现功能
+- [x] 现代化UI设计
+- [x] 文件上传功能
+- [x] 书签展示和管理
+- [x] 重复书签检测
+- [x] 搜索和筛选功能
+
+### 待开发功能
+- [ ] 书签编辑功能
+- [ ] 数据导出功能
+- [ ] 用户偏好设置
+- [ ] 夜间模式
+- [ ] 数据统计图表
+
+## 许可证
+
+MIT
