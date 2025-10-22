@@ -22,3 +22,51 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Coverage reports
+coverage/
+*.coverage
+
+# Build outputs
+build/
+.out/
+.next/
+
+# Environment variables
+.env*
+!.env.example
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Vite
+vite.config.ts.timestamp-*
+vite.config.mjs.timestamp-*
+
+# Project specific ignores
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vue CLI
+vue.config.js
+vue-ssr-client-manifest.json
+vue-ssr-server-bundle.json
+
+# Vitepress
+.vitepress/dist
+.vitepress/cache

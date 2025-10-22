@@ -150,6 +150,23 @@
         "-y",
         "@iflow-mcp/npm-mcp-server"
       ]
+    },
+    "python-execute-server": {
+      "command": "uvx",
+      "args": [
+        "--python",
+        "3.12.7",
+        "iflow-mcp_python-execute-server@latest",
+        "--workspace-path",
+        "./workspace"
+      ]
+    },
+    "fetch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@iflow-mcp/fetch@1.0.2"
+      ]
     }
   }
 }

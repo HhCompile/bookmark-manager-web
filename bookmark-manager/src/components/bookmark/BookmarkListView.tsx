@@ -1,10 +1,12 @@
-import { ExternalLink, Trash2, Folder, Tag, Globe } from 'lucide-react';
+import { ExternalLink, Trash2, Folder, Tag, Globe, CheckCircle, XCircle } from 'lucide-react';
 
 interface Bookmark {
   url: string;
   title: string;
   category?: string;
   tags?: string[];
+  isValid: boolean;
+  alias?: string;
 }
 
 interface BookmarkListViewProps {
@@ -34,6 +36,9 @@ export default function BookmarkListView({
                 }}
                 className="h-4 w-4 text-primary rounded border-input focus:ring-primary focus:ring-2"
               />
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">
+              状态
             </th>
             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">
               网站
@@ -67,12 +72,24 @@ export default function BookmarkListView({
                 />
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
+                {bookmark.isValid ? (
+                  <CheckCircle className="w-5 h-5 text-success" />
+                ) : (
+                  <XCircle className="w-5 h-5 text-error" />
+                )}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
                 <div className="bg-gray-200 border-2 border-dashed rounded-lg w-10 h-10 flex items-center justify-center">
                   <Globe className="w-5 h-5 text-gray-400" />
                 </div>
               </td>
               <td className="px-6 py-4">
-                <div className="text-sm font-medium text-text-dark max-w-xs truncate" title={bookmark.title}>{bookmark.title || '无标题'}</div>
+                <div className="text-sm font-medium text-text-dark max-w-xs truncate" title={bookmark.title}>
+                  {bookmark.title || '无标题'}
+                  {bookmark.alias && (
+                    <span className="block text-xs text-text-gray">({bookmark.alias})</span>
+                  )}
+                </div>
               </td>
               <td className="px-6 py-4">
                 <div className="text-sm text-text-gray max-w-xs truncate">

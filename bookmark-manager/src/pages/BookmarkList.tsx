@@ -5,13 +5,15 @@ import {
   List, 
   Table,
   Folder, 
-  X 
+  X,
+  Download
 } from 'lucide-react';
 import { toast } from 'sonner';
 import BookmarkToolbar from '@/components/bookmark/BookmarkToolbar';
 import BookmarkGridView from '@/components/bookmark/BookmarkGridView';
 import BookmarkListView from '@/components/bookmark/BookmarkListView';
 import BookmarkTableView from '@/components/bookmark/BookmarkTableView';
+import FolderManager from '@/components/bookmark/FolderManager';
 import { debounceFn } from '@/lib/utils';
 
 interface Bookmark {
@@ -19,6 +21,8 @@ interface Bookmark {
   title: string;
   category?: string;
   tags?: string[];
+  isValid: boolean;
+  alias?: string;
 }
 
 export default function BookmarkList() {
@@ -27,6 +31,7 @@ export default function BookmarkList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
+  const [selectedValidity, setSelectedValidity] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,6 +39,10 @@ export default function BookmarkList() {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'table'>('grid');
   const [selectedBookmarks, setSelectedBookmarks] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [validationStatus, setValidationStatus] = useState<any>(null);
+  const [isValidationRunning, setIsValidationRunning] = useState(false);
+  const [folders, setFolders] = useState<any[]>([]);
+  const [showFolderManager, setShowFolderManager] = useState(false);
 
   // 防抖搜索处理
   const debouncedSearch = debounceFn((term: string) => {
@@ -45,7 +54,7 @@ export default function BookmarkList() {
     const fetchBookmarks = async () => {
       try {
         setLoading(true);
-        const response = await api.getAllBookmarks();
+        const response = await api.getBookmarks();
         setBookmarks(response.data.bookmarks);
         setFilteredBookmarks(response.data.bookmarks);
         
@@ -94,8 +103,17 @@ export default function BookmarkList() {
       );
     }
     
+    // 有效性过滤
+    if (selectedValidity) {
+      if (selectedValidity === 'valid') {
+        result = result.filter(bookmark => bookmark.isValid);
+      } else if (selectedValidity === 'invalid') {
+        result = result.filter(bookmark => !bookmark.isValid);
+      }
+    }
+    
     setFilteredBookmarks(result);
-  }, [searchTerm, selectedCategory, selectedTag, bookmarks]);
+  }, [searchTerm, selectedCategory, selectedTag, selectedValidity, bookmarks]);
 
   // 删除书签
   const handleDelete = async (url: string) => {
@@ -106,7 +124,7 @@ export default function BookmarkList() {
         // 从选中列表中移除
         setSelectedBookmarks(prev => prev.filter(item => item !== url));
         // 重新获取数据以更新分类和标签
-        const response = await api.getAllBookmarks();
+        const response = await api.getBookmarks();
         const updatedBookmarks = response.data.bookmarks;
         setBookmarks(updatedBookmarks);
         setFilteredBookmarks(updatedBookmarks);
@@ -139,7 +157,7 @@ export default function BookmarkList() {
         setBookmarks(prev => prev.filter(b => !selectedBookmarks.includes(b.url)));
         setSelectedBookmarks([]);
         // 重新获取数据以更新分类和标签
-        const response = await api.getAllBookmarks();
+        const response = await api.getBookmarks();
         const updatedBookmarks = response.data.bookmarks;
         setBookmarks(updatedBookmarks);
         setFilteredBookmarks(updatedBookmarks);
@@ -187,6 +205,84 @@ export default function BookmarkList() {
     setSearchTerm('');
     setSelectedCategory('');
     setSelectedTag('');
+    setSelectedValidity('');
+  };
+
+  // 开始验证
+  const startValidation = async () => {
+    try {
+      setIsValidationRunning(true);
+      const response = await api.startValidation();
+      setValidationStatus(response.data);
+      toast.success('验证已启动', {
+        description: response.data.message
+      });
+      
+      // 获取更新后的书签数据
+      const bookmarksResponse = await api.getBookmarks();
+      setBookmarks(bookmarksResponse.data.bookmarks);
+      setFilteredBookmarks(bookmarksResponse.data.bookmarks);
+    } catch (error: any) {
+      toast.error('启动验证失败', {
+        description: error.message
+      });
+    } finally {
+      setIsValidationRunning(false);
+    }
+  };
+
+  // 重试失败的验证
+  const retryFailedValidation = async () => {
+    try {
+      // 这里应该调用后端API来重试失败的验证任务
+      // 暂时使用模拟实现
+      toast.info('重试失败的验证任务', {
+        description: '正在重新验证失败的书签链接'
+      });
+    } catch (error: any) {
+      toast.error('重试验证失败', {
+        description: error.message
+      });
+    }
+  };
+
+  // 导出书签
+  const exportBookmarks = async () => {
+    try {
+      const response = await api.exportBookmarks();
+      
+      // 创建下载链接
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'bookmarks.html');
+      document.body.appendChild(link);
+      link.click();
+      
+      // 清理
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('导出成功', {
+        description: '书签已导出为HTML文件'
+      });
+    } catch (error: any) {
+      toast.error('导出失败', {
+        description: error.message
+      });
+    }
+  };
+
+  // 处理文件夹变化
+  const handleFoldersChange = (newFolders: any[]) => {
+    setFolders(newFolders);
+    setShowFolderManager(false);
+    toast.success('文件夹结构已更新');
+  };
+
+  // 显示文件夹管理器
+  const showFolderManagerDialog = () => {
+    setShowFolderManager(true);
   };
 
   // 批量自动打标
@@ -532,6 +628,36 @@ export default function BookmarkList() {
     }
   };
 
+  // 更新书签别名
+  const updateBookmarkAlias = async (bookmark: Bookmark, alias: string) => {
+    try {
+      // 更新书签
+      const updatedBookmark = {
+        ...bookmark,
+        alias: alias || undefined
+      };
+      
+      // 调用API更新书签
+      await api.updateBookmark(bookmark.url, { alias: alias || undefined });
+      
+      // 更新本地状态
+      const updatedBookmarks = bookmarks.map(b => 
+        b.url === bookmark.url ? updatedBookmark : b
+      );
+      setBookmarks(updatedBookmarks);
+      setFilteredBookmarks(updatedBookmarks);
+      
+      // 显示成功消息
+      toast.success('更新别名成功', {
+        description: `书签 "${bookmark.title}" 的别名已更新为: ${alias || '无别名'}`
+      });
+    } catch (error: any) {
+      toast.error('更新别名失败', {
+        description: error.message
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-6">
@@ -653,9 +779,16 @@ export default function BookmarkList() {
         setSelectedCategory={setSelectedCategory}
         selectedTag={selectedTag}
         setSelectedTag={setSelectedTag}
+        selectedValidity={selectedValidity}
+        setSelectedValidity={setSelectedValidity}
         categories={categories}
         tags={tags}
         clearFilters={clearFilters}
+        isValidationRunning={isValidationRunning}
+        onStartValidation={startValidation}
+        onRetryFailed={retryFailedValidation}
+        onExport={exportBookmarks}
+        onManageFolders={showFolderManagerDialog}
       />
       
       {/* 结果统计 */}
@@ -673,7 +806,7 @@ export default function BookmarkList() {
           </div>
           <h3 className="text-lg font-medium text-text-primary mb-2">没有找到书签</h3>
           <p className="text-text-secondary">
-            {searchTerm || selectedCategory || selectedTag 
+            {searchTerm || selectedCategory || selectedTag || selectedValidity
               ? '没有匹配筛选条件的书签' 
               : '暂无书签，请先上传一些书签'}
           </p>
@@ -700,7 +833,30 @@ export default function BookmarkList() {
           handleDelete={handleDelete}
           handleAutoTag={handleAutoTag}
           handleAutoClassify={handleAutoClassify}
+          handleUpdateAlias={updateBookmarkAlias}
         />
+      )}
+    {/* 文件夹管理对话框 */}
+      {showFolderManager && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold text-text-primary">管理文件夹结构</h3>
+                <button 
+                  onClick={() => setShowFolderManager(false)}
+                  className="text-text-secondary hover:text-text-primary"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <FolderManager 
+                folders={folders} 
+                onFoldersChange={handleFoldersChange} 
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

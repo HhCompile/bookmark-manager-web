@@ -1,10 +1,13 @@
-import { ExternalLink, Trash2, Folder, Tag, Sparkles, Globe } from 'lucide-react';
+import { ExternalLink, Trash2, Folder, Tag, Sparkles, Globe, CheckCircle, XCircle, Edit3 } from 'lucide-react';
+import AliasEditor from './AliasEditor';
 
 interface Bookmark {
   url: string;
   title: string;
   category?: string;
   tags?: string[];
+  isValid: boolean;
+  alias?: string;
 }
 
 interface BookmarkTableViewProps {
@@ -14,6 +17,7 @@ interface BookmarkTableViewProps {
   handleDelete: (url: string) => void;
   handleAutoTag: (bookmark: Bookmark) => void;
   handleAutoClassify: (bookmark: Bookmark) => void;
+  handleUpdateAlias: (bookmark: Bookmark, alias: string) => void;
 }
 
 export default function BookmarkTableView({
@@ -22,7 +26,8 @@ export default function BookmarkTableView({
   toggleBookmarkSelection,
   handleDelete,
   handleAutoTag,
-  handleAutoClassify
+  handleAutoClassify,
+  handleUpdateAlias
 }: BookmarkTableViewProps) {
   return (
     <div className="card overflow-hidden">
@@ -39,6 +44,9 @@ export default function BookmarkTableView({
                   }}
                   className="h-4 w-4 text-primary rounded border-input focus:ring-primary focus:ring-2"
                 />
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">
+                状态
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">
                 网站
@@ -75,6 +83,13 @@ export default function BookmarkTableView({
                   />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
+                  {bookmark.isValid ? (
+                    <CheckCircle className="w-5 h-5 text-success" />
+                  ) : (
+                    <XCircle className="w-5 h-5 text-error" />
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
                   <div className="bg-gray-200 border-2 border-dashed rounded-lg w-10 h-10 flex items-center justify-center">
                     <Globe className="w-5 h-5 text-gray-400" />
                   </div>
@@ -82,6 +97,15 @@ export default function BookmarkTableView({
                 <td className="px-6 py-4">
                   <div className="text-sm font-medium text-text-dark max-w-xs truncate" title={bookmark.title}>
                     {bookmark.title || '无标题'}
+                    {bookmark.alias && (
+                      <span className="ml-2 text-xs text-text-secondary">({bookmark.alias})</span>
+                    )}
+                  </div>
+                  <div className="mt-1">
+                    <AliasEditor 
+                      alias={bookmark.alias} 
+                      onSave={(alias) => handleUpdateAlias(bookmark, alias)} 
+                    />
                   </div>
                 </td>
                 <td className="px-6 py-4">

@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { ExternalLink, Trash2, Folder, Tag, Globe, ChevronDown, ChevronUp } from 'lucide-react';
+import { ExternalLink, Trash2, Folder, Tag, Globe, ChevronDown, ChevronUp, CheckCircle, XCircle } from 'lucide-react';
 
 interface Bookmark {
   url: string;
   title: string;
   category?: string;
   tags?: string[];
+  isValid: boolean;
+  alias?: string;
 }
 
 interface BookmarkGridViewProps {
@@ -54,6 +56,15 @@ export default function BookmarkGridView({
           key={index} 
           className="card hover:shadow-lg transition-all duration-200 relative"
         >
+          {/* 有效性状态指示器 */}
+          <div className="absolute top-2 right-2">
+            {bookmark.isValid ? (
+              <CheckCircle className="w-5 h-5 text-success" />
+            ) : (
+              <XCircle className="w-5 h-5 text-error" />
+            )}
+          </div>
+          
           {/* 分类角标 */}
           {bookmark.category && (
             <div className={`absolute -top-2 -left-2 px-2 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(bookmark.category)} shadow-sm`}>
@@ -78,6 +89,9 @@ export default function BookmarkGridView({
             {/* 标题 */}
             <h3 className="text-h3 text-text-dark mb-2 line-clamp-2">
               {bookmark.title || '无标题'}
+              {bookmark.alias && (
+                <span className="block text-sm text-text-gray">({bookmark.alias})</span>
+              )}
             </h3>
             
             {/* 链接 - 可折叠 */}

@@ -1,6 +1,6 @@
 // tests/UploadPage.test.js
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import UploadPage from '../src/pages/UploadPage'
 
 // Mock the store
@@ -9,13 +9,15 @@ vi.mock('../src/store/bookmarkStore', () => ({
     setLoading: vi.fn(),
     setError: vi.fn(),
     loading: false,
-    error: null
+    error: null,
+    uploadProgress: 0,
+    validationProgress: 0
   })
 }))
 
 // Mock the API
 vi.mock('../src/services/api', () => ({
-  api: {
+  apiService: {
     uploadBookmarkFile: vi.fn()
   }
 }))

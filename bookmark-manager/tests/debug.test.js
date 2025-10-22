@@ -1,6 +1,6 @@
 // Simple test to verify debugging tools
 import { test, expect } from 'vitest'
-import { debug } from '@/lib/debug'
+import { debug } from '../src/lib/debug'
 
 test('debug function exists', () => {
   expect(debug).toBeDefined()

@@ -1,80 +1,229 @@
-import axios from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
-// 创建Axios实例
-const apiClient = axios.create({
-  // 设置基础URL，使用代理路径
-  baseURL: '/api',
-  // 设置请求超时时间
-  timeout: 10000,
-});
+// Define API response types
+interface Bookmark {
+  url: string;
+  title: string;
+  alias?: string;
+  tags: string[];
+  category?: string;
+  isValid: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
-// 请求拦截器
-apiClient.interceptors.request.use(
-  (config) => {
-    // 在发送请求之前做些什么
-    // 可以在这里添加认证token等
-    return config;
-  },
-  (error) => {
-    // 对请求错误做些什么
-    return Promise.reject(error);
+interface Tag {
+  id: string;
+  name: string;
+  description?: string;
+  category: string;
+}
+
+interface Folder {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ValidationTask {
+  id: string;
+  bookmarkUrl: string;
+  round: number;
+  method: string;
+  result?: boolean;
+  details?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+interface UploadResponse {
+  message: string;
+  filename: string;
+  file_path: string;
+  processed_count: number;
+}
+
+interface BatchBookmarkRequest {
+  bookmarks: Array<{
+    url: string;
+    title: string;
+    tags?: string[];
+    category?: string;
+  }>;
+}
+
+interface UpdateBookmarkRequest {
+  title?: string;
+  alias?: string;
+  tags?: string[];
+  category?: string;
+  reprocess?: boolean;
+}
+
+interface ValidationStatus {
+  total_tasks: number;
+  completed_tasks: number;
+  pending_tasks: number;
+  bookmark_status: {
+    [url: string]: {
+      title: string;
+      total_rounds: number;
+      completed_rounds: number;
+      is_valid: boolean;
+      tasks: ValidationTask[];
+    };
+  };
+}
+
+class ApiService {
+  private api: AxiosInstance;
+
+  constructor() {
+    this.api = axios.create({
+      baseURL: 'http://localhost:9001', // Default backend URL
+      timeout: 10000,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    // Add request interceptor
+    this.api.interceptors.request.use(
+      (config) => {
+        // You can add authentication tokens here if needed
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    // Add response interceptor
+    this.api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        console.error('API Error:', error);
+        return Promise.reject(error);
+      }
+    );
   }
-);
 
-// 响应拦截器
-apiClient.interceptors.response.use(
-  (response) => {
-    // 对响应数据做些什么
-    return response;
-  },
-  (error) => {
-    // 对响应错误做些什么
-    if (error.response) {
-      // 请求已发出，但服务器响应的状态码不在2xx范围内
-      console.error('API Error:', error.response.status, error.response.data);
-    } else if (error.request) {
-      // 请求已发出，但没有收到响应
-      console.error('Network Error:', error.request);
-    } else {
-      // 发生了一些问题，触发了错误
-      console.error('Error:', error.message);
-    }
-    return Promise.reject(error);
+  // Health check
+  async healthCheck(): Promise<AxiosResponse<any>> {
+    return this.api.get('/health');
   }
-);
 
-// API端点函数封装
-export const api = {
-  // 健康检查接口
-  healthCheck: () => apiClient.get('/health'),
+  // Upload bookmark file
+  async uploadBookmarkFile(file: File): Promise<AxiosResponse<UploadResponse>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    return this.api.post('/bookmark/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
 
-  // 上传书签文件
-  uploadBookmarkFile: (formData) => apiClient.post('/bookmark/upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  }),
+  // Add single bookmark
+  async addBookmark(bookmark: {
+    url: string;
+    title: string;
+    tags?: string[];
+    category?: string;
+  }): Promise<AxiosResponse<{ message: string; bookmark: Bookmark }>> {
+    return this.api.post('/bookmark', bookmark);
+  }
 
-  // 添加单个书签
-  addBookmark: (bookmarkData) => apiClient.post('/bookmark', bookmarkData),
+  // Batch add bookmarks
+  async addBookmarksBatch(data: BatchBookmarkRequest): Promise<AxiosResponse<{
+    message: string;
+    bookmarks: Bookmark[];
+  }>> {
+    return this.api.post('/bookmarks/batch', data);
+  }
 
-  // 批量添加书签
-  addBookmarksBatch: (bookmarksData) => apiClient.post('/bookmarks/batch', bookmarksData),
+  // Get all bookmarks
+  async getBookmarks(isValid?: boolean): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
+    const params = isValid !== undefined ? { is_valid: isValid.toString() } : {};
+    return this.api.get('/bookmarks', { params });
+  }
 
-  // 获取所有书签
-  getAllBookmarks: () => apiClient.get('/bookmarks'),
+  // Get bookmarks by category
+  async getBookmarksByCategory(category: string): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
+    return this.api.get(`/bookmarks/category/${category}`);
+  }
 
-  // 根据分类获取书签
-  getBookmarksByCategory: (category) => apiClient.get(`/bookmarks/category/${category}`),
+  // Get bookmarks by tag
+  async getBookmarksByTag(tag: string): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
+    return this.api.get(`/bookmarks/tag/${tag}`);
+  }
 
-  // 根据标签获取书签
-  getBookmarksByTag: (tag) => apiClient.get(`/bookmarks/tag/${tag}`),
+  // Update bookmark
+  async updateBookmark(url: string, data: UpdateBookmarkRequest): Promise<AxiosResponse<{
+    message: string;
+    bookmark: Bookmark;
+  }>> {
+    return this.api.put(`/bookmark/${encodeURIComponent(url)}`, data);
+  }
 
-  // 删除书签
-  deleteBookmark: (url) => apiClient.delete(`/bookmark/${url}`),
+  // Delete bookmark
+  async deleteBookmark(url: string): Promise<AxiosResponse<{ message: string }>> {
+    return this.api.delete(`/bookmark/${encodeURIComponent(url)}`);
+  }
 
-  // 更新书签
-  updateBookmark: (url, bookmarkData) => apiClient.put(`/bookmark/${url}`, bookmarkData),
+  // Start bookmark validation
+  async startValidation(): Promise<AxiosResponse<{ 
+    message: string; 
+    total_tasks: number; 
+    completed_tasks: number 
+  }>> {
+    return this.api.post('/bookmark/validate');
+  }
+
+  // Get validation status
+  async getValidationStatus(): Promise<AxiosResponse<ValidationStatus>> {
+    return this.api.get('/bookmark/validate/status');
+  }
+
+  // Get invalid bookmarks
+  async getInvalidBookmarks(): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
+    return this.api.get('/bookmarks/invalid');
+  }
+
+  // Export bookmarks
+  async exportBookmarks(): Promise<AxiosResponse<Blob>> {
+    return this.api.get('/bookmark/export', {
+      responseType: 'blob'
+    });
+  }
+
+  // Get folder suggestions
+  async getFolderSuggestions(): Promise<AxiosResponse<any>> {
+    return this.api.get('/bookmark/folder-suggestions');
+  }
+
+  // Export bookmarks with folders
+  async exportBookmarksWithFolders(folderStructure: any): Promise<AxiosResponse<Blob>> {
+    return this.api.post('/bookmark/export-with-folders', { folder_structure: folderStructure }, {
+      responseType: 'blob'
+    });
+  }
+}
+
+// Export a singleton instance
+export const apiService = new ApiService();
+
+// Export types for use in components
+export type { 
+  Bookmark,
+  Tag,
+  Folder,
+  ValidationTask,
+  UploadResponse,
+  BatchBookmarkRequest,
+  UpdateBookmarkRequest,
+  ValidationStatus
 };
-
-export default apiClient;

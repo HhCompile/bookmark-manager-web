@@ -1,596 +1,303 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useBookmarkStore } from '@/store/bookmarkStore';
 import { api } from '@/services/api';
-import { 
-  CheckCircle, 
-  ExternalLink, 
-  Trash2, 
-  Check, 
-  X, 
-  FileText, 
-  Hash,
-  AlertTriangle
-} from 'lucide-react';
+import { AlertTriangle, CheckCircle, RefreshCw, Play, Pause, Loader2, XCircle, Download } from 'lucide-react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+
+// 导入子组件
 import DuplicateGroup from '@/components/duplicate/DuplicateGroup';
+import { Button } from '@/components/ui/button';
 
-interface Bookmark {
-  url: string;
-  title: string;
-  category?: string;
-  tags?: string[];
-}
-
+/**
+ * 重复书签检查页面
+ * 主要功能：
+ * 1. 显示无效链接
+ * 2. 管理验证任务
+ * 3. 提供验证控制
+ */
 export default function DuplicateCheck() {
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [duplicateGroups, setDuplicateGroups] = useState<Bookmark[][]>([]);
-  const [invalidBookmarks, setInvalidBookmarks] = useState<Bookmark[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
-  const [selectedGroups, setSelectedGroups] = useState<Set<number>>(new Set());
-  const [selectedInvalid, setSelectedInvalid] = useState<Set<number>>(new Set());
+  const { setLoading, setError, loading, error } = useBookmarkStore();
+  const navigate = useNavigate();
+  
+  // 本地状态
+  const [invalidBookmarks, setInvalidBookmarks] = useState<any[]>([]);
+  const [validationStatus, setValidationStatus] = useState<any>(null);
+  const [isValidationRunning, setIsValidationRunning] = useState(false);
 
-  // 获取书签数据并检测重复项
+  // 获取无效书签
+  const fetchInvalidBookmarks = async () => {
+    try {
+      setLoading(true);
+      const response = await api.getInvalidBookmarks();
+      setInvalidBookmarks(response.data.bookmarks);
+    } catch (error: any) {
+      setError('获取无效书签失败: ' + error.message);
+      toast.error('获取失败', {
+        description: '获取无效书签失败: ' + error.message,
+        duration: 5000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 获取验证状态
+  const fetchValidationStatus = async () => {
+    try {
+      const response = await api.getValidationStatus();
+      setValidationStatus(response.data);
+    } catch (error: any) {
+      console.error('获取验证状态失败:', error);
+    }
+  };
+
+  // 开始验证
+  const startValidation = async () => {
+    try {
+      setIsValidationRunning(true);
+      setLoading(true);
+      const response = await api.startValidation();
+      
+      toast.success('验证已启动', {
+        description: response.data.message,
+        duration: 3000,
+      });
+      
+      // 获取更新后的状态
+      await fetchValidationStatus();
+      await fetchInvalidBookmarks();
+    } catch (error: any) {
+      setError('启动验证失败: ' + error.message);
+      toast.error('启动验证失败', {
+        description: '启动验证失败: ' + error.message,
+        duration: 5000,
+      });
+    } finally {
+      setLoading(false);
+      setIsValidationRunning(false);
+    }
+  };
+
+  // 暂停验证
+  const pauseValidation = async () => {
+    try {
+      // 这里应该调用后端API来暂停验证任务
+      // 暂时使用模拟实现
+      toast.info('暂停验证', {
+        description: '验证任务已暂停'
+      });
+    } catch (error: any) {
+      toast.error('暂停验证失败', {
+        description: '暂停验证失败: ' + error.message
+      });
+    }
+  };
+
+  // 重试失败的验证
+  const retryFailedValidation = async () => {
+    try {
+      // 这里应该调用后端API来重试失败的验证任务
+      // 暂时使用模拟实现
+      toast.info('重试失败的验证任务', {
+        description: '正在重新验证失败的书签链接'
+      });
+    } catch (error: any) {
+      toast.error('重试验证失败', {
+        description: '重试验证失败: ' + error.message
+      });
+    }
+  };
+
+  // 导出书签
+  const exportBookmarks = async () => {
+    try {
+      const response = await api.exportBookmarks();
+      
+      // 创建下载链接
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'bookmarks.html');
+      document.body.appendChild(link);
+      link.click();
+      
+      // 清理
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('导出成功', {
+        description: '书签已导出为HTML文件'
+      });
+    } catch (error: any) {
+      toast.error('导出失败', {
+        description: '导出失败: ' + error.message
+      });
+    }
+  };
+
+  // 组件挂载时获取数据
   useEffect(() => {
-    const fetchAndAnalyzeBookmarks = async () => {
-      try {
-        setLoading(true);
-        const response = await api.getAllBookmarks();
-        const bookmarksData = response.data.bookmarks;
-        setBookmarks(bookmarksData);
-        
-        // 检测重复书签（基于URL）
-        const urlMap: Record<string, Bookmark[]> = {};
-        bookmarksData.forEach(bookmark => {
-          if (!urlMap[bookmark.url]) {
-            urlMap[bookmark.url] = [];
-          }
-          urlMap[bookmark.url].push(bookmark);
-        });
-        
-        // 只保留有重复的组
-        const duplicates = Object.values(urlMap).filter(group => group.length > 1);
-        setDuplicateGroups(duplicates);
-        
-        // 检测无效书签（URL格式不正确的书签）
-        const invalid = bookmarksData.filter(bookmark => {
-          if (!bookmark.url) return true;
-          
-          try {
-            // 使用URL构造函数验证URL格式
-            const url = new URL(bookmark.url);
-            // 检查协议是否为http或https
-            return url.protocol !== 'http:' && url.protocol !== 'https:';
-          } catch (e) {
-            // URL构造函数抛出异常说明URL格式无效
-            return true;
-          }
-        });
-        setInvalidBookmarks(invalid);
-      } catch (err: any) {
-        setError('获取书签失败: ' + err.message);
-        console.error('Fetch bookmarks error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAndAnalyzeBookmarks();
+    fetchInvalidBookmarks();
+    fetchValidationStatus();
   }, []);
 
-  // 切换组展开状态
-  const toggleGroup = (index: number) => {
-    const newExpanded = new Set(expandedGroups);
-    if (newExpanded.has(index)) {
-      newExpanded.delete(index);
-    } else {
-      newExpanded.add(index);
-    }
-    setExpandedGroups(newExpanded);
-  };
-
-  // 切换组选择状态
-  const toggleGroupSelection = (index: number) => {
-    const newSelected = new Set(selectedGroups);
-    if (newSelected.has(index)) {
-      newSelected.delete(index);
-    } else {
-      newSelected.add(index);
-    }
-    setSelectedGroups(newSelected);
-  };
-
-  // 切换无效书签选择状态
-  const toggleInvalidSelection = (index: number) => {
-    const newSelected = new Set(selectedInvalid);
-    if (newSelected.has(index)) {
-      newSelected.delete(index);
-    } else {
-      newSelected.add(index);
-    }
-    setSelectedInvalid(newSelected);
-  };
-
-  // 删除单个书签
-  const handleDelete = async (url: string) => {
-    if (window.confirm('确定要删除这个书签吗？')) {
-      try {
-        await api.deleteBookmark(url);
-        // 重新加载数据
-        const response = await api.getAllBookmarks();
-        const bookmarksData = response.data.bookmarks;
-        setBookmarks(bookmarksData);
-        
-        // 重新检测重复项
-        const urlMap: Record<string, Bookmark[]> = {};
-        bookmarksData.forEach(bookmark => {
-          if (!urlMap[bookmark.url]) {
-            urlMap[bookmark.url] = [];
-          }
-          urlMap[bookmark.url].push(bookmark);
-        });
-        
-        const duplicates = Object.values(urlMap).filter(group => group.length > 1);
-        setDuplicateGroups(duplicates);
-        
-        // 重新检测无效书签
-        const invalid = bookmarksData.filter(bookmark => {
-          if (!bookmark.url) return true;
-          
-          try {
-            // 使用URL构造函数验证URL格式
-            const url = new URL(bookmark.url);
-            // 检查协议是否为http或https
-            return url.protocol !== 'http:' && url.protocol !== 'https:';
-          } catch (e) {
-            // URL构造函数抛出异常说明URL格式无效
-            return true;
-          }
-        });
-        setInvalidBookmarks(invalid);
-        
-        toast.success('删除成功');
-      } catch (err: any) {
-        toast.error('删除失败: ' + err.message);
-      }
-    }
-  };
-
-  // 保留选中项并删除其他
-  const handleKeepSelected = async (group: Bookmark[], selectedIndex: number) => {
-    const bookmarksToDelete = group.filter((_, index) => index !== selectedIndex);
-    
-    try {
-      // 删除其他书签
-      for (const bookmark of bookmarksToDelete) {
-        await api.deleteBookmark(bookmark.url);
-      }
-      
-      // 重新加载数据
-      const response = await api.getAllBookmarks();
-      const bookmarksData = response.data.bookmarks;
-      setBookmarks(bookmarksData);
-      
-      // 重新检测重复项
-      const urlMap: Record<string, Bookmark[]> = {};
-      bookmarksData.forEach(bookmark => {
-        if (!urlMap[bookmark.url]) {
-          urlMap[bookmark.url] = [];
-        }
-        urlMap[bookmark.url].push(bookmark);
-      });
-      
-      const duplicates = Object.values(urlMap).filter(group => group.length > 1);
-      setDuplicateGroups(duplicates);
-      
-      // 重新检测无效书签
-      const invalid = bookmarksData.filter(bookmark => {
-        if (!bookmark.url) return true;
-        
-        try {
-          // 使用URL构造函数验证URL格式
-          const url = new URL(bookmark.url);
-          // 检查协议是否为http或https
-          return url.protocol !== 'http:' && url.protocol !== 'https:';
-        } catch (e) {
-          // URL构造函数抛出异常说明URL格式无效
-          return true;
-        }
-      });
-      setInvalidBookmarks(invalid);
-      
-      toast.success('删除成功');
-    } catch (err: any) {
-      toast.error('删除失败: ' + err.message);
-    }
-  };
-
-  // 批量处理选中的组
-  const handleBatchProcess = async (action: 'keepFirst' | 'deleteAllButFirst') => {
-    if (selectedGroups.size === 0) return;
-    
-    if (action === 'keepFirst') {
-      if (!window.confirm(`确定要为选中的 ${selectedGroups.size} 组保留第一个书签并删除其他重复项吗？`)) {
-        return;
-      }
-    } else if (action === 'deleteAllButFirst') {
-      if (!window.confirm(`确定要删除选中的 ${selectedGroups.size} 组中的重复项吗？`)) {
-        return;
-      }
-    }
-    
-    try {
-      for (const groupIndex of selectedGroups) {
-        const group = duplicateGroups[groupIndex];
-        if (action === 'keepFirst') {
-          // 保留第一个，删除其他
-          const bookmarksToDelete = group.slice(1);
-          for (const bookmark of bookmarksToDelete) {
-            await api.deleteBookmark(bookmark.url);
-          }
-        } else if (action === 'deleteAllButFirst') {
-          // 删除除第一个外的所有重复项
-          const bookmarksToDelete = group.slice(1);
-          for (const bookmark of bookmarksToDelete) {
-            await api.deleteBookmark(bookmark.url);
-          }
-        }
-      }
-      
-      // 重新加载数据
-      const response = await api.getAllBookmarks();
-      const bookmarksData = response.data.bookmarks;
-      setBookmarks(bookmarksData);
-      
-      // 重新检测重复项
-      const urlMap: Record<string, Bookmark[]> = {};
-      bookmarksData.forEach(bookmark => {
-        if (!urlMap[bookmark.url]) {
-          urlMap[bookmark.url] = [];
-        }
-        urlMap[bookmark.url].push(bookmark);
-      });
-      
-      const duplicates = Object.values(urlMap).filter(group => group.length > 1);
-      setDuplicateGroups(duplicates);
-      
-      // 重新检测无效书签
-      const invalid = bookmarksData.filter(bookmark => {
-        if (!bookmark.url) return true;
-        
-        try {
-          // 使用URL构造函数验证URL格式
-          const url = new URL(bookmark.url);
-          // 检查协议是否为http或https
-          return url.protocol !== 'http:' && url.protocol !== 'https:';
-        } catch (e) {
-          // URL构造函数抛出异常说明URL格式无效
-          return true;
-        }
-      });
-      setInvalidBookmarks(invalid);
-      
-      // 清除选择
-      setSelectedGroups(new Set());
-      
-      toast.success('批量处理完成');
-    } catch (err: any) {
-      toast.error('批量处理失败: ' + err.message);
-    }
-  };
-
-  // 批量删除无效书签
-  const handleBatchDeleteInvalid = async () => {
-    if (selectedInvalid.size === 0) return;
-    
-    if (!window.confirm(`确定要删除选中的 ${selectedInvalid.size} 个无效书签吗？`)) {
-      return;
-    }
-    
-    try {
-      for (const index of selectedInvalid) {
-        const bookmark = invalidBookmarks[index];
-        await api.deleteBookmark(bookmark.url);
-      }
-      
-      // 重新加载数据
-      const response = await api.getAllBookmarks();
-      const bookmarksData = response.data.bookmarks;
-      setBookmarks(bookmarksData);
-      
-      // 重新检测重复项
-      const urlMap: Record<string, Bookmark[]> = {};
-      bookmarksData.forEach(bookmark => {
-        if (!urlMap[bookmark.url]) {
-          urlMap[bookmark.url] = [];
-        }
-        urlMap[bookmark.url].push(bookmark);
-      });
-      
-      const duplicates = Object.values(urlMap).filter(group => group.length > 1);
-      setDuplicateGroups(duplicates);
-      
-      // 重新检测无效书签
-      const invalid = bookmarksData.filter(bookmark => {
-        if (!bookmark.url) return true;
-        
-        try {
-          // 使用URL构造函数验证URL格式
-          const url = new URL(bookmark.url);
-          // 检查协议是否为http或https
-          return url.protocol !== 'http:' && url.protocol !== 'https:';
-        } catch (e) {
-          // URL构造函数抛出异常说明URL格式无效
-          return true;
-        }
-      });
-      setInvalidBookmarks(invalid);
-      
-      // 清除选择
-      setSelectedInvalid(new Set());
-      
-      toast.success('批量删除无效书签完成');
-    } catch (err: any) {
-      toast.error('批量删除无效书签失败: ' + err.message);
-    }
-  };
-
-  // 访问书签
-  const handleVisitBookmark = (url: string) => {
-    window.open(url, '_blank');
-  };
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-text-primary">重复书签检查</h2>
-          <div className="flex space-x-2">
-            <Button variant="default" disabled>
-              批量保留首个
-            </Button>
-            <Button variant="secondary" disabled>
-              批量删除重复项
-            </Button>
-          </div>
-        </div>
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-text-primary">重复书签检查</h2>
-          <div className="flex space-x-2">
-            <Button variant="default" disabled>
-              批量保留首个
-            </Button>
-            <Button variant="secondary" disabled>
-              批量删除重复项
-            </Button>
-          </div>
-        </div>
-        <div className="card p-6 border border-error/30 bg-error/5">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <X className="w-6 h-6 text-error" />
-            </div>
-            <div className="ml-3">
-              <h3 className="text-lg font-medium text-error mb-2">加载失败</h3>
-              <p className="text-text-secondary">{error}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-text-primary">重复书签检查</h2>
-        <div className="flex space-x-2">
-          <Button 
-            onClick={() => handleBatchProcess('keepFirst')}
-            disabled={selectedGroups.size === 0}
-            variant="default"
-          >
-            <Check className="w-4 h-4 mr-2" />
-            批量保留首个
-          </Button>
-          <Button 
-            onClick={() => handleBatchProcess('deleteAllButFirst')}
-            disabled={selectedGroups.size === 0}
-            variant="secondary"
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            批量删除重复项
-          </Button>
-        </div>
-      </div>
-      
-      {/* 统计信息 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="card p-5 text-center">
-          <div className="flex justify-center mb-2">
-            <div className="p-2 rounded-full bg-primary/10">
-              <FileText className="w-5 h-5 text-primary" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-text-primary">
-            {bookmarks.length}
-          </p>
-          <p className="text-text-secondary text-sm">总书签数</p>
-        </div>
-        <div className="card p-5 text-center">
-          <div className="flex justify-center mb-2">
-            <div className="p-2 rounded-full bg-primary/10">
-              <Hash className="w-5 h-5 text-primary" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-primary">
-            {duplicateGroups.length}
-          </p>
-          <p className="text-text-secondary text-sm">重复组数</p>
-        </div>
-        <div className="card p-5 text-center">
-          <div className="flex justify-center mb-2">
-            <div className="p-2 rounded-full bg-accent/10">
-              <FileText className="w-5 h-5 text-accent" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-accent">
-            {duplicateGroups.reduce((total, group) => total + group.length, 0)}
-          </p>
-          <p className="text-text-secondary text-sm">重复书签总数</p>
-        </div>
-        <div className="card p-5 text-center">
-          <div className="flex justify-center mb-2">
-            <div className="p-2 rounded-full bg-warning/10">
-              <AlertTriangle className="w-5 h-5 text-warning" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-warning">
-            {invalidBookmarks.length}
-          </p>
-          <p className="text-text-secondary text-sm">无效书签数</p>
-        </div>
-      </div>
-      
-      {/* 无效书签列表 */}
-      {invalidBookmarks.length > 0 && (
-        <div className="card mb-8">
-          <div className="p-5 border-b border-border">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-text-primary">
-                发现 {invalidBookmarks.length} 个无效书签
-              </h3>
-              <Button 
-                onClick={handleBatchDeleteInvalid}
-                disabled={selectedInvalid.size === 0}
-                variant="destructive"
-                size="sm"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                批量删除选中
-              </Button>
-            </div>
-          </div>
-          <div className="p-5">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-border">
-                <thead className="bg-gray-50/50">
-                  <tr>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-10">
-                      <input
-                        type="checkbox"
-                        checked={selectedInvalid.size === invalidBookmarks.length && invalidBookmarks.length > 0}
-                        onChange={() => {
-                          if (selectedInvalid.size === invalidBookmarks.length) {
-                            setSelectedInvalid(new Set());
-                          } else {
-                            setSelectedInvalid(new Set(invalidBookmarks.map((_, index) => index)));
-                          }
-                        }}
-                        className="h-4 w-4 text-primary rounded border-input focus:ring-primary"
-                      />
-                    </th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      标题
-                    </th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      URL
-                    </th>
-                    <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      操作
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-surface divide-y divide-border">
-                  {invalidBookmarks.map((bookmark, index) => (
-                    <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <input
-                          type="checkbox"
-                          checked={selectedInvalid.has(index)}
-                          onChange={() => toggleInvalidSelection(index)}
-                          className="h-4 w-4 text-primary rounded border-input focus:ring-primary"
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="text-sm font-medium text-text-primary max-w-xs truncate">
-                          {bookmark.title || '无标题'}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="text-sm text-text-secondary max-w-xs truncate">
-                          {bookmark.url || '无效URL'}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                        <button 
-                          onClick={() => handleVisitBookmark(bookmark.url)}
-                          className="text-primary hover:text-primary-dark mr-3 transition-colors"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(bookmark.url)}
-                          className="text-error hover:text-red-700 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* 重复书签列表 */}
-      {duplicateGroups.length === 0 ? (
-        <div className="card p-12 text-center">
-          <div className="mx-auto w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mb-4">
-            <CheckCircle className="w-8 h-8 text-success" />
-          </div>
-          <h3 className="text-lg font-medium text-text-primary mb-2">恭喜！没有发现重复书签</h3>
-          <p className="text-text-secondary">所有书签都是唯一的</p>
-        </div>
-      ) : (
-        <div className="space-y-5">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold text-text-primary">
-              发现 {duplicateGroups.length} 组重复书签
-            </h3>
-            <p className="text-text-secondary text-sm">
-              {selectedGroups.size > 0 ? `已选择 ${selectedGroups.size} 组` : '选择组进行批量操作'}
-            </p>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto">
+          {/* 页面标题 */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-text-primary mb-2">书签验证</h1>
+            <p className="text-text-secondary">检查和管理无效书签链接</p>
           </div>
           
-          {duplicateGroups.map((group, groupIndex) => (
-            <DuplicateGroup
-              key={groupIndex}
-              group={group}
-              groupIndex={groupIndex}
-              isSelected={selectedGroups.has(groupIndex)}
-              isExpanded={expandedGroups.has(groupIndex)}
-              onToggleSelection={toggleGroupSelection}
-              onToggleExpand={toggleGroup}
-              onDelete={handleDelete}
-              onKeepSelected={handleKeepSelected}
-            />
-          ))}
+          {/* 验证控制面板 */}
+          <div className="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden mb-8">
+            <div className="p-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-text-primary mb-2">链接验证</h2>
+                  <p className="text-text-secondary">
+                    系统将通过三轮验证检查书签链接的有效性
+                  </p>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                {validationStatus && (
+                  <div className="text-sm text-text-secondary">
+                    <span className="font-medium text-text-primary">
+                      {validationStatus.completed_tasks}
+                    </span>/{validationStatus.total_tasks} 任务完成
+                  </div>
+                )}
+                
+                <Button
+                  onClick={isValidationRunning ? pauseValidation : startValidation}
+                  disabled={loading}
+                  className="flex items-center"
+                >
+                  {isValidationRunning ? (
+                    <>
+                      <Pause className="w-4 h-4 mr-2" />
+                      暂停验证
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      开始验证
+                    </>
+                  )}
+                </Button>
+                
+                <Button
+                  onClick={retryFailedValidation}
+                  disabled={loading}
+                  variant="outline"
+                  className="flex items-center"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  重试失败项
+                </Button>
+                
+                <Button
+                  onClick={exportBookmarks}
+                  variant="outline"
+                  className="flex items-center"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  导出书签
+                </Button>
+              </div>
+              </div>
+              
+              {/* 验证进度条 */}
+              {validationStatus && validationStatus.total_tasks > 0 && (
+                <div className="mt-6">
+                  <div className="flex justify-between text-sm text-text-secondary mb-2">
+                    <span>验证进度</span>
+                    <span>
+                      {Math.round(
+                        (validationStatus.completed_tasks / validationStatus.total_tasks) * 100
+                      )}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
+                      style={{
+                        width: `${
+                          (validationStatus.completed_tasks / validationStatus.total_tasks) * 100
+                        }%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* 无效书签列表 */}
+          <div className="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <AlertTriangle className="w-5 h-5 text-warning mr-3" />
+                  <h2 className="text-xl font-semibold text-text-primary">无效书签</h2>
+                </div>
+                <div className="text-sm text-text-secondary">
+                  {invalidBookmarks.length} 个无效书签
+                </div>
+              </div>
+              
+              {invalidBookmarks.length > 0 ? (
+                <div className="space-y-4">
+                  {invalidBookmarks.map((bookmark, index) => (
+                    <div
+                      key={index}
+                      className="border border-border rounded-lg p-4 hover:bg-gray-50/50 transition-colors"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-medium text-text-primary mb-1">
+                            {bookmark.title || '无标题'}
+                          </h3>
+                          <p className="text-sm text-text-secondary truncate mb-2">
+                            {bookmark.url}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {bookmark.tags.map((tag: string, tagIndex: number) => (
+                              <span
+                                key={tagIndex}
+                                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                            无效链接
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <CheckCircle className="w-12 h-12 text-success mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-text-primary mb-2">没有无效书签</h3>
+                  <p className="text-text-secondary">
+                    所有书签链接都有效，或者尚未运行验证
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

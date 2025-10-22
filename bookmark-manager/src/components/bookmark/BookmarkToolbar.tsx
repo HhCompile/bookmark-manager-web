@@ -1,4 +1,4 @@
-import { Search, Filter, Grid, List, Table, Trash2, Folder, Tag, Sparkles } from 'lucide-react';
+import { Search, Filter, Grid, List, Table, Trash2, Folder, Tag, Sparkles, CheckCircle, XCircle, Play, Pause, RotateCcw, Download } from 'lucide-react';
 import { useState } from 'react';
 import { debounceFn } from '@/lib/utils';
 
@@ -19,9 +19,17 @@ interface BookmarkToolbarProps {
   setSelectedCategory: (category: string) => void;
   selectedTag: string;
   setSelectedTag: (tag: string) => void;
+  selectedValidity: string;
+  setSelectedValidity: (validity: string) => void;
   categories: string[];
   tags: string[];
   clearFilters: () => void;
+  isValidationRunning?: boolean;
+  onStartValidation?: () => void;
+  onPauseValidation?: () => void;
+  onRetryFailed?: () => void;
+  onExport?: () => void;
+  onManageFolders?: () => void;
 }
 
 export default function BookmarkToolbar({
@@ -41,9 +49,17 @@ export default function BookmarkToolbar({
   setSelectedCategory,
   selectedTag,
   setSelectedTag,
+  selectedValidity,
+  setSelectedValidity,
   categories,
   tags,
-  clearFilters
+  clearFilters,
+  isValidationRunning = false,
+  onStartValidation,
+  onPauseValidation,
+  onRetryFailed,
+  onExport,
+  onManageFolders
 }: BookmarkToolbarProps) {
   // 防抖搜索处理
   const debouncedSearch = debounceFn((term: string) => {
@@ -91,6 +107,52 @@ export default function BookmarkToolbar({
               </button>
             </div>
           )}
+          
+          {/* 验证控制按钮 */}
+          <div className="flex flex-wrap gap-2">
+            <button 
+              onClick={onStartValidation}
+              disabled={isValidationRunning}
+              className="btn btn-primary flex items-center px-3 py-1.5 text-sm disabled:opacity-50"
+            >
+              {isValidationRunning ? (
+                <>
+                  <Pause className="w-4 h-4 mr-1" />
+                  暂停验证
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 mr-1" />
+                  开始验证
+                </>
+              )}
+            </button>
+            <button 
+              onClick={onRetryFailed}
+              className="btn btn-warning flex items-center px-3 py-1.5 text-sm"
+            >
+              <RotateCcw className="w-4 h-4 mr-1" />
+              重试失败项
+            </button>
+          </div>
+          
+          {/* 导出按钮 */}
+          <button 
+            onClick={onExport}
+            className="btn btn-success flex items-center px-3 py-1.5 text-sm"
+          >
+            <Download className="w-4 h-4 mr-1" />
+            导出书签
+          </button>
+          
+          {/* 文件夹管理按钮 */}
+          <button 
+            onClick={onManageFolders}
+            className="btn btn-info flex items-center px-3 py-1.5 text-sm"
+          >
+            <Folder className="w-4 h-4 mr-1" />
+            管理文件夹
+          </button>
         </div>
         
         <div className="flex flex-wrap gap-3">
@@ -185,8 +247,22 @@ export default function BookmarkToolbar({
             </select>
           </div>
           
+          {/* 有效性筛选 */}
+          <div className="flex items-center">
+            <CheckCircle className="w-4 h-4 text-text-light mr-2" />
+            <select
+              value={selectedValidity}
+              onChange={(e) => setSelectedValidity(e.target.value)}
+              className="p-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-white shadow-sm"
+            >
+              <option value="">所有状态</option>
+              <option value="valid">有效链接</option>
+              <option value="invalid">无效链接</option>
+            </select>
+          </div>
+          
           {/* 清除筛选 */}
-          {(selectedCategory || selectedTag) && (
+          {(selectedCategory || selectedTag || selectedValidity) && (
             <button 
               onClick={clearFilters}
               className="btn btn-ghost text-sm px-3 py-1.5"
