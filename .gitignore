@@ -36,8 +36,6 @@ ehthumbs.db
 Thumbs.db
 
 # Specified files
-specs/*/
-!specs/README.md
 
 # Temporary files
 *.tmp

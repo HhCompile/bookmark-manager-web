@@ -91,19 +91,19 @@ class ApiService {
 
     // Add request interceptor
     this.api.interceptors.request.use(
-      (config) => {
+      config => {
         // You can add authentication tokens here if needed
         return config;
       },
-      (error) => {
+      error => {
         return Promise.reject(error);
       }
     );
 
     // Add response interceptor
     this.api.interceptors.response.use(
-      (response) => response,
-      (error) => {
+      response => response,
+      error => {
         console.error('API Error:', error);
         return Promise.reject(error);
       }
@@ -119,7 +119,7 @@ class ApiService {
   async uploadBookmarkFile(file: File): Promise<AxiosResponse<UploadResponse>> {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     return this.api.post('/bookmark/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -138,48 +138,66 @@ class ApiService {
   }
 
   // Batch add bookmarks
-  async addBookmarksBatch(data: BatchBookmarkRequest): Promise<AxiosResponse<{
-    message: string;
-    bookmarks: Bookmark[];
-  }>> {
+  async addBookmarksBatch(data: BatchBookmarkRequest): Promise<
+    AxiosResponse<{
+      message: string;
+      bookmarks: Bookmark[];
+    }>
+  > {
     return this.api.post('/bookmarks/batch', data);
   }
 
   // Get all bookmarks
-  async getBookmarks(isValid?: boolean): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
-    const params = isValid !== undefined ? { is_valid: isValid.toString() } : {};
+  async getBookmarks(
+    isValid?: boolean
+  ): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
+    const params =
+      isValid !== undefined ? { is_valid: isValid.toString() } : {};
     return this.api.get('/bookmarks', { params });
   }
 
   // Get bookmarks by category
-  async getBookmarksByCategory(category: string): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
+  async getBookmarksByCategory(
+    category: string
+  ): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
     return this.api.get(`/bookmarks/category/${category}`);
   }
 
   // Get bookmarks by tag
-  async getBookmarksByTag(tag: string): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
+  async getBookmarksByTag(
+    tag: string
+  ): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
     return this.api.get(`/bookmarks/tag/${tag}`);
   }
 
   // Update bookmark
-  async updateBookmark(url: string, data: UpdateBookmarkRequest): Promise<AxiosResponse<{
-    message: string;
-    bookmark: Bookmark;
-  }>> {
+  async updateBookmark(
+    url: string,
+    data: UpdateBookmarkRequest
+  ): Promise<
+    AxiosResponse<{
+      message: string;
+      bookmark: Bookmark;
+    }>
+  > {
     return this.api.put(`/bookmark/${encodeURIComponent(url)}`, data);
   }
 
   // Delete bookmark
-  async deleteBookmark(url: string): Promise<AxiosResponse<{ message: string }>> {
+  async deleteBookmark(
+    url: string
+  ): Promise<AxiosResponse<{ message: string }>> {
     return this.api.delete(`/bookmark/${encodeURIComponent(url)}`);
   }
 
   // Start bookmark validation
-  async startValidation(): Promise<AxiosResponse<{ 
-    message: string; 
-    total_tasks: number; 
-    completed_tasks: number 
-  }>> {
+  async startValidation(): Promise<
+    AxiosResponse<{
+      message: string;
+      total_tasks: number;
+      completed_tasks: number;
+    }>
+  > {
     return this.api.post('/bookmark/validate');
   }
 
@@ -189,14 +207,16 @@ class ApiService {
   }
 
   // Get invalid bookmarks
-  async getInvalidBookmarks(): Promise<AxiosResponse<{ bookmarks: Bookmark[] }>> {
+  async getInvalidBookmarks(): Promise<
+    AxiosResponse<{ bookmarks: Bookmark[] }>
+  > {
     return this.api.get('/bookmarks/invalid');
   }
 
   // Export bookmarks
   async exportBookmarks(): Promise<AxiosResponse<Blob>> {
     return this.api.get('/bookmark/export', {
-      responseType: 'blob'
+      responseType: 'blob',
     });
   }
 
@@ -206,10 +226,16 @@ class ApiService {
   }
 
   // Export bookmarks with folders
-  async exportBookmarksWithFolders(folderStructure: any): Promise<AxiosResponse<Blob>> {
-    return this.api.post('/bookmark/export-with-folders', { folder_structure: folderStructure }, {
-      responseType: 'blob'
-    });
+  async exportBookmarksWithFolders(
+    folderStructure: any
+  ): Promise<AxiosResponse<Blob>> {
+    return this.api.post(
+      '/bookmark/export-with-folders',
+      { folder_structure: folderStructure },
+      {
+        responseType: 'blob',
+      }
+    );
   }
 }
 
@@ -217,7 +243,7 @@ class ApiService {
 export const apiService = new ApiService();
 
 // Export types for use in components
-export type { 
+export type {
   Bookmark,
   Tag,
   Folder,
@@ -225,5 +251,5 @@ export type {
   UploadResponse,
   BatchBookmarkRequest,
   UpdateBookmarkRequest,
-  ValidationStatus
+  ValidationStatus,
 };

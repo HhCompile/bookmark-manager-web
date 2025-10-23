@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBookmarkStore } from '@/store/bookmarkStore';
-import { api } from '@/services/api';
+import { apiService as api } from '@/services/api';
 import { BookOpen, FileUp } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -27,7 +27,7 @@ export default function UploadPage() {
   // 获取状态和动作函数
   const { setLoading, setError, loading, error } = useBookmarkStore();
   const navigate = useNavigate();
-  
+
   // 本地状态
   const [file, setFile] = useState<File | null>(null);
   const [uploadResult, setUploadResult] = useState<any>(null);
@@ -69,10 +69,10 @@ export default function UploadPage() {
   const handleFolderConfirm = (folders: any[]) => {
     // 在实际项目中，这里应该将确认的文件夹结构发送到后端
     console.log('确认的文件夹结构:', folders);
-    
+
     // 隐藏文件夹确认界面
     setShowFolderConfirmation(false);
-    
+
     // 模拟验证任务（实际项目中应从后端获取）
     const mockValidationTasks = [
       {
@@ -84,7 +84,7 @@ export default function UploadPage() {
         status: 'completed',
         result: true,
         createdAt: new Date().toISOString(),
-        completedAt: new Date(Date.now() - 10000).toISOString()
+        completedAt: new Date(Date.now() - 10000).toISOString(),
       },
       {
         id: '2',
@@ -95,16 +95,17 @@ export default function UploadPage() {
         status: 'completed',
         result: true,
         createdAt: new Date().toISOString(),
-        completedAt: new Date(Date.now() - 8000).toISOString()
+        completedAt: new Date(Date.now() - 8000).toISOString(),
       },
       {
         id: '3',
         bookmarkUrl: 'https://stackoverflow.com',
-        title: 'Stack Overflow - Where Developers Learn, Share, & Build Careers',
+        title:
+          'Stack Overflow - Where Developers Learn, Share, & Build Careers',
         round: 1,
         method: 'HTTP HEAD request',
         status: 'running',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       },
       {
         id: '4',
@@ -114,7 +115,7 @@ export default function UploadPage() {
         method: 'HTTP HEAD request',
         status: 'failed',
         details: 'ENOTFOUND - 无法解析域名',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       },
       {
         id: '5',
@@ -123,90 +124,90 @@ export default function UploadPage() {
         round: 1,
         method: 'HTTP HEAD request',
         status: 'pending',
-        createdAt: new Date().toISOString()
-      }
+        createdAt: new Date().toISOString(),
+      },
     ];
-    
+
     // 保存验证任务
     setValidationTasks(mockValidationTasks);
-    
+
     // 显示验证任务管理界面
     setShowValidationTasks(true);
-    
+
     // 显示成功消息
     toast.success('文件夹结构确认成功', {
       description: '文件夹结构已保存，现在可以开始验证书签链接的有效性。',
       duration: 3000,
     });
   };
-  
+
   // 处理取消文件夹确认
   const handleFolderCancel = () => {
     // 隐藏文件夹确认界面
     setShowFolderConfirmation(false);
-    
+
     // 显示提示消息
     toast.info('已取消文件夹确认', {
       description: '您可以稍后在书签管理页面调整文件夹结构。',
       duration: 3000,
     });
-    
+
     // 自动跳转到书签列表页面
     setTimeout(() => {
       navigate('/bookmarks');
     }, 2000);
   };
-  
+
   // 开始验证任务
   const handleStartValidation = () => {
     // 在实际项目中，这里应该调用后端API开始验证任务
     console.log('开始验证任务');
-    
+
     // 更新验证任务状态
-    setValidationTasks(prev => 
-      prev.map(task => 
+    setValidationTasks(prev =>
+      prev.map(task =>
         task.status === 'pending' ? { ...task, status: 'running' } : task
       )
     );
-    
+
     // 显示提示消息
     toast.info('开始验证任务', {
       description: '正在验证书签链接的有效性，请稍候。',
       duration: 3000,
     });
   };
-  
+
   // 暂停验证任务
   const handlePauseValidation = () => {
     // 在实际项目中，这里应该调用后端API暂停验证任务
     console.log('暂停验证任务');
-    
+
     // 更新验证任务状态
-    setValidationTasks(prev => 
-      prev.map(task => 
+    setValidationTasks(prev =>
+      prev.map(task =>
         task.status === 'running' ? { ...task, status: 'pending' } : task
       )
     );
-    
+
     // 显示提示消息
     toast.info('已暂停验证任务', {
       description: '验证任务已暂停，您可以稍后继续。',
       duration: 3000,
     });
   };
-  
+
   // 重试失败的验证任务
   const handleRetryFailed = () => {
     // 在实际项目中，这里应该调用后端API重试失败的验证任务
     console.log('重试失败的验证任务');
-    
+
     // 更新验证任务状态
-    setValidationTasks(prev => 
-      prev.map(task => 
+    setValidationTasks(prev =>
+      prev.map(task =>
         task.status === 'failed' ? { ...task, status: 'pending' } : task
       )
     );
-    
+
     // 显示提示消息
     toast.info('重试失败的验证任务', {
       description: '正在重新验证失败的书签链接。',
@@ -233,50 +234,95 @@ export default function UploadPage() {
       // 设置加载状态
       setLoading(true);
       setError(null);
-      
+
       // 模拟上传进度
       progressInterval = simulateUploadProgress();
-      
+
       // 调用API上传文件
       console.log('开始上传文件:', file.name);
       const response = await api.uploadBookmarkFile(formData);
       console.log('上传响应:', response);
-      
+
       // 完成上传进度
       clearInterval(progressInterval);
       setUploadProgress(100);
-      
+
       // 保存上传结果
       setUploadResult(response.data);
-      
+
       // 模拟智能标记结果（实际项目中应从后端获取）
       const mockTaggingResult = {
         totalBookmarks: response.data.processed_count,
         taggedBookmarks: Math.floor(response.data.processed_count * 0.95),
         categories: [
-          { name: '技术', count: Math.floor(response.data.processed_count * 0.4) },
-          { name: '新闻', count: Math.floor(response.data.processed_count * 0.2) },
-          { name: '娱乐', count: Math.floor(response.data.processed_count * 0.15) },
-          { name: '学习', count: Math.floor(response.data.processed_count * 0.15) },
-          { name: '购物', count: Math.floor(response.data.processed_count * 0.1) }
+          {
+            name: '技术',
+            count: Math.floor(response.data.processed_count * 0.4),
+          },
+          {
+            name: '新闻',
+            count: Math.floor(response.data.processed_count * 0.2),
+          },
+          {
+            name: '娱乐',
+            count: Math.floor(response.data.processed_count * 0.15),
+          },
+          {
+            name: '学习',
+            count: Math.floor(response.data.processed_count * 0.15),
+          },
+          {
+            name: '购物',
+            count: Math.floor(response.data.processed_count * 0.1),
+          },
         ],
         tags: [
-          { name: '编程', count: Math.floor(response.data.processed_count * 0.2) },
-          { name: '开发', count: Math.floor(response.data.processed_count * 0.15) },
-          { name: 'React', count: Math.floor(response.data.processed_count * 0.1) },
-          { name: '前端', count: Math.floor(response.data.processed_count * 0.15) },
-          { name: '后端', count: Math.floor(response.data.processed_count * 0.1) },
-          { name: '数据库', count: Math.floor(response.data.processed_count * 0.05) },
-          { name: 'AI', count: Math.floor(response.data.processed_count * 0.05) },
-          { name: '机器学习', count: Math.floor(response.data.processed_count * 0.05) },
-          { name: '科技', count: Math.floor(response.data.processed_count * 0.1) },
-          { name: '设计', count: Math.floor(response.data.processed_count * 0.05) }
-        ]
+          {
+            name: '编程',
+            count: Math.floor(response.data.processed_count * 0.2),
+          },
+          {
+            name: '开发',
+            count: Math.floor(response.data.processed_count * 0.15),
+          },
+          {
+            name: 'React',
+            count: Math.floor(response.data.processed_count * 0.1),
+          },
+          {
+            name: '前端',
+            count: Math.floor(response.data.processed_count * 0.15),
+          },
+          {
+            name: '后端',
+            count: Math.floor(response.data.processed_count * 0.1),
+          },
+          {
+            name: '数据库',
+            count: Math.floor(response.data.processed_count * 0.05),
+          },
+          {
+            name: 'AI',
+            count: Math.floor(response.data.processed_count * 0.05),
+          },
+          {
+            name: '机器学习',
+            count: Math.floor(response.data.processed_count * 0.05),
+          },
+          {
+            name: '科技',
+            count: Math.floor(response.data.processed_count * 0.1),
+          },
+          {
+            name: '设计',
+            count: Math.floor(response.data.processed_count * 0.05),
+          },
+        ],
       };
-      
+
       // 保存智能标记结果
       setTaggingResult(mockTaggingResult);
-      
+
       // 模拟文件夹结构（实际项目中应从后端获取）
       const mockFolderStructure = [
         {
@@ -295,17 +341,19 @@ export default function UploadPage() {
                   id: '1-1-1',
                   name: 'React',
                   path: '/技术文档/前端开发/React',
-                  bookmarkCount: Math.floor(response.data.processed_count * 0.1),
-                }
-              ]
+                  bookmarkCount: Math.floor(
+                    response.data.processed_count * 0.1
+                  ),
+                },
+              ],
             },
             {
               id: '1-2',
               name: '后端开发',
               path: '/技术文档/后端开发',
               bookmarkCount: Math.floor(response.data.processed_count * 0.15),
-            }
-          ]
+            },
+          ],
         },
         {
           id: '2',
@@ -324,29 +372,29 @@ export default function UploadPage() {
               name: '电子书',
               path: '/学习资料/电子书',
               bookmarkCount: Math.floor(response.data.processed_count * 0.1),
-            }
-          ]
+            },
+          ],
         },
         {
           id: '3',
           name: '娱乐收藏',
           path: '/娱乐收藏',
           bookmarkCount: Math.floor(response.data.processed_count * 0.15),
-        }
+        },
       ];
-      
+
       // 保存文件夹结构
       setFolderStructure(mockFolderStructure);
-      
+
       // 显示文件夹确认界面
       setShowFolderConfirmation(true);
-      
+
       // 显示成功消息
       toast.success('上传成功', {
         description: `文件 "${response.data.filename}" 上传成功，共处理 ${response.data.processed_count} 个书签。`,
         duration: 5000,
       });
-      
+
       // 重置文件选择
       setFile(null);
     } catch (error: any) {
@@ -375,10 +423,14 @@ export default function UploadPage() {
                 <BookOpen className="w-8 h-8 text-primary" />
               </div>
             </div>
-            <h1 className="text-3xl font-bold text-text-primary mb-2">书签管理器</h1>
-            <p className="text-text-secondary max-w-2xl mx-auto">上传并管理您的浏览器书签，智能分类和去重让您的书签井井有条</p>
+            <h1 className="text-3xl font-bold text-text-primary mb-2">
+              书签管理器
+            </h1>
+            <p className="text-text-secondary max-w-2xl mx-auto">
+              上传并管理您的浏览器书签，智能分类和去重让您的书签井井有条
+            </p>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* 主内容区 - 上传区域 */}
             <div className="lg:col-span-2 space-y-6">
@@ -388,7 +440,9 @@ export default function UploadPage() {
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center">
                       <FileUp className="w-5 h-5 text-primary mr-3" />
-                      <h2 className="text-xl font-semibold text-text-primary">上传书签文件</h2>
+                      <h2 className="text-xl font-semibold text-text-primary">
+                        上传书签文件
+                      </h2>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
@@ -396,9 +450,9 @@ export default function UploadPage() {
                       </span>
                     </div>
                   </div>
-                  
+
                   {/* 文件上传区域 */}
-                  <FileUploadArea 
+                  <FileUploadArea
                     file={file}
                     onFileChange={handleFileChange}
                     loading={loading}
@@ -408,27 +462,22 @@ export default function UploadPage() {
                   />
                 </div>
               </div>
-              
+
               {/* 上传结果 */}
-              <UploadResult 
-                uploadResult={uploadResult} 
-                error={error} 
-              />
-              
+              <UploadResult uploadResult={uploadResult} error={error} />
+
               {/* 智能标记结果 */}
-              <SmartTaggingResult 
-                taggingResult={taggingResult} 
-              />
-              
+              <SmartTaggingResult taggingResult={taggingResult} />
+
               {/* 文件夹结构确认 */}
               {showFolderConfirmation && folderStructure && (
-                <FolderStructureConfirmation 
-                  folders={folderStructure} 
+                <FolderStructureConfirmation
+                  folders={folderStructure}
                   onConfirm={handleFolderConfirm}
                   onCancel={handleFolderCancel}
                 />
               )}
-              
+
               {/* 验证任务管理 */}
               {showValidationTasks && (
                 <ValidationTaskManager
@@ -439,15 +488,15 @@ export default function UploadPage() {
                 />
               )}
             </div>
-            
+
             {/* 右侧信息面板 */}
             <div className="space-y-6">
               {/* 使用说明卡片 */}
               <UsageInstructions />
-              
+
               {/* 上传统计卡片 */}
               <UploadStats />
-              
+
               {/* 最近上传卡片 */}
               <RecentUploads />
             </div>

@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Folder, ChevronRight, ChevronDown, Plus, Edit3, Save, X } from 'lucide-react';
-import { api } from '@/services/api';
+import {
+  Folder,
+  ChevronRight,
+  ChevronDown,
+  Plus,
+  Edit3,
+  Save,
+  X,
+} from 'lucide-react';
+import { apiService as api } from '@/services/api';
 import { toast } from 'sonner';
 
 interface FolderItem {
@@ -20,8 +28,13 @@ interface FolderManagerProps {
  * 文件夹管理组件
  * 显示和管理文件夹结构
  */
-export default function FolderManager({ folders, onFoldersChange }: FolderManagerProps) {
-  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
+export default function FolderManager({
+  folders,
+  onFoldersChange,
+}: FolderManagerProps) {
+  const [expandedFolders, setExpandedFolders] = useState<
+    Record<string, boolean>
+  >({});
   const [editingFolder, setEditingFolder] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [localFolders, setLocalFolders] = useState<FolderItem[]>(folders);
@@ -37,7 +50,7 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
   const toggleFolder = (folderId: string) => {
     setExpandedFolders(prev => ({
       ...prev,
-      [folderId]: !prev[folderId]
+      [folderId]: !prev[folderId],
     }));
   };
 
@@ -50,7 +63,11 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
   // 保存编辑的文件夹名称
   const saveEdit = (folderId: string) => {
     if (editValue.trim()) {
-      const updatedFolders = updateFolderName(localFolders, folderId, editValue.trim());
+      const updatedFolders = updateFolderName(
+        localFolders,
+        folderId,
+        editValue.trim()
+      );
       setLocalFolders(updatedFolders);
       onFoldersChange(updatedFolders);
     }
@@ -59,13 +76,20 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
   };
 
   // 递归更新文件夹名称
-  const updateFolderName = (folders: FolderItem[], folderId: string, newName: string): FolderItem[] => {
+  const updateFolderName = (
+    folders: FolderItem[],
+    folderId: string,
+    newName: string
+  ): FolderItem[] => {
     return folders.map(folder => {
       if (folder.id === folderId) {
         return { ...folder, name: newName };
       }
       if (folder.children) {
-        return { ...folder, children: updateFolderName(folder.children, folderId, newName) };
+        return {
+          ...folder,
+          children: updateFolderName(folder.children, folderId, newName),
+        };
       }
       return folder;
     });
@@ -86,7 +110,7 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
       toast.success('获取文件夹建议成功');
     } catch (error: any) {
       toast.error('获取文件夹建议失败', {
-        description: error.message
+        description: error.message,
       });
     } finally {
       setIsLoading(false);
@@ -108,7 +132,7 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
       <div key={folder.id} className="ml-4">
         <div className="flex items-center py-2">
           {folder.children && folder.children.length > 0 && (
-            <button 
+            <button
               onClick={() => toggleFolder(folder.id)}
               className="mr-1 p-1 rounded hover:bg-gray-100"
             >
@@ -122,30 +146,30 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
           {(!folder.children || folder.children.length === 0) && (
             <div className="w-6 mr-1" />
           )}
-          
+
           <Folder className="w-4 h-4 text-text-secondary mr-2 flex-shrink-0" />
-          
+
           {editingFolder === folder.id ? (
             <div className="flex items-center flex-1">
               <input
                 type="text"
                 value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
+                onChange={e => setEditValue(e.target.value)}
                 className="flex-1 px-2 py-1 text-sm border rounded"
                 autoFocus
                 onBlur={() => saveEdit(folder.id)}
-                onKeyDown={(e) => {
+                onKeyDown={e => {
                   if (e.key === 'Enter') saveEdit(folder.id);
                   if (e.key === 'Escape') cancelEdit();
                 }}
               />
-              <button 
+              <button
                 onClick={() => saveEdit(folder.id)}
                 className="ml-2 p-1 text-green-600 hover:bg-green-50 rounded"
               >
                 <Save className="w-4 h-4" />
               </button>
-              <button 
+              <button
                 onClick={cancelEdit}
                 className="ml-1 p-1 text-gray-500 hover:bg-gray-100 rounded"
               >
@@ -156,8 +180,10 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
             <div className="flex items-center justify-between flex-1">
               <span className="text-text-primary">{folder.name}</span>
               <div className="flex items-center">
-                <span className="text-xs text-text-secondary mr-2">{folder.bookmarkCount} 个书签</span>
-                <button 
+                <span className="text-xs text-text-secondary mr-2">
+                  {folder.bookmarkCount} 个书签
+                </span>
+                <button
                   onClick={() => startEditing(folder.id, folder.name)}
                   className="p-1 text-text-secondary hover:bg-gray-100 rounded"
                 >
@@ -167,12 +193,14 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
             </div>
           )}
         </div>
-        
-        {folder.children && folder.children.length > 0 && expandedFolders[folder.id] && (
-          <div className="border-l border-border ml-2 pl-2">
-            {renderFolderTree(folder.children, level + 1)}
-          </div>
-        )}
+
+        {folder.children &&
+          folder.children.length > 0 &&
+          expandedFolders[folder.id] && (
+            <div className="border-l border-border ml-2 pl-2">
+              {renderFolderTree(folder.children, level + 1)}
+            </div>
+          )}
       </div>
     ));
   };
@@ -181,7 +209,9 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
     <div className="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold text-text-primary">文件夹结构</h3>
+          <h3 className="text-lg font-semibold text-text-primary">
+            文件夹结构
+          </h3>
           <div className="flex space-x-2">
             <button
               onClick={fetchFolderSuggestions}
@@ -192,11 +222,13 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
             </button>
           </div>
         </div>
-        
+
         {/* 文件夹建议 */}
         {suggestions && (
           <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h4 className="text-sm font-medium text-blue-800 mb-2">文件夹建议</h4>
+            <h4 className="text-sm font-medium text-blue-800 mb-2">
+              文件夹建议
+            </h4>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => applySuggestedFolders('category_based')}
@@ -219,16 +251,18 @@ export default function FolderManager({ folders, onFoldersChange }: FolderManage
             </div>
           </div>
         )}
-        
+
         {/* 文件夹树 */}
         <div className="border border-border rounded-lg p-4 max-h-96 overflow-y-auto">
           {localFolders.length > 0 ? (
             renderFolderTree(localFolders)
           ) : (
-            <p className="text-text-secondary text-center py-4">暂无文件夹结构</p>
+            <p className="text-text-secondary text-center py-4">
+              暂无文件夹结构
+            </p>
           )}
         </div>
-        
+
         {/* 操作按钮 */}
         <div className="flex justify-end space-x-3 mt-6">
           <button
