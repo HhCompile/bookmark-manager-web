@@ -870,26 +870,15 @@ export default function BookmarkList() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h2 className="text-h1 text-text-dark">书签列表</h2>
-          <div className="flex bg-surface rounded-lg p-1 border border-border shadow-sm">
-            <button className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-primary text-white shadow-sm">
-              <Grid className="w-4 h-4 inline mr-2" />
-              网格
-            </button>
-            <button className="px-4 py-2 rounded-md text-sm font-medium transition-colors text-text-gray hover:bg-blue-50">
-              <List className="w-4 h-4 inline mr-2" />
-              列表
-            </button>
-            <button className="px-4 py-2 rounded-md text-sm font-medium transition-colors text-text-gray hover:bg-blue-50">
-              <Table className="w-4 h-4 inline mr-2" />
-              表格
-            </button>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">书签列表</h1>
+            <p className="text-gray-600">正在加载您的书签，请稍候...</p>
           </div>
-        </div>
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
         </div>
       </div>
     );
@@ -897,32 +886,26 @@ export default function BookmarkList() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h2 className="text-h1 text-text-dark">书签列表</h2>
-          <div className="flex bg-surface rounded-lg p-1 border border-border shadow-sm">
-            <button className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-primary text-white shadow-sm">
-              <Grid className="w-4 h-4 inline mr-2" />
-              网格
-            </button>
-            <button className="px-4 py-2 rounded-md text-sm font-medium transition-colors text-text-gray hover:bg-blue-50">
-              <List className="w-4 h-4 inline mr-2" />
-              列表
-            </button>
-            <button className="px-4 py-2 rounded-md text-sm font-medium transition-colors text-text-gray hover:bg-blue-50">
-              <Table className="w-4 h-4 inline mr-2" />
-              表格
-            </button>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">书签列表</h1>
           </div>
-        </div>
-        <div className="card p-8 border border-danger/30 bg-danger/5">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <X className="w-6 h-6 text-danger" />
-            </div>
-            <div className="ml-4">
-              <h3 className="text-h3 text-danger mb-2">加载失败</h3>
-              <p className="text-body text-text-gray">{error}</p>
+          <div className="bg-white rounded-xl shadow-sm border border-red-200 p-8 max-w-2xl mx-auto">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <X className="w-6 h-6 text-red-500" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-red-800 mb-2">加载失败</h3>
+                <p className="text-red-600">{error}</p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                >
+                  重新加载
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -931,151 +914,163 @@ export default function BookmarkList() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h2 className="text-h1 text-text-dark">书签列表</h2>
-        <div className="flex bg-surface rounded-lg p-1 border border-border shadow-sm">
-          <button
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              viewMode === 'grid'
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-text-gray hover:bg-blue-50'
-            }`}
-            onClick={() => setViewMode('grid')}
-          >
-            <Grid className="w-4 h-4 inline mr-2" />
-            网格
-          </button>
-          <button
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              viewMode === 'list'
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-text-gray hover:bg-blue-50'
-            }`}
-            onClick={() => setViewMode('list')}
-          >
-            <List className="w-4 h-4 inline mr-2" />
-            列表
-          </button>
-          <button
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              viewMode === 'table'
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-text-gray hover:bg-blue-50'
-            }`}
-            onClick={() => setViewMode('table')}
-          >
-            <Table className="w-4 h-4 inline mr-2" />
-            表格
-          </button>
-        </div>
-      </div>
-
-      {/* 顶部工具栏 */}
-      <BookmarkToolbar
-        selectedBookmarks={selectedBookmarks}
-        filteredBookmarksLength={filteredBookmarks.length}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        toggleSelectAll={toggleSelectAll}
-        handleBatchDelete={handleBatchDelete}
-        handleBatchAutoTag={handleBatchAutoTag}
-        handleBatchAutoClassify={handleBatchAutoClassify}
-        searchTerm={searchTerm}
-        setSearchTerm={debouncedSearch}
-        isFilterOpen={isFilterOpen}
-        setIsFilterOpen={setIsFilterOpen}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        selectedTag={selectedTag}
-        setSelectedTag={setSelectedTag}
-        selectedValidity={selectedValidity}
-        setSelectedValidity={setSelectedValidity}
-        categories={categories}
-        tags={tags}
-        clearFilters={clearFilters}
-        isValidationRunning={isValidationRunning}
-        onStartValidation={startValidation}
-        onRetryFailed={retryFailedValidation}
-        onExport={exportBookmarks}
-        onManageFolders={showFolderManagerDialog}
-      />
-
-      {/* 结果统计 */}
-      <div className="mb-4 flex justify-between items-center">
-        <p className="text-text-secondary text-sm">
-          找到{' '}
-          <span className="font-medium text-text-primary">
-            {filteredBookmarks.length}
-          </span>{' '}
-          个书签
-        </p>
-      </div>
-
-      {/* 书签列表 */}
-      {filteredBookmarks.length === 0 ? (
-        <div className="card p-12 text-center">
-          <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-            <Folder className="w-8 h-8 text-primary" />
-          </div>
-          <h3 className="text-lg font-medium text-text-primary mb-2">
-            没有找到书签
-          </h3>
-          <p className="text-text-secondary">
-            {searchTerm || selectedCategory || selectedTag || selectedValidity
-              ? '没有匹配筛选条件的书签'
-              : '暂无书签，请先上传一些书签'}
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12 fade-in">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">书签管理</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            智能分类和整理您的书签，让您的收藏更加井井有条
           </p>
         </div>
-      ) : viewMode === 'grid' ? (
-        <BookmarkGridView
-          bookmarks={filteredBookmarks}
-          selectedBookmarks={selectedBookmarks}
-          toggleBookmarkSelection={toggleBookmarkSelection}
-          handleDelete={handleDelete}
-        />
-      ) : viewMode === 'list' ? (
-        <BookmarkListView
-          bookmarks={filteredBookmarks}
-          selectedBookmarks={selectedBookmarks}
-          toggleBookmarkSelection={toggleBookmarkSelection}
-          handleDelete={handleDelete}
-        />
-      ) : (
-        <BookmarkTableView
-          bookmarks={filteredBookmarks}
-          selectedBookmarks={selectedBookmarks}
-          toggleBookmarkSelection={toggleBookmarkSelection}
-          handleDelete={handleDelete}
-          handleAutoTag={handleAutoTag}
-          handleAutoClassify={handleAutoClassify}
-          handleUpdateAlias={updateBookmarkAlias}
-        />
-      )}
-      {/* 文件夹管理对话框 */}
-      {showFolderManager && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold text-text-primary">
-                  管理文件夹结构
-                </h3>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">书签列表</h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  找到 <span className="font-medium">{filteredBookmarks.length}</span> 个书签
+                </p>
+              </div>
+              <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
-                  onClick={() => setShowFolderManager(false)}
-                  className="text-text-secondary hover:text-text-primary"
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === 'grid'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                  onClick={() => setViewMode('grid')}
                 >
-                  <X className="w-6 h-6" />
+                  <Grid className="w-4 h-4 inline mr-2" />
+                  网格
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === 'list'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                  onClick={() => setViewMode('list')}
+                >
+                  <List className="w-4 h-4 inline mr-2" />
+                  列表
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === 'table'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                  onClick={() => setViewMode('table')}
+                >
+                  <Table className="w-4 h-4 inline mr-2" />
+                  表格
                 </button>
               </div>
-              <FolderManager
-                folders={folders}
-                onFoldersChange={handleFoldersChange}
-              />
             </div>
           </div>
+
+          {/* 顶部工具栏 */}
+          <div className="p-6 border-b border-gray-200">
+            <BookmarkToolbar
+              selectedBookmarks={selectedBookmarks}
+              filteredBookmarksLength={filteredBookmarks.length}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+              toggleSelectAll={toggleSelectAll}
+              handleBatchDelete={handleBatchDelete}
+              handleBatchAutoTag={handleBatchAutoTag}
+              handleBatchAutoClassify={handleBatchAutoClassify}
+              searchTerm={searchTerm}
+              setSearchTerm={debouncedSearch}
+              isFilterOpen={isFilterOpen}
+              setIsFilterOpen={setIsFilterOpen}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              selectedTag={selectedTag}
+              setSelectedTag={setSelectedTag}
+              selectedValidity={selectedValidity}
+              setSelectedValidity={setSelectedValidity}
+              categories={categories}
+              tags={tags}
+              clearFilters={clearFilters}
+              isValidationRunning={isValidationRunning}
+              onStartValidation={startValidation}
+              onRetryFailed={retryFailedValidation}
+              onExport={exportBookmarks}
+              onManageFolders={showFolderManagerDialog}
+            />
+          </div>
+
+          {/* 书签列表 */}
+          <div className="p-6">
+            {filteredBookmarks.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="mx-auto w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                  <Folder className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  没有找到书签
+                </h3>
+                <p className="text-gray-500">
+                  {searchTerm || selectedCategory || selectedTag || selectedValidity
+                    ? '没有匹配筛选条件的书签'
+                    : '暂无书签，请先上传一些书签'}
+                </p>
+              </div>
+            ) : viewMode === 'grid' ? (
+              <BookmarkGridView
+                bookmarks={filteredBookmarks}
+                selectedBookmarks={selectedBookmarks}
+                toggleBookmarkSelection={toggleBookmarkSelection}
+                handleDelete={handleDelete}
+              />
+            ) : viewMode === 'list' ? (
+              <BookmarkListView
+                bookmarks={filteredBookmarks}
+                selectedBookmarks={selectedBookmarks}
+                toggleBookmarkSelection={toggleBookmarkSelection}
+                handleDelete={handleDelete}
+              />
+            ) : (
+              <BookmarkTableView
+                bookmarks={filteredBookmarks}
+                selectedBookmarks={selectedBookmarks}
+                toggleBookmarkSelection={toggleBookmarkSelection}
+                handleDelete={handleDelete}
+                handleAutoTag={handleAutoTag}
+                handleAutoClassify={handleAutoClassify}
+                handleUpdateAlias={updateBookmarkAlias}
+              />
+            )}
+          </div>
         </div>
-      )}
+
+        {/* 文件夹管理对话框 */}
+        {showFolderManager && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    管理文件夹结构
+                  </h3>
+                  <button
+                    onClick={() => setShowFolderManager(false)}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+                <FolderManager
+                  folders={folders}
+                  onFoldersChange={handleFoldersChange}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
