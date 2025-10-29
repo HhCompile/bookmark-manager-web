@@ -64,10 +64,10 @@ export default function FileUploadArea({
     <div className="mt-6">
       {/* 拖拽区域 */}
       <div 
-        className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${
+        className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${
           dragActive 
-            ? 'border-primary bg-primary/5' 
-            : 'border-border hover:border-primary/50 hover:bg-gray-50/50'
+            ? 'border-blue-500 bg-blue-50 border-2 border-dashed rounded-xl' 
+            : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -76,15 +76,15 @@ export default function FileUploadArea({
       >
         <div className="flex flex-col items-center">
           {/* 上传图标 */}
-          <div className="mb-4 p-3 rounded-full bg-primary/10">
-            <Upload className="w-6 h-6 text-primary" />
+          <div className="mb-4 p-3 rounded-full bg-blue-100">
+            <Upload className="w-6 h-6 text-blue-600" />
           </div>
           
-          <h3 className="text-lg font-medium text-text-primary mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             {file ? '文件已选择' : '拖拽文件到此处'}
           </h3>
           
-          <p className="text-text-secondary mb-5 max-w-md">
+          <p className="text-gray-600 mb-5 max-w-md">
             {file 
               ? file.name 
               : '支持HTML格式的书签文件，或点击下方按钮选择文件'
@@ -94,7 +94,7 @@ export default function FileUploadArea({
           {/* 文件选择按钮 */}
           <button 
             onClick={triggerFileSelect}
-            className="btn btn-primary px-5 py-2.5 rounded-lg text-sm font-medium"
+            className="inline-flex items-center px-5 py-2.5 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200"
             disabled={loading}
           >
             {file ? '重新选择文件' : '选择文件'}
@@ -114,22 +114,22 @@ export default function FileUploadArea({
       
       {/* 文件信息和操作按钮 */}
       {file && (
-        <div className="mt-6 p-4 bg-gray-50/50 rounded-lg border border-border">
+        <div className="mt-6 p-5 bg-white rounded-lg border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <FileText className="w-5 h-5 text-text-secondary mr-3" />
+              <FileText className="w-5 h-5 text-gray-400 mr-3" />
               <div>
-                <p className="font-medium text-text-primary">{file.name}</p>
-                <p className="text-sm text-text-secondary">{(file.size / 1024).toFixed(2)} KB</p>
+                <p className="font-medium text-gray-900">{file.name}</p>
+                <p className="text-sm text-gray-500">{(file.size / 1024).toFixed(2)} KB</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <button 
                 onClick={onRemoveFile}
-                className="p-2 text-text-secondary hover:text-error hover:bg-error/10 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 disabled={loading}
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -137,13 +137,13 @@ export default function FileUploadArea({
           {/* 上传进度条 */}
           {loading && (
             <div className="mt-4">
-              <div className="flex justify-between text-sm text-text-secondary mb-2">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
                 <span>上传进度</span>
                 <span>{uploadProgress}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
                 <div 
-                  className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 rounded-full transition-all duration-500 ease-out"
                   style={{ width: `${uploadProgress}%` }}
                 ></div>
               </div>
@@ -155,7 +155,7 @@ export default function FileUploadArea({
             <button 
               onClick={onUpload}
               disabled={loading}
-              className="btn btn-primary px-5 py-2.5 rounded-lg font-medium disabled:opacity-50"
+              className="inline-flex items-center px-5 py-2.5 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50"
             >
               {loading ? (
                 <span className="flex items-center">

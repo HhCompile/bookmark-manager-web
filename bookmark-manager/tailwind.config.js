@@ -5,7 +5,36 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Noto Sans SC', 'sans-serif'],
+      },
+      animation: {
+        float: 'float 6s ease-in-out infinite',
+        'fade-in': 'fadeIn 0.3s ease-out',
+      },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      backgroundImage: {
+        'hero-gradient': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'blue-gradient': 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+        'green-gradient': 'linear-gradient(90deg, #10b981, #059669)',
+      },
+      backdropBlur: {
+        'xs': '2px',
+      },
+      opacity: {
+        '15': '0.15',
+      },
+    },
   },
   plugins: [],
 }

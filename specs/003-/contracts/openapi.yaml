@@ -1,0 +1,300 @@
+openapi: 3.0.3
+info:
+  title: 测试管理API
+  description: 用于运行测试、分析结果和监控测试执行的API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:9001
+    description: 本地开发服务器
+
+paths:
+  /health:
+    get:
+      summary: 健康检查
+      description: 检查测试服务是否正常运行
+      responses:
+        '200':
+          description: 服务正常
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /test/run:
+    post:
+      summary: 运行测试
+      description: 运行指定类型的测试套件
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                testType:
+                  type: string
+                  enum: [unit, integration, e2e]
+                  description: 测试类型
+                configId:
+                  type: string
+                  description: 测试配置ID
+              required:
+                - testType
+      responses:
+        '200':
+          description: 测试运行成功启动
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suiteId:
+                    type: string
+                    description: 测试套件ID
+                  message:
+                    type: string
+                    example: Test suite started successfully
+        '400':
+          description: 请求参数错误
+        '500':
+          description: 服务器内部错误
+
+  /test/suite/{suiteId}:
+    get:
+      summary: 获取测试套件状态
+      description: 获取指定测试套件的当前状态和结果
+      parameters:
+        - name: suiteId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 测试套件ID
+      responses:
+        '200':
+          description: 返回测试套件信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestSuite'
+        '404':
+          description: 测试套件未找到
+
+  /test/report/{suiteId}:
+    get:
+      summary: 获取测试报告
+      description: 获取指定测试套件的详细报告
+      parameters:
+        - name: suiteId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 测试套件ID
+      responses:
+        '200':
+          description: 返回测试报告
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestReport'
+        '404':
+          description: 测试报告未找到
+
+  /test/coverage/{suiteId}:
+    get:
+      summary: 获取覆盖率信息
+      description: 获取指定测试套件的代码覆盖率信息
+      parameters:
+        - name: suiteId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 测试套件ID
+      responses:
+        '200':
+          description: 返回覆盖率信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lineCoverage:
+                    type: number
+                    format: float
+                    description: 行覆盖率百分比
+                  branchCoverage:
+                    type: number
+                    format: float
+                    description: 分支覆盖率百分比
+                  functionCoverage:
+                    type: number
+                    format: float
+                    description: 函数覆盖率百分比
+        '404':
+          description: 测试套件未找到
+
+  /test/config:
+    post:
+      summary: 创建测试配置
+      description: 创建新的测试环境配置
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestConfiguration'
+      responses:
+        '201':
+          description: 测试配置创建成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  configId:
+                    type: string
+                    description: 配置ID
+        '400':
+          description: 请求参数错误
+
+  /monitoring/resources:
+    get:
+      summary: 获取系统资源监控信息
+      description: 获取当前系统资源使用情况
+      responses:
+        '200':
+          description: 返回系统资源信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cpuUsage:
+                    type: number
+                    format: float
+                    description: CPU使用率百分比
+                  memoryUsage:
+                    type: number
+                    format: float
+                    description: 内存使用率百分比
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: 时间戳
+
+components:
+  schemas:
+    TestResult:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: [PASS, FAIL, SKIP]
+        executionTime:
+          type: number
+          description: 执行时间(毫秒)
+        errorMessage:
+          type: string
+          nullable: true
+        stackTrace:
+          type: string
+          nullable: true
+        context:
+          type: object
+          nullable: true
+        type:
+          type: string
+          enum: [unit, integration, e2e]
+        createdAt:
+          type: string
+          format: date-time
+
+    TestSuite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        testResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestResult'
+        type:
+          type: string
+          enum: [unit, integration, e2e]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TestReport:
+      type: object
+      properties:
+        id:
+          type: string
+        testSuiteId:
+          type: string
+        totalTests:
+          type: integer
+        passedTests:
+          type: integer
+        failedTests:
+          type: integer
+        skippedTests:
+          type: integer
+        coverage:
+          type: object
+          properties:
+            lineCoverage:
+              type: number
+              format: float
+            branchCoverage:
+              type: number
+              format: float
+            functionCoverage:
+              type: number
+              format: float
+        executionTime:
+          type: number
+          description: 总执行时间(毫秒)
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        summary:
+          type: string
+
+    TestConfiguration:
+      type: object
+      properties:
+        id:
+          type: string
+        frontendTechStack:
+          type: string
+        backendTechStack:
+          type: string
+        monitoringFrequency:
+          type: integer
+          description: 监控频率(秒)
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

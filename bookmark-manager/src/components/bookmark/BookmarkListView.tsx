@@ -1,10 +1,12 @@
-import { ExternalLink, Trash2, Folder, Tag, Globe } from 'lucide-react';
+import { ExternalLink, Trash2, Folder, Tag, Globe, CheckCircle, XCircle } from 'lucide-react';
 
 interface Bookmark {
   url: string;
   title: string;
   category?: string;
   tags?: string[];
+  isValid: boolean;
+  alias?: string;
 }
 
 interface BookmarkListViewProps {
@@ -21,66 +23,81 @@ export default function BookmarkListView({
   handleDelete
 }: BookmarkListViewProps) {
   return (
-    <div className="card overflow-hidden">
-      <table className="min-w-full divide-y divide-border">
-        <thead className="bg-surface">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
           <tr>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider w-12">
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
               <input
                 type="checkbox"
                 checked={selectedBookmarks.length === bookmarks.length && bookmarks.length > 0}
                 onChange={() => {
                   // This would need to be handled by the parent component
                 }}
-                className="h-4 w-4 text-primary rounded border-input focus:ring-primary focus:ring-2"
+                className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
               />
             </th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              状态
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               网站
             </th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               标题
             </th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               URL
             </th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               分类
             </th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               标签
             </th>
-            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-text-gray uppercase tracking-wider">
+            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               操作
             </th>
           </tr>
         </thead>
-        <tbody className="bg-surface divide-y divide-border">
+        <tbody className="bg-white divide-y divide-gray-200">
           {bookmarks.map((bookmark, index) => (
-            <tr key={index} className="hover:bg-blue-50 transition-colors">
+            <tr key={index} className="hover:bg-gray-50 transition-colors">
               <td className="px-6 py-4 whitespace-nowrap">
                 <input
                   type="checkbox"
                   checked={selectedBookmarks.includes(bookmark.url)}
                   onChange={() => toggleBookmarkSelection(bookmark.url)}
-                  className="h-4 w-4 text-primary rounded border-input focus:ring-primary focus:ring-2"
+                  className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
                 />
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="bg-gray-200 border-2 border-dashed rounded-lg w-10 h-10 flex items-center justify-center">
+                {bookmark.isValid ? (
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                ) : (
+                  <XCircle className="w-5 h-5 text-red-500" />
+                )}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="bg-gray-100 rounded-lg w-10 h-10 flex items-center justify-center">
                   <Globe className="w-5 h-5 text-gray-400" />
                 </div>
               </td>
               <td className="px-6 py-4">
-                <div className="text-sm font-medium text-text-dark max-w-xs truncate" title={bookmark.title}>{bookmark.title || '无标题'}</div>
+                <div className="text-sm font-medium text-gray-900 max-w-xs truncate" title={bookmark.title}>
+                  {bookmark.title || '无标题'}
+                  {bookmark.alias && (
+                    <span className="block text-xs text-gray-500">({bookmark.alias})</span>
+                  )}
+                </div>
               </td>
               <td className="px-6 py-4">
-                <div className="text-sm text-text-gray max-w-xs truncate">
+                <div className="text-sm text-gray-500 max-w-xs truncate">
                   <a 
                     href={bookmark.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="hover:text-primary hover:underline transition-colors"
+                    className="hover:text-blue-600 hover:underline transition-colors"
                     title={bookmark.url}
                   >
                     {bookmark.url}
@@ -89,7 +106,7 @@ export default function BookmarkListView({
               </td>
               <td className="px-6 py-4">
                 {bookmark.category && (
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     <Folder className="w-3 h-3 mr-1" />
                     {bookmark.category}
                   </span>
@@ -108,7 +125,7 @@ export default function BookmarkListView({
                       </span>
                     ))}
                     {bookmark.tags.length > 2 && (
-                      <span className="text-xs text-text-gray">+{bookmark.tags.length - 2}</span>
+                      <span className="text-xs text-gray-500">+{bookmark.tags.length - 2}</span>
                     )}
                   </div>
                 )}
@@ -117,14 +134,14 @@ export default function BookmarkListView({
                 <div className="flex justify-end space-x-2">
                   <button 
                     onClick={() => window.open(bookmark.url, '_blank')}
-                    className="btn btn-outline p-2"
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all"
                     title="打开链接"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </button>
                   <button 
                     onClick={() => handleDelete(bookmark.url)}
-                    className="btn btn-danger p-2"
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-all"
                     title="删除书签"
                   >
                     <Trash2 className="w-4 h-4" />

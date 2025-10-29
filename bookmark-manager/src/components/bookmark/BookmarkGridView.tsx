@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { ExternalLink, Trash2, Folder, Tag, Globe, ChevronDown, ChevronUp } from 'lucide-react';
+import { ExternalLink, Trash2, Folder, Tag, Globe, ChevronDown, ChevronUp, CheckCircle, XCircle } from 'lucide-react';
 
 interface Bookmark {
   url: string;
   title: string;
   category?: string;
   tags?: string[];
+  isValid: boolean;
+  alias?: string;
 }
 
 interface BookmarkGridViewProps {
@@ -48,15 +50,24 @@ export default function BookmarkGridView({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {bookmarks.map((bookmark, index) => (
         <div 
           key={index} 
-          className="card hover:shadow-lg transition-all duration-200 relative"
+          className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 relative"
         >
+          {/* 有效性状态指示器 */}
+          <div className="absolute top-3 right-3">
+            {bookmark.isValid ? (
+              <CheckCircle className="w-5 h-5 text-green-500" />
+            ) : (
+              <XCircle className="w-5 h-5 text-red-500" />
+            )}
+          </div>
+          
           {/* 分类角标 */}
           {bookmark.category && (
-            <div className={`absolute -top-2 -left-2 px-2 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(bookmark.category)} shadow-sm`}>
+            <div className={`absolute -top-2 -left-2 px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(bookmark.category)} shadow-sm`}>
               {bookmark.category}
             </div>
           )}
@@ -71,33 +82,36 @@ export default function BookmarkGridView({
                 type="checkbox"
                 checked={selectedBookmarks.includes(bookmark.url)}
                 onChange={() => toggleBookmarkSelection(bookmark.url)}
-                className="h-5 w-5 text-primary rounded border-input focus:ring-primary focus:ring-2 mt-1"
+                className="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2 mt-1"
               />
             </div>
             
             {/* 标题 */}
-            <h3 className="text-h3 text-text-dark mb-2 line-clamp-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
               {bookmark.title || '无标题'}
+              {bookmark.alias && (
+                <span className="block text-sm text-gray-500">({bookmark.alias})</span>
+              )}
             </h3>
             
             {/* 链接 - 可折叠 */}
-            <div className="mb-3">
+            <div className="mb-4">
               {bookmark.url.length > 40 && !expandedBookmarks[bookmark.url] ? (
                 <div className="flex items-center">
                   <a 
                     href={bookmark.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-sm text-primary hover:underline transition-colors truncate flex-1"
+                    className="text-sm text-blue-600 hover:underline transition-colors truncate flex-1"
                     title={bookmark.url}
                   >
                     {bookmark.url.substring(0, 40)}...
                   </a>
                   <button 
                     onClick={() => toggleExpand(bookmark.url)}
-                    className="ml-1 text-text-gray hover:text-primary text-xs"
+                    className="ml-1 text-gray-400 hover:text-blue-600 text-xs"
                   >
-                    <ChevronDown className="w-3.5 h-3.5" />
+                    <ChevronDown className="w-4 h-4" />
                   </button>
                 </div>
               ) : bookmark.url.length > 40 && expandedBookmarks[bookmark.url] ? (
@@ -106,15 +120,15 @@ export default function BookmarkGridView({
                     href={bookmark.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-sm text-primary hover:underline transition-colors break-all"
+                    className="text-sm text-blue-600 hover:underline transition-colors break-all"
                   >
                     {bookmark.url}
                   </a>
                   <button 
                     onClick={() => toggleExpand(bookmark.url)}
-                    className="ml-1 text-text-gray hover:text-primary mt-1 text-xs"
+                    className="ml-1 text-gray-400 hover:text-blue-600 mt-1 text-xs"
                   >
-                    <ChevronUp className="w-3.5 h-3.5" />
+                    <ChevronUp className="w-4 h-4" />
                   </button>
                 </div>
               ) : (
@@ -122,7 +136,7 @@ export default function BookmarkGridView({
                   href={bookmark.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-sm text-primary hover:underline transition-colors break-all"
+                  className="text-sm text-blue-600 hover:underline transition-colors break-all"
                 >
                   {bookmark.url}
                 </a>
@@ -131,19 +145,19 @@ export default function BookmarkGridView({
             
             {/* 标签 */}
             {bookmark.tags && bookmark.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-5">
-                {bookmark.tags.slice(0, 5).map((tag, tagIndex) => (
+              <div className="flex flex-wrap gap-2 mb-5">
+                {bookmark.tags.slice(0, 3).map((tag, tagIndex) => (
                   <span 
                     key={tagIndex}
-                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                    className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
                   >
-                    <Tag className="w-2 h-2 mr-1" />
+                    <Tag className="w-2.5 h-2.5 mr-1" />
                     {tag}
                   </span>
                 ))}
-                {bookmark.tags.length > 5 && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                    +{bookmark.tags.length - 5}
+                {bookmark.tags.length > 3 && (
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                    +{bookmark.tags.length - 3}
                   </span>
                 )}
               </div>
@@ -153,18 +167,18 @@ export default function BookmarkGridView({
             <div className="flex justify-end space-x-2">
               <button 
                 onClick={() => window.open(bookmark.url, '_blank')}
-                className="btn btn-outline px-2.5 py-1 text-sm"
+                className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all"
                 title="打开链接"
               >
-                <ExternalLink className="w-3.5 h-3.5 mr-1" />
+                <ExternalLink className="w-4 h-4 mr-1" />
                 打开
               </button>
               <button 
                 onClick={() => handleDelete(bookmark.url)}
-                className="btn btn-danger px-2.5 py-1 text-sm"
+                className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-all"
                 title="删除书签"
               >
-                <Trash2 className="w-3.5 h-3.5 mr-1" />
+                <Trash2 className="w-4 h-4 mr-1" />
                 删除
               </button>
             </div>
