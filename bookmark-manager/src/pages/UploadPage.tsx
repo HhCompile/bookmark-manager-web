@@ -415,31 +415,41 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen hero-bg">
       {/* Hero区域 */}
-      <section className="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section className="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
         <div className="text-center mb-16 fade-in">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             智能整理
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">Chrome书签</span>
           </h1>
-          <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-3xl mx-auto">
             一键导入、智能分类、可视化管理的全新书签体验。让混乱的书签变得井井有条，提升您的浏览效率。
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
               onClick={() => document.getElementById('upload-section')?.scrollIntoView({behavior: 'smooth'})}
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105"
+              className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 shadow-lg hover:shadow-xl text-base"
             >
               开始整理
             </button>
             <button 
               onClick={() => {
                 // 模拟加载示例数据
-                toast.info('体验演示', {
-                  description: '示例数据加载完成！',
+                toast.success('体验演示', {
+                  description: '示例数据加载完成！即将展示智能分类效果...',
                   duration: 3000,
+                  position: 'top-center',
                 });
+                
+                // 模拟一些演示效果
+                setTimeout(() => {
+                  toast.info('智能分类完成', {
+                    description: '已识别技术、新闻、娱乐等5个分类',
+                    duration: 4000,
+                    position: 'bottom-right',
+                  });
+                }, 1000);
               }}
-              className="glass-effect text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:bg-opacity-20 transition-all"
+              className="glass-effect text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:bg-opacity-20 transition-all focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 shadow-lg hover:shadow-xl text-base"
             >
               体验演示
             </button>
@@ -448,32 +458,32 @@ export default function UploadPage() {
 
         {/* 功能特性 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
-          <div className="glass-effect rounded-xl p-6 text-center text-white fade-in floating-element">
-            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <div className="glass-effect rounded-2xl p-8 text-center text-white fade-in floating-element border border-white border-opacity-20 shadow-2xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+            <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">智能分类</h3>
-            <p className="text-blue-100">基于AI算法自动识别书签类别，准确率高达90%以上</p>
+            <h3 className="text-xl font-bold mb-3">智能分类</h3>
+            <p className="text-blue-100 text-base">基于AI算法自动识别书签类别，准确率高达90%以上</p>
           </div>
-          <div className="glass-effect rounded-xl p-6 text-center text-white fade-in floating-element" style={{animationDelay: '0.5s'}}>
-            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <div className="glass-effect rounded-2xl p-8 text-center text-white fade-in floating-element border border-white border-opacity-20 shadow-2xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3" style={{animationDelay: '0.5s'}}>
+            <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">一键整理</h3>
-            <p className="text-blue-100">拖拽上传，秒级处理，让混乱的书签瞬间变得井井有条</p>
+            <h3 className="text-xl font-bold mb-3">一键整理</h3>
+            <p className="text-blue-100 text-base">拖拽上传，秒级处理，让混乱的书签瞬间变得井井有条</p>
           </div>
-          <div className="glass-effect rounded-xl p-6 text-center text-white fade-in floating-element" style={{animationDelay: '1s'}}>
-            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <div className="glass-effect rounded-2xl p-8 text-center text-white fade-in floating-element border border-white border-opacity-20 shadow-2xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3" style={{animationDelay: '1s'}}>
+            <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M4 16v1a3 3 0 003 3h6a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">多格式导出</h3>
-            <p className="text-blue-100">支持HTML、JSON、CSV等多种格式，方便导入其他浏览器</p>
+            <h3 className="text-xl font-bold mb-3">多格式导出</h3>
+            <p className="text-blue-100 text-base">支持HTML、JSON、CSV等多种格式，方便导入其他浏览器</p>
           </div>
         </div>
       </section>
@@ -483,21 +493,23 @@ export default function UploadPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">上传Chrome书签文件</h2>
-            <p className="text-gray-600">从Chrome浏览器导出书签HTML文件，拖拽到下方区域或点击上传</p>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">从Chrome浏览器导出书签HTML文件，拖拽到下方区域或点击上传</p>
           </div>
 
           {/* 上传卡片 */}
-          <div className="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden transition-all duration-300 hover:shadow-md">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden transition-all duration-500 hover:shadow-2xl">
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
-                  <FileUp className="w-5 h-5 text-primary mr-3" />
-                  <h2 className="text-xl font-semibold text-text-primary">
+                  <div className="p-3 rounded-xl bg-blue-100 mr-4">
+                    <FileUp className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900">
                     上传书签文件
                   </h2>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                  <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border border-blue-200 shadow-sm">
                     HTML格式
                   </span>
                 </div>
@@ -547,40 +559,45 @@ export default function UploadPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">使用说明</h2>
-            <p className="text-gray-600">简单三步，轻松整理您的Chrome书签</p>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">简单三步，轻松整理您的Chrome书签</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-5">
                 <span className="text-2xl font-bold text-blue-600">1</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">导出书签</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">导出书签</h3>
               <p className="text-gray-600">在Chrome浏览器中打开书签管理器，选择"导出书签"，保存为HTML文件</p>
             </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
                 <span className="text-2xl font-bold text-green-600">2</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">上传文件</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">上传文件</h3>
               <p className="text-gray-600">将导出的HTML文件拖拽到上传区域，或点击选择文件</p>
             </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-5">
                 <span className="text-2xl font-bold text-purple-600">3</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">获取结果</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">获取结果</h3>
               <p className="text-gray-600">系统自动分类整理，查看结果并可按需要导出为各种格式</p>
             </div>
           </div>
 
-          <div className="mt-12 p-6 bg-blue-50 rounded-xl">
-            <h4 className="font-semibold text-blue-900 mb-2">Chrome书签导出步骤：</h4>
-            <ol className="list-decimal list-inside text-blue-800 space-y-1">
-              <li>打开Chrome浏览器，点击右上角的三个点菜单</li>
-              <li>选择"书签" → "书签管理器"</li>
-              <li>在书签管理器页面，点击右上角的三个点</li>
-              <li>选择"导出书签"，选择保存位置并确认</li>
+          <div className="mt-12 p-6 bg-blue-50 rounded-2xl border border-blue-100">
+            <h4 className="font-semibold text-blue-900 mb-3 flex items-center text-lg">
+              <svg className="w-5 h-5 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              Chrome书签导出步骤：
+            </h4>
+            <ol className="list-decimal list-inside text-blue-800 space-y-2 ml-2">
+              <li className="pl-2">打开Chrome浏览器，点击右上角的三个点菜单</li>
+              <li className="pl-2">选择"书签" → "书签管理器"</li>
+              <li className="pl-2">在书签管理器页面，点击右上角的三个点</li>
+              <li className="pl-2">选择"导出书签"，选择保存位置并确认</li>
             </ol>
           </div>
         </div>

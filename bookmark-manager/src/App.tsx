@@ -13,7 +13,7 @@ import router from './router';
  */
 function App() {
   return (
-    <div className="App min-h-screen flex flex-col bg-background">
+    <div className="App min-h-screen flex flex-col">
       {/* 路由配置 */}
       <RouterProvider router={router} />
       <Toaster />

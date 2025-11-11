@@ -10,8 +10,8 @@ export default function RootLayout() {
       <Header />
       <div className="flex flex-1">
         {/* 左侧导航和筛选面板 */}
-        <nav className="w-60 bg-surface p-5 border-r border-border hidden lg:block shadow-sm">
-          <div className="space-y-7">
+        <nav className="w-64 bg-surface p-5 border-r border-border hidden lg:block shadow-sm">
+          <div className="space-y-8">
             {/* 搜索框 */}
             <div>
               <label className="block text-xs font-medium text-text-gray mb-2">搜索书签</label>
@@ -22,94 +22,94 @@ export default function RootLayout() {
                 <input
                   type="text"
                   placeholder="搜索标题或URL..."
-                  className="w-full pl-9 pr-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm transition-colors bg-white"
+                  className="w-full pl-9 pr-3 py-2.5 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm transition-colors bg-white focus:outline-none shadow-sm hover:shadow-sm"
                 />
               </div>
             </div>
             
             {/* 分类筛选 */}
             <div>
-              <h3 className="text-xs font-semibold text-text-dark mb-3 flex items-center">
-                <Folder className="w-4 h-4 mr-2" />
+              <h3 className="text-sm font-semibold text-text-dark mb-3 flex items-center">
+                <Folder className="w-4 h-4 mr-2 text-primary" />
                 分类
               </h3>
-              <ul className="space-y-1">
+              <ul className="space-y-1.5">
                 <li>
-                  <a href="#" className="block px-3 py-2 text-sm rounded-lg text-primary bg-blue-50 border-l-3 border-primary transition-colors">全部分类</a>
+                  <a href="#" className="block px-3.5 py-2.5 text-sm rounded-lg text-primary bg-blue-50 border-l-3 border-primary transition-colors hover:bg-blue-100 font-medium">全部分类</a>
                 </li>
                 <li>
-                  <a href="#" className="block px-3 py-2 text-sm rounded-lg text-text-gray hover:bg-blue-50 transition-colors">技术</a>
+                  <a href="#" className="block px-3.5 py-2.5 text-sm rounded-lg text-text-gray hover:bg-blue-50 transition-colors hover:text-primary">技术</a>
                 </li>
                 <li>
-                  <a href="#" className="block px-3 py-2 text-sm rounded-lg text-text-gray hover:bg-blue-50 transition-colors">新闻</a>
+                  <a href="#" className="block px-3.5 py-2.5 text-sm rounded-lg text-text-gray hover:bg-blue-50 transition-colors hover:text-primary">新闻</a>
                 </li>
                 <li>
-                  <a href="#" className="block px-3 py-2 text-sm rounded-lg text-text-gray hover:bg-blue-50 transition-colors">娱乐</a>
+                  <a href="#" className="block px-3.5 py-2.5 text-sm rounded-lg text-text-gray hover:bg-blue-50 transition-colors hover:text-primary">娱乐</a>
                 </li>
                 <li>
-                  <a href="#" className="block px-3 py-2 text-sm rounded-lg text-text-gray hover:bg-blue-50 transition-colors">学习</a>
+                  <a href="#" className="block px-3.5 py-2.5 text-sm rounded-lg text-text-gray hover:bg-blue-50 transition-colors hover:text-primary">学习</a>
                 </li>
                 <li>
-                  <a href="#" className="block px-3 py-2 text-sm rounded-lg text-text-gray hover:bg-blue-50 transition-colors">生活</a>
+                  <a href="#" className="block px-3.5 py-2.5 text-sm rounded-lg text-text-gray hover:bg-blue-50 transition-colors hover:text-primary">生活</a>
                 </li>
               </ul>
             </div>
             
             {/* 标签筛选 */}
             <div>
-              <h3 className="text-xs font-semibold text-text-dark mb-3 flex items-center">
-                <Tag className="w-4 h-4 mr-2" />
+              <h3 className="text-sm font-semibold text-text-dark mb-3 flex items-center">
+                <Tag className="w-4 h-4 mr-2 text-primary" />
                 常用标签
               </h3>
               <div className="flex flex-wrap gap-2">
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer">编程</span>
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer">教程</span>
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer">文档</span>
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer">工具</span>
+                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer font-medium">编程</span>
+                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer font-medium">教程</span>
+                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer font-medium">文档</span>
+                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer font-medium">工具</span>
               </div>
             </div>
           </div>
         </nav>
         
         {/* 主内容区 */}
-        <main className="flex-1 p-5 sm:p-6">
+        <main className="flex-1 p-4 sm:p-5 md:p-6">
           <Outlet />
         </main>
         
         {/* 右侧信息面板 */}
         <aside className="w-64 bg-surface p-5 border-l border-border hidden xl:block shadow-sm">
           <div className="space-y-7">
-            <div className="card p-4">
-              <h3 className="text-h3 text-text-dark mb-4">统计信息</h3>
+            <div className="card p-5 rounded-xl border border-border shadow-sm bg-gradient-to-br from-white to-gray-50">
+              <h3 className="text-h3 text-text-dark mb-4 font-semibold">统计信息</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                   <span className="text-body text-text-gray">总书签数</span>
-                  <span className="font-medium text-text-dark">128</span>
+                  <span className="font-bold text-text-dark text-lg">128</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
                   <span className="text-body text-text-gray">分类数</span>
-                  <span className="font-medium text-text-dark">12</span>
+                  <span className="font-bold text-text-dark text-lg">12</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
                   <span className="text-body text-text-gray">标签数</span>
-                  <span className="font-medium text-text-dark">24</span>
+                  <span className="font-bold text-text-dark text-lg">24</span>
                 </div>
               </div>
             </div>
             
-            <div className="card p-4">
-              <h3 className="text-h3 text-text-dark mb-4">最近添加</h3>
-              <ul className="space-y-3">
-                <li className="text-body">
-                  <a href="#" className="text-primary hover:underline truncate block transition-colors">React官方文档</a>
+            <div className="card p-5 rounded-xl border border-border shadow-sm bg-gradient-to-br from-white to-gray-50">
+              <h3 className="text-h3 text-text-dark mb-4 font-semibold">最近添加</h3>
+              <ul className="space-y-4">
+                <li className="text-body pb-3 border-b border-gray-100 last:border-0 last:pb-0">
+                  <a href="#" className="text-primary hover:underline truncate block transition-colors font-medium">React官方文档</a>
                   <span className="text-text-gray text-caption">2小时前</span>
                 </li>
-                <li className="text-body">
-                  <a href="#" className="text-primary hover:underline truncate block transition-colors">JavaScript高级程序设计</a>
+                <li className="text-body pb-3 border-b border-gray-100 last:border-0 last:pb-0">
+                  <a href="#" className="text-primary hover:underline truncate block transition-colors font-medium">JavaScript高级程序设计</a>
                   <span className="text-text-gray text-caption">5小时前</span>
                 </li>
-                <li className="text-body">
-                  <a href="#" className="text-primary hover:underline truncate block transition-colors">Vue.js实战指南</a>
+                <li className="text-body pb-3 border-b border-gray-100 last:border-0 last:pb-0">
+                  <a href="#" className="text-primary hover:underline truncate block transition-colors font-medium">Vue.js实战指南</a>
                   <span className="text-text-gray text-caption">1天前</span>
                 </li>
               </ul>

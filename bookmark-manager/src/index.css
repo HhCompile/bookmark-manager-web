@@ -47,6 +47,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Noto Sans SC', sans-serif;
 }
 
 body {
@@ -68,18 +69,17 @@ h1, h2, h3, h4, h5, h6 {
 
 /* 玻璃态效果 */
 .glass-effect {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: var(--shadow-glass);
 }
 
 /* Hero区域背景 */
 .hero-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .hero-bg::before {
@@ -114,14 +114,11 @@ h1, h2, h3, h4, h5, h6 {
 .upload-zone {
   border: 2px dashed #e2e8f0;
   transition: all 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
 }
 
 .upload-zone.dragover {
   border-color: #3b82f6;
-  background-color: rgba(239, 246, 255, 0.3);
+  background-color: #eff6ff;
   transform: scale(1.02);
 }
 
@@ -129,7 +126,6 @@ h1, h2, h3, h4, h5, h6 {
 .bookmark-card {
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 .bookmark-card:hover {
@@ -312,7 +308,7 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -321,7 +317,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .fade-in {
-  animation: fadeIn 0.3s ease-out;
+  opacity: 0;
+  transform: translateY(30px);
 }
 
 /* 过渡效果 */
