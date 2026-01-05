@@ -1,6 +1,22 @@
-import { Search, Filter, Grid, List, Table, Trash2, Folder, Tag, Sparkles, CheckCircle, XCircle, Play, Pause, RotateCcw, Download } from 'lucide-react';
-import { useState } from 'react';
+import {
+  Search,
+  Filter,
+  Grid,
+  List,
+  Table,
+  Trash2,
+  Folder,
+  Tag,
+  Sparkles,
+  CheckCircle,
+  XCircle,
+  Play,
+  Pause,
+  RotateCcw,
+  Download,
+} from 'lucide-react';
 import { debounceFn } from '@/lib/utils';
+import { useState } from 'react';
 
 interface BookmarkToolbarProps {
   selectedBookmarks: string[];
@@ -59,7 +75,7 @@ export default function BookmarkToolbar({
   onPauseValidation,
   onRetryFailed,
   onExport,
-  onManageFolders
+  onManageFolders,
 }: BookmarkToolbarProps) {
   // 防抖搜索处理
   const debouncedSearch = debounceFn((term: string) => {
@@ -73,32 +89,37 @@ export default function BookmarkToolbar({
           <div className="flex items-center">
             <input
               type="checkbox"
-              checked={selectedBookmarks.length === filteredBookmarksLength && filteredBookmarksLength > 0}
+              checked={
+                selectedBookmarks.length === filteredBookmarksLength &&
+                filteredBookmarksLength > 0
+              }
               onChange={toggleSelectAll}
               className="h-5 w-5 text-primary rounded border-input focus:ring-primary focus:ring-2"
             />
             <span className="ml-2 text-body text-text-gray">
-              {selectedBookmarks.length > 0 ? `已选择 ${selectedBookmarks.length} 项` : '全选'}
+              {selectedBookmarks.length > 0
+                ? `已选择 ${selectedBookmarks.length} 项`
+                : '全选'}
             </span>
           </div>
-          
+
           {selectedBookmarks.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              <button 
+              <button
                 onClick={handleBatchDelete}
                 className="btn btn-danger flex items-center px-3 py-1.5 text-sm"
               >
                 <Trash2 className="w-4 h-4 mr-1" />
                 批量删除
               </button>
-              <button 
+              <button
                 onClick={handleBatchAutoTag}
                 className="btn btn-warning flex items-center px-3 py-1.5 text-sm"
               >
                 <Tag className="w-4 h-4 mr-1" />
                 批量打标
               </button>
-              <button 
+              <button
                 onClick={handleBatchAutoClassify}
                 className="btn btn-primary flex items-center px-3 py-1.5 text-sm"
               >
@@ -107,10 +128,10 @@ export default function BookmarkToolbar({
               </button>
             </div>
           )}
-          
+
           {/* 验证控制按钮 */}
           <div className="flex flex-wrap gap-2">
-            <button 
+            <button
               onClick={onStartValidation}
               disabled={isValidationRunning}
               className="btn btn-primary flex items-center px-3 py-1.5 text-sm disabled:opacity-50"
@@ -127,7 +148,7 @@ export default function BookmarkToolbar({
                 </>
               )}
             </button>
-            <button 
+            <button
               onClick={onRetryFailed}
               className="btn btn-warning flex items-center px-3 py-1.5 text-sm"
             >
@@ -135,18 +156,18 @@ export default function BookmarkToolbar({
               重试失败项
             </button>
           </div>
-          
+
           {/* 导出按钮 */}
-          <button 
+          <button
             onClick={onExport}
             className="btn btn-success flex items-center px-3 py-1.5 text-sm"
           >
             <Download className="w-4 h-4 mr-1" />
             导出书签
           </button>
-          
+
           {/* 文件夹管理按钮 */}
-          <button 
+          <button
             onClick={onManageFolders}
             className="btn btn-info flex items-center px-3 py-1.5 text-sm"
           >
@@ -154,7 +175,7 @@ export default function BookmarkToolbar({
             管理文件夹
           </button>
         </div>
-        
+
         <div className="flex flex-wrap gap-3">
           {/* 搜索框 */}
           <div className="relative">
@@ -165,11 +186,11 @@ export default function BookmarkToolbar({
               type="text"
               placeholder="搜索书签..."
               value={searchTerm}
-              onChange={(e) => debouncedSearch(e.target.value)}
+              onChange={e => debouncedSearch(e.target.value)}
               className="pl-9 pr-8 py-2 w-64 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm transition-colors bg-white"
             />
             {searchTerm && (
-              <button 
+              <button
                 onClick={() => debouncedSearch('')}
                 className="absolute right-2 top-2 text-text-light hover:text-danger"
               >
@@ -177,33 +198,33 @@ export default function BookmarkToolbar({
               </button>
             )}
           </div>
-          
+
           {/* 筛选按钮 */}
-          <button 
+          <button
             onClick={() => setIsFilterOpen(!isFilterOpen)}
             className={`btn ${isFilterOpen ? 'btn-primary' : 'btn-outline'} flex items-center px-3 py-1.5 text-sm`}
           >
             <Filter className="w-4 h-4 mr-1" />
             筛选
           </button>
-          
+
           {/* 视图切换按钮 - pills 样式 */}
           <div className="flex gap-1">
-            <button 
+            <button
               className={`btn ${viewMode === 'grid' ? 'btn-primary' : 'btn-outline'} flex items-center px-3 py-1.5 text-sm`}
               onClick={() => setViewMode('grid')}
             >
               <Grid className="w-4 h-4 mr-1" />
               网格
             </button>
-            <button 
+            <button
               className={`btn ${viewMode === 'list' ? 'btn-primary' : 'btn-outline'} flex items-center px-3 py-1.5 text-sm`}
               onClick={() => setViewMode('list')}
             >
               <List className="w-4 h-4 mr-1" />
               列表
             </button>
-            <button 
+            <button
               className={`btn ${viewMode === 'table' ? 'btn-primary' : 'btn-outline'} flex items-center px-3 py-1.5 text-sm`}
               onClick={() => setViewMode('table')}
             >
@@ -213,7 +234,7 @@ export default function BookmarkToolbar({
           </div>
         </div>
       </div>
-      
+
       {/* 筛选面板 */}
       {isFilterOpen && (
         <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-3">
@@ -222,37 +243,41 @@ export default function BookmarkToolbar({
             <Folder className="w-4 h-4 text-text-light mr-2" />
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={e => setSelectedCategory(e.target.value)}
               className="p-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-white shadow-sm"
             >
               <option value="">所有分类</option>
               {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
           </div>
-          
+
           {/* 标签筛选 */}
           <div className="flex items-center">
             <Tag className="w-4 h-4 text-text-light mr-2" />
             <select
               value={selectedTag}
-              onChange={(e) => setSelectedTag(e.target.value)}
+              onChange={e => setSelectedTag(e.target.value)}
               className="p-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-white shadow-sm"
             >
               <option value="">所有标签</option>
               {tags.map(tag => (
-                <option key={tag} value={tag}>{tag}</option>
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
               ))}
             </select>
           </div>
-          
+
           {/* 有效性筛选 */}
           <div className="flex items-center">
             <CheckCircle className="w-4 h-4 text-text-light mr-2" />
             <select
               value={selectedValidity}
-              onChange={(e) => setSelectedValidity(e.target.value)}
+              onChange={e => setSelectedValidity(e.target.value)}
               className="p-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-white shadow-sm"
             >
               <option value="">所有状态</option>
@@ -260,10 +285,10 @@ export default function BookmarkToolbar({
               <option value="invalid">无效链接</option>
             </select>
           </div>
-          
+
           {/* 清除筛选 */}
           {(selectedCategory || selectedTag || selectedValidity) && (
-            <button 
+            <button
               onClick={clearFilters}
               className="btn btn-ghost text-sm px-3 py-1.5"
             >

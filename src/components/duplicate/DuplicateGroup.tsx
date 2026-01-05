@@ -10,10 +10,10 @@ interface DuplicateGroupProps {
  * 重复书签组组件
  * 显示一组重复的书签并提供操作选项
  */
-export default function DuplicateGroup({ 
-  bookmarks, 
-  onRemoveBookmark, 
-  onKeepBookmark 
+export default function DuplicateGroup({
+  bookmarks,
+  onRemoveBookmark,
+  onKeepBookmark,
 }: DuplicateGroupProps) {
   if (bookmarks.length === 0) return null;
 
@@ -25,10 +25,13 @@ export default function DuplicateGroup({
           重复书签组
         </h3>
       </div>
-      
+
       <div className="divide-y divide-border">
         {bookmarks.map((bookmark, index) => (
-          <div key={index} className="p-4 hover:bg-gray-50/50 transition-colors">
+          <div
+            key={index}
+            className="p-4 hover:bg-gray-50/50 transition-colors"
+          >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h4 className="font-medium text-text-primary mb-1">
@@ -48,7 +51,7 @@ export default function DuplicateGroup({
                   ))}
                 </div>
               </div>
-              
+
               <div className="flex space-x-2 ml-4">
                 <button
                   onClick={() => onKeepBookmark(bookmark.url)}

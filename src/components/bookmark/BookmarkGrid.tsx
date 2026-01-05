@@ -22,7 +22,7 @@ export default function BookmarkGridItem({
   isSelected,
   onToggleSelection,
   onDelete,
-  onOpen
+  onOpen,
 }: BookmarkGridItemProps) {
   return (
     <tr className="hover:bg-gray-50/50 transition-colors">
@@ -35,13 +35,15 @@ export default function BookmarkGridItem({
         />
       </td>
       <td className="px-4 py-3">
-        <div className="text-sm font-medium text-text-primary max-w-xs truncate">{bookmark.title || '无标题'}</div>
+        <div className="text-sm font-medium text-text-primary max-w-xs truncate">
+          {bookmark.title || '无标题'}
+        </div>
       </td>
       <td className="px-4 py-3">
         <div className="text-sm text-text-secondary max-w-xs truncate">
-          <a 
-            href={bookmark.url} 
-            target="_blank" 
+          <a
+            href={bookmark.url}
+            target="_blank"
             rel="noopener noreferrer"
             className="hover:text-primary hover:underline transition-colors"
           >
@@ -60,7 +62,7 @@ export default function BookmarkGridItem({
         {bookmark.tags && bookmark.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {bookmark.tags.slice(0, 2).map((tag, tagIndex) => (
-              <span 
+              <span
                 key={tagIndex}
                 className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent/10 text-accent"
               >
@@ -68,19 +70,21 @@ export default function BookmarkGridItem({
               </span>
             ))}
             {bookmark.tags.length > 2 && (
-              <span className="text-xs text-text-secondary">+{bookmark.tags.length - 2}</span>
+              <span className="text-xs text-text-secondary">
+                +{bookmark.tags.length - 2}
+              </span>
             )}
           </div>
         )}
       </td>
       <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-        <button 
+        <button
           onClick={() => onOpen(bookmark.url)}
           className="text-primary hover:text-primary-dark mr-3 transition-colors"
         >
           <ExternalLink className="w-4 h-4" />
         </button>
-        <button 
+        <button
           onClick={() => onDelete(bookmark.url)}
           className="text-error hover:text-red-700 transition-colors"
         >

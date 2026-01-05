@@ -1,4 +1,14 @@
-import { ExternalLink, Trash2, Folder, Tag, Sparkles, Globe, CheckCircle, XCircle, Edit3 } from 'lucide-react';
+import {
+  ExternalLink,
+  Trash2,
+  Folder,
+  Tag,
+  Sparkles,
+  Globe,
+  CheckCircle,
+  XCircle,
+  Edit3,
+} from 'lucide-react';
 import AliasEditor from './AliasEditor';
 
 interface Bookmark {
@@ -27,7 +37,7 @@ export default function BookmarkTableView({
   handleDelete,
   handleAutoTag,
   handleAutoClassify,
-  handleUpdateAlias
+  handleUpdateAlias,
 }: BookmarkTableViewProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -35,38 +45,68 @@ export default function BookmarkTableView({
         <table className="min-w-full border-collapse">
           <thead className="bg-gray-50">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12"
+              >
                 <input
                   type="checkbox"
-                  checked={selectedBookmarks.length === bookmarks.length && bookmarks.length > 0}
+                  checked={
+                    selectedBookmarks.length === bookmarks.length &&
+                    bookmarks.length > 0
+                  }
                   onChange={() => {
                     // This would need to be handled by the parent component
                   }}
                   className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
                 />
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 状态
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 网站
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 标题
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 URL
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 分类
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 标签
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 智能功能
               </th>
-              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                scope="col"
+                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 操作
               </th>
             </tr>
@@ -95,24 +135,29 @@ export default function BookmarkTableView({
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900 max-w-xs truncate" title={bookmark.title}>
+                  <div
+                    className="text-sm font-medium text-gray-900 max-w-xs truncate"
+                    title={bookmark.title}
+                  >
                     {bookmark.title || '无标题'}
                     {bookmark.alias && (
-                      <span className="ml-2 text-xs text-gray-500">({bookmark.alias})</span>
+                      <span className="ml-2 text-xs text-gray-500">
+                        ({bookmark.alias})
+                      </span>
                     )}
                   </div>
                   <div className="mt-1">
-                    <AliasEditor 
-                      alias={bookmark.alias} 
-                      onSave={(alias) => handleUpdateAlias(bookmark, alias)} 
+                    <AliasEditor
+                      alias={bookmark.alias}
+                      onSave={alias => handleUpdateAlias(bookmark, alias)}
                     />
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   <div className="text-sm text-gray-500 max-w-xs truncate">
-                    <a 
-                      href={bookmark.url} 
-                      target="_blank" 
+                    <a
+                      href={bookmark.url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="hover:text-blue-600 hover:underline transition-colors"
                       title={bookmark.url}
@@ -128,7 +173,7 @@ export default function BookmarkTableView({
                       {bookmark.category}
                     </span>
                   ) : (
-                    <button 
+                    <button
                       onClick={() => handleAutoClassify(bookmark)}
                       className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
                     >
@@ -141,7 +186,7 @@ export default function BookmarkTableView({
                   {bookmark.tags && bookmark.tags.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
                       {bookmark.tags.slice(0, 2).map((tag, tagIndex) => (
-                        <span 
+                        <span
                           key={tagIndex}
                           className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
                         >
@@ -150,11 +195,13 @@ export default function BookmarkTableView({
                         </span>
                       ))}
                       {bookmark.tags.length > 2 && (
-                        <span className="text-xs text-gray-500">+{bookmark.tags.length - 2}</span>
+                        <span className="text-xs text-gray-500">
+                          +{bookmark.tags.length - 2}
+                        </span>
                       )}
                     </div>
                   ) : (
-                    <button 
+                    <button
                       onClick={() => handleAutoTag(bookmark)}
                       className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
                     >
@@ -166,7 +213,7 @@ export default function BookmarkTableView({
                 <td className="px-6 py-4">
                   <div className="flex flex-wrap gap-2">
                     {!bookmark.category && (
-                      <button 
+                      <button
                         onClick={() => handleAutoClassify(bookmark)}
                         className="text-xs text-blue-600 hover:text-blue-800 flex items-center transition-colors"
                       >
@@ -175,7 +222,7 @@ export default function BookmarkTableView({
                       </button>
                     )}
                     {(!bookmark.tags || bookmark.tags.length === 0) && (
-                      <button 
+                      <button
                         onClick={() => handleAutoTag(bookmark)}
                         className="text-xs text-blue-600 hover:text-blue-800 flex items-center transition-colors"
                       >
@@ -187,14 +234,14 @@ export default function BookmarkTableView({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end space-x-2">
-                    <button 
+                    <button
                       onClick={() => window.open(bookmark.url, '_blank')}
                       className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all"
                       title="打开链接"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDelete(bookmark.url)}
                       className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-all"
                       title="删除书签"

@@ -17,33 +17,25 @@ export default function UsageInstructions() {
             <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mr-3 mt-0.5">
               <span className="text-xs font-medium text-primary">1</span>
             </div>
-            <p className="text-text-secondary">
-              在浏览器中打开书签管理器
-            </p>
+            <p className="text-text-secondary">在浏览器中打开书签管理器</p>
           </li>
           <li className="flex items-start">
             <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mr-3 mt-0.5">
               <span className="text-xs font-medium text-primary">2</span>
             </div>
-            <p className="text-text-secondary">
-              选择"导出书签"或"备份书签"
-            </p>
+            <p className="text-text-secondary">选择"导出书签"或"备份书签"</p>
           </li>
           <li className="flex items-start">
             <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mr-3 mt-0.5">
               <span className="text-xs font-medium text-primary">3</span>
             </div>
-            <p className="text-text-secondary">
-              保存为HTML格式文件
-            </p>
+            <p className="text-text-secondary">保存为HTML格式文件</p>
           </li>
           <li className="flex items-start">
             <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mr-3 mt-0.5">
               <span className="text-xs font-medium text-primary">4</span>
             </div>
-            <p className="text-text-secondary">
-              上传到此页面进行管理
-            </p>
+            <p className="text-text-secondary">上传到此页面进行管理</p>
           </li>
         </ul>
       </div>

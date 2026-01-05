@@ -20,14 +20,14 @@ export const debugApiCall = async (apiCall, ...args) => {
       const endTime = performance.now();
       console.log('[API RESPONSE]', apiCall.name || 'Anonymous', {
         duration: `${(endTime - startTime).toFixed(2)}ms`,
-        result
+        result,
       });
       return result;
     } catch (error) {
       const endTime = performance.now();
       console.error('[API ERROR]', apiCall.name || 'Anonymous', {
         duration: `${(endTime - startTime).toFixed(2)}ms`,
-        error
+        error,
       });
       throw error;
     }

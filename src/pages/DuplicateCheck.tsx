@@ -1,7 +1,3 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useBookmarkStore } from '@/store/bookmarkStore';
-import { apiService as api } from '@/services/api';
 import {
   AlertTriangle,
   CheckCircle,
@@ -12,6 +8,10 @@ import {
   XCircle,
   Download,
 } from 'lucide-react';
+import { useBookmarkStore } from '@/store/bookmarkStore';
+import { apiService as api } from '@/services/api';
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 // 导入子组件
@@ -155,7 +155,9 @@ export default function DuplicateCheck() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 fade-in">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">重复书签检查</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            重复书签检查
+          </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             智能检测和管理重复书签，让您的收藏更加整洁有序
           </p>
@@ -170,24 +172,32 @@ export default function DuplicateCheck() {
                 <div className="p-2 rounded-lg bg-blue-100 mr-3">
                   <AlertTriangle className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">验证统计</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  验证统计
+                </h3>
               </div>
-              
+
               {validationStatus ? (
                 <div className="space-y-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">总任务数</span>
-                    <span className="font-medium">{validationStatus.total_tasks}</span>
+                    <span className="font-medium">
+                      {validationStatus.total_tasks}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">已完成</span>
-                    <span className="font-medium text-green-600">{validationStatus.completed_tasks}</span>
+                    <span className="font-medium text-green-600">
+                      {validationStatus.completed_tasks}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">失败项</span>
-                    <span className="font-medium text-red-600">{validationStatus.failed_tasks}</span>
+                    <span className="font-medium text-red-600">
+                      {validationStatus.failed_tasks}
+                    </span>
                   </div>
-                  
+
                   {/* 进度条 */}
                   <div className="pt-2">
                     <div className="flex justify-between text-sm text-gray-600 mb-1">
@@ -225,7 +235,9 @@ export default function DuplicateCheck() {
 
             {/* 操作按钮卡片 */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">操作控制</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                操作控制
+              </h3>
               <div className="space-y-3">
                 <Button
                   onClick={
@@ -304,16 +316,17 @@ export default function DuplicateCheck() {
                               {bookmark.url}
                             </p>
                             <div className="flex flex-wrap gap-2">
-                              {bookmark.tags && bookmark.tags.map(
-                                (tag: string, tagIndex: number) => (
-                                  <span
-                                    key={tagIndex}
-                                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                                  >
-                                    {tag}
-                                  </span>
-                                )
-                              )}
+                              {bookmark.tags &&
+                                bookmark.tags.map(
+                                  (tag: string, tagIndex: number) => (
+                                    <span
+                                      key={tagIndex}
+                                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                    >
+                                      {tag}
+                                    </span>
+                                  )
+                                )}
                             </div>
                           </div>
                           <div className="flex items-center">

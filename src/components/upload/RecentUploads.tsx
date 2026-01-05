@@ -1,5 +1,5 @@
-import { FileIcon } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
+import { FileIcon } from 'lucide-react';
 
 interface RecentFile {
   name: string;
@@ -17,18 +17,18 @@ export default function RecentUploads() {
     {
       name: '书签备份_2024.html',
       time: '2024-10-04T14:30:00',
-      count: 24
+      count: 24,
     },
     {
       name: '技术文档收藏.html',
       time: '2024-10-03T10:15:00',
-      count: 18
+      count: 18,
     },
     {
       name: '学习资源集.html',
       time: '2024-10-01T16:45:00',
-      count: 32
-    }
+      count: 32,
+    },
   ];
 
   return (
@@ -40,8 +40,13 @@ export default function RecentUploads() {
         </h3>
         <ul className="space-y-4">
           {recentFiles.map((file, index) => (
-            <li key={index} className="border-b border-border pb-4 last:border-0 last:pb-0">
-              <p className="text-sm font-medium text-text-primary truncate">{file.name}</p>
+            <li
+              key={index}
+              className="border-b border-border pb-4 last:border-0 last:pb-0"
+            >
+              <p className="text-sm font-medium text-text-primary truncate">
+                {file.name}
+              </p>
               <p className="text-xs text-text-secondary mt-1">
                 {formatDate(file.time, 'MM-dd HH:mm')} • {file.count}个书签
               </p>

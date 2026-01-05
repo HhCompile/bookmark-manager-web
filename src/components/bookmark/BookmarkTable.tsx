@@ -25,14 +25,17 @@ export default function BookmarkTable({
   onDelete,
   onOpen,
   toggleSelectAll,
-  allSelected
+  allSelected,
 }: BookmarkTableProps) {
   return (
     <div className="card overflow-hidden">
       <table className="min-w-full divide-y divide-border">
         <thead className="bg-gray-50/50">
           <tr>
-            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-10">
+            <th
+              scope="col"
+              className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-10"
+            >
               <input
                 type="checkbox"
                 checked={allSelected}
@@ -40,19 +43,34 @@ export default function BookmarkTable({
                 className="h-4 w-4 text-primary rounded border-input focus:ring-primary"
               />
             </th>
-            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+            <th
+              scope="col"
+              className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+            >
               标题
             </th>
-            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+            <th
+              scope="col"
+              className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+            >
               URL
             </th>
-            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+            <th
+              scope="col"
+              className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+            >
               分类
             </th>
-            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+            <th
+              scope="col"
+              className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+            >
               标签
             </th>
-            <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+            <th
+              scope="col"
+              className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider"
+            >
               操作
             </th>
           </tr>

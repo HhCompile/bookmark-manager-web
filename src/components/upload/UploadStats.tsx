@@ -15,7 +15,7 @@ export default function UploadStats() {
   const stats: UploadStatsData = {
     today: 3,
     week: 12,
-    month: 45
+    month: 45,
   };
 
   return (

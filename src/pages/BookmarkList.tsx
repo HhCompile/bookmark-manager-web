@@ -1,13 +1,13 @@
+import BookmarkTableView from '@/components/bookmark/BookmarkTableView';
+import BookmarkListView from '@/components/bookmark/BookmarkListView';
+import BookmarkGridView from '@/components/bookmark/BookmarkGridView';
+import BookmarkToolbar from '@/components/bookmark/BookmarkToolbar';
+import FolderManager from '@/components/bookmark/FolderManager';
+import { Grid, List, Table, Folder, X } from 'lucide-react';
 import { useState, useEffect, SetStateAction } from 'react';
 import { apiService as api } from '@/services/api';
-import { Grid, List, Table, Folder, X } from 'lucide-react';
-import { toast } from 'sonner';
-import BookmarkToolbar from '@/components/bookmark/BookmarkToolbar';
-import BookmarkGridView from '@/components/bookmark/BookmarkGridView';
-import BookmarkListView from '@/components/bookmark/BookmarkListView';
-import BookmarkTableView from '@/components/bookmark/BookmarkTableView';
-import FolderManager from '@/components/bookmark/FolderManager';
 import { debounceFn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface Bookmark {
   url: string;
@@ -897,9 +897,11 @@ export default function BookmarkList() {
                 <X className="w-6 h-6 text-red-500" />
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-medium text-red-800 mb-2">加载失败</h3>
+                <h3 className="text-lg font-medium text-red-800 mb-2">
+                  加载失败
+                </h3>
                 <p className="text-red-600">{error}</p>
-                <button 
+                <button
                   onClick={() => window.location.reload()}
                   className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                 >
@@ -927,9 +929,15 @@ export default function BookmarkList() {
           <div className="p-6 border-b border-gray-200">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">书签列表</h2>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  书签列表
+                </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  找到 <span className="font-medium">{filteredBookmarks.length}</span> 个书签
+                  找到{' '}
+                  <span className="font-medium">
+                    {filteredBookmarks.length}
+                  </span>{' '}
+                  个书签
                 </p>
               </div>
               <div className="flex bg-gray-100 rounded-lg p-1">
@@ -1013,7 +1021,10 @@ export default function BookmarkList() {
                   没有找到书签
                 </h3>
                 <p className="text-gray-500">
-                  {searchTerm || selectedCategory || selectedTag || selectedValidity
+                  {searchTerm ||
+                  selectedCategory ||
+                  selectedTag ||
+                  selectedValidity
                     ? '没有匹配筛选条件的书签'
                     : '暂无书签，请先上传一些书签'}
                 </p>

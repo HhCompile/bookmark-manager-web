@@ -1,5 +1,5 @@
-import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { create } from 'zustand';
 
 // 定义状态类型
 interface Bookmark {

@@ -1,8 +1,8 @@
 // 导入路由相关组件
 import { RouterProvider } from 'react-router-dom';
+import { Toaster } from '@/components/ui/sonner';
 // 导入全局样式
 import './index.css';
-import { Toaster } from '@/components/ui/sonner';
 
 // 导入路由配置
 import router from './router';

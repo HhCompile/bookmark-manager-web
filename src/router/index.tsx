@@ -1,8 +1,8 @@
-import { createBrowserRouter } from 'react-router-dom'
-import UploadPage from '../pages/UploadPage'
-import BookmarkList from '../pages/BookmarkList'
-import DuplicateCheck from '../pages/DuplicateCheck'
-import RootLayout from '../components/Layout'
+import { createBrowserRouter } from 'react-router-dom';
+import DuplicateCheck from '../pages/DuplicateCheck';
+import BookmarkList from '../pages/BookmarkList';
+import RootLayout from '../components/Layout';
+import UploadPage from '../pages/UploadPage';
 
 const routes = [
   {
@@ -11,20 +11,20 @@ const routes = [
     children: [
       {
         index: true,
-        element: <UploadPage />
+        element: <UploadPage />,
       },
       {
         path: '/bookmarks',
-        element: <BookmarkList />
+        element: <BookmarkList />,
       },
       {
         path: '/duplicates',
-        element: <DuplicateCheck />
-      }
-    ]
-  }
-]
+        element: <DuplicateCheck />,
+      },
+    ],
+  },
+];
 
-const router = createBrowserRouter(routes)
+const router = createBrowserRouter(routes);
 
-export default router
+export default router;

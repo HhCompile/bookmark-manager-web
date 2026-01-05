@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import { Bookmark, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // 页头组件 - 显示应用标题
 export default function Header() {
@@ -12,7 +12,7 @@ export default function Header() {
           <Bookmark className="w-6 h-6 text-primary mr-2" />
           <h1 className="text-xl font-bold text-primary">书签管理器</h1>
         </Link>
-        
+
         {/* 用户操作区域 */}
         <div className="flex items-center space-x-2">
           <button className="p-2 text-text-secondary hover:text-primary hover:bg-gray-100 rounded-md transition-colors">
