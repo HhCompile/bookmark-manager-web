@@ -1,0 +1,81 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "add": "添加",
+    "update": "更新",
+    "yes": "是",
+    "no": "否",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功"
+  },
+  "header": {
+    "title": "书签管理器",
+    "home": "首页",
+    "upload": "上传",
+    "duplicate": "重复检查",
+    "compliance": "合规性",
+    "update": "更新任务"
+  },
+  "footer": {
+    "copyright": "© 2024 书签管理器. 保留所有权利."
+  },
+  "bookmarks": {
+    "title": "书签",
+    "url": "URL",
+    "title_label": "标题",
+    "alias": "别名",
+    "tags": "标签",
+    "category": "分类",
+    "status": "状态",
+    "valid": "有效",
+    "invalid": "无效",
+    "created_at": "创建时间",
+    "updated_at": "更新时间",
+    "actions": "操作",
+    "add_new": "添加新书签",
+    "no_bookmarks": "未找到书签",
+    "grid_view": "网格视图",
+    "list_view": "列表视图"
+  },
+  "upload": {
+    "title": "上传书签",
+    "drag_drop": "拖拽文件到此处，或",
+    "browse": "浏览",
+    "select_file": "选择文件",
+    "upload": "上传",
+    "processing": "处理中...",
+    "completed": "上传完成",
+    "stats": {
+      "total": "书签总数",
+      "valid": "有效",
+      "invalid": "无效",
+      "duplicates": "重复",
+      "categories": "分类",
+      "tags": "标签"
+    }
+  },
+  "duplicate": {
+    "title": "重复检查",
+    "checking": "正在检查重复项...",
+    "found": "找到重复组",
+    "no_duplicates": "未找到重复项",
+    "group": "组 {{id}}",
+    "merge": "合并",
+    "keep": "保留",
+    "remove": "移除"
+  },
+  "compliance": {
+    "title": "合规报告",
+    "description": "生成您的书签合规报告",
+    "generate": "生成报告",
+    "report_type": "报告类型",
+    "date_range": "日期范围",
+    "format": "格式",
+    "generating": "正在生成报告...",
+    "download": "下载报告"
+  }
+}

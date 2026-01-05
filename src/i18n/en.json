@@ -1,0 +1,81 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "update": "Update",
+    "yes": "Yes",
+    "no": "No",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "header": {
+    "title": "Bookmark Manager",
+    "home": "Home",
+    "upload": "Upload",
+    "duplicate": "Duplicate Check",
+    "compliance": "Compliance",
+    "update": "Update Tasks"
+  },
+  "footer": {
+    "copyright": "© 2024 Bookmark Manager. All rights reserved."
+  },
+  "bookmarks": {
+    "title": "Bookmarks",
+    "url": "URL",
+    "title_label": "Title",
+    "alias": "Alias",
+    "tags": "Tags",
+    "category": "Category",
+    "status": "Status",
+    "valid": "Valid",
+    "invalid": "Invalid",
+    "created_at": "Created At",
+    "updated_at": "Updated At",
+    "actions": "Actions",
+    "add_new": "Add New Bookmark",
+    "no_bookmarks": "No bookmarks found",
+    "grid_view": "Grid View",
+    "list_view": "List View"
+  },
+  "upload": {
+    "title": "Upload Bookmarks",
+    "drag_drop": "Drag and drop files here, or",
+    "browse": "Browse",
+    "select_file": "Select a file",
+    "upload": "Upload",
+    "processing": "Processing...",
+    "completed": "Upload Completed",
+    "stats": {
+      "total": "Total Bookmarks",
+      "valid": "Valid",
+      "invalid": "Invalid",
+      "duplicates": "Duplicates",
+      "categories": "Categories",
+      "tags": "Tags"
+    }
+  },
+  "duplicate": {
+    "title": "Duplicate Check",
+    "checking": "Checking for duplicates...",
+    "found": "Duplicate Groups Found",
+    "no_duplicates": "No duplicates found",
+    "group": "Group {{id}}",
+    "merge": "Merge",
+    "keep": "Keep",
+    "remove": "Remove"
+  },
+  "compliance": {
+    "title": "Compliance Report",
+    "description": "Generate compliance reports for your bookmarks",
+    "generate": "Generate Report",
+    "report_type": "Report Type",
+    "date_range": "Date Range",
+    "format": "Format",
+    "generating": "Generating report...",
+    "download": "Download Report"
+  }
+}
