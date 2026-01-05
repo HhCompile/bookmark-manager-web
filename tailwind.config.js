@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       fontFamily: {
@@ -29,12 +26,12 @@ export default {
         'green-gradient': 'linear-gradient(90deg, #10b981, #059669)',
       },
       backdropBlur: {
-        'xs': '2px',
+        xs: '2px',
       },
       opacity: {
-        '15': '0.15',
+        15: '0.15',
       },
     },
   },
   plugins: [],
-}
+};

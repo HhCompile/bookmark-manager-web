@@ -62,3 +62,5 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
+*storybook.log
+storybook-static

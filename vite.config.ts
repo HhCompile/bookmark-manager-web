@@ -1,21 +1,21 @@
-import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import { defineConfig, loadEnv } from 'vite';
+import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
 // 获取当前目录路径
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // 加载环境变量
-  const env = loadEnv(mode, process.cwd(), '')
-  
+  const env = loadEnv(mode, process.cwd(), '');
+
   return {
     // 插件配置
     plugins: [react()],
-    
+
     // 路径别名配置
     resolve: {
       alias: {
@@ -30,9 +30,9 @@ export default defineConfig(({ mode }) => {
         '@hooks': path.resolve(__dirname, './src/hooks'),
       },
       // 文件扩展名解析
-      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
+      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
     },
-    
+
     // 服务器配置
     server: {
       host: '0.0.0.0',
@@ -42,15 +42,15 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: env.VITE_API_URL || 'http://localhost:9001',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
+          rewrite: path => path.replace(/^\/api/, ''),
+        },
       },
       // HMR配置
       hmr: {
-        overlay: true
-      }
+        overlay: true,
+      },
     },
-    
+
     // 构建配置
     build: {
       // 输出目录
@@ -79,36 +79,36 @@ export default defineConfig(({ mode }) => {
             // 将UI组件库打包在一起
             ui: ['lucide-react', 'sonner', '@radix-ui/react-*'],
             // 将工具库打包在一起
-            utils: ['lodash-es', 'date-fns']
-          }
-        }
+            utils: ['lodash-es', 'date-fns'],
+          },
+        },
       },
       // 启用terser选项
       terserOptions: {
         compress: {
           drop_console: true,
-          drop_debugger: true
-        }
-      }
+          drop_debugger: true,
+        },
+      },
     },
-    
+
     // 预览配置
     preview: {
       port: 3000,
       host: '0.0.0.0',
-      strictPort: true
+      strictPort: true,
     },
-    
+
     // CSS配置
     css: {
       // 指定传递给CSS预处理器的选项
       preprocessorOptions: {
         scss: {
-          additionalData: `@import "@/styles/variables.scss";`
-        }
-      }
+          additionalData: `@import "@/styles/variables.scss";`,
+        },
+      },
     },
-    
+
     // 优化配置
     optimizeDeps: {
       include: [
@@ -120,8 +120,8 @@ export default defineConfig(({ mode }) => {
         'zustand',
         'axios',
         'lodash-es',
-        'date-fns'
-      ]
-    }
-  }
-})
+        'date-fns',
+      ],
+    },
+  };
+});
