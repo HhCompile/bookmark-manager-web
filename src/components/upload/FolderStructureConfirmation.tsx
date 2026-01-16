@@ -2,7 +2,6 @@ import {
   Folder,
   ChevronRight,
   ChevronDown,
-  Plus,
   Edit3,
   Save,
   X,

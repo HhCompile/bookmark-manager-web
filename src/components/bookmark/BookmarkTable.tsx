@@ -1,7 +1,5 @@
 import { ExternalLink, Trash2, Folder, Tag } from 'lucide-react';
 import BookmarkListItem from './BookmarkList';
-
-interface Bookmark {
   url: string;
   title: string;
   category?: string;

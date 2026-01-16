@@ -1,5 +1,4 @@
-import { Tag, Folder, CheckCircle, AlertCircle } from 'lucide-react';
-import { useState } from 'react';
+import { Tag, Folder, CheckCircle } from 'lucide-react';
 
 interface SmartTaggingResultProps {
   taggingResult: {

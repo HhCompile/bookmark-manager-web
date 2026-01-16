@@ -6,6 +6,8 @@ import {
   XCircle,
   Clock,
   Activity,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 import { useState } from 'react';
 

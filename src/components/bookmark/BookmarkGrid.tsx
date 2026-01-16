@@ -1,5 +1,4 @@
-import { ExternalLink, Trash2, Folder, Tag } from 'lucide-react';
-import { useState } from 'react';
+import { ExternalLink, Trash2 } from 'lucide-react';
 
 interface Bookmark {
   url: string;

@@ -1,6 +1,5 @@
 import { Upload, FileText, X } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 interface FileUploadAreaProps {
   file: File | null;

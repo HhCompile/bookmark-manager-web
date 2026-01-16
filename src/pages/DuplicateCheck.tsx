@@ -5,17 +5,13 @@ import {
   Play,
   Pause,
   Loader2,
-  XCircle,
   Download,
 } from 'lucide-react';
 import { useBookmarkStore } from '@/store/bookmarkStore';
 import { apiService as api } from '@/services/api';
-import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
-// 导入子组件
-import DuplicateGroup from '@/components/duplicate/DuplicateGroup';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -26,8 +22,11 @@ import { Button } from '@/components/ui/button';
  * 3. 提供验证控制
  */
 export default function DuplicateCheck() {
-  const { setLoading, setError, loading, error } = useBookmarkStore();
-  const navigate = useNavigate();
+  const [loading, setLoading, setError] = useBookmarkStore((state: any) => [
+    state.loading,
+    state.setLoading,
+    state.setError,
+  ]);
 
   // 本地状态
   const [invalidBookmarks, setInvalidBookmarks] = useState<any[]>([]);
