@@ -5,31 +5,29 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+
+    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@pages/*": ["./src/pages/*"],
-      "@assets/*": ["./src/assets/*"],
-      "@utils/*": ["./src/lib/*"],
-      "@services/*": ["./src/services/*"],
-      "@store/*": ["./src/store/*"],
-      "@router/*": ["./src/router/*"]
-    },
-    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx",
-    "types": ["vite/client", "node"]
+    "ignoreDeprecations": "6.0",
+
+    /* Path mapping */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
