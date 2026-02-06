@@ -1,97 +1,78 @@
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
-import { defineConfig, globalIgnores } from 'eslint/config';
+// ESLint 配置文件（ESLint v9+ 扁平配置格式）
 import typescriptParser from '@typescript-eslint/parser';
-import reactRefresh from 'eslint-plugin-react-refresh';
+import typescriptPlugin from '@typescript-eslint/eslint-plugin';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import reactRefreshPlugin from 'eslint-plugin-react-refresh';
 import prettierConfig from 'eslint-config-prettier';
-import reactHooks from 'eslint-plugin-react-hooks';
-import globals from 'globals';
-import js from '@eslint/js';
 
-export default defineConfig([
-  globalIgnores(['dist', '.storybook', 'public']),
+// 导出 ESLint 配置
+export default [
+  // 基础配置
   {
-    files: ['**/*.{js,jsx}'],
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs['recommended-latest'],
-      reactRefresh.configs.vite,
-      prettierConfig,
-    ],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: {
-        ...globals.browser,
-        React: 'readonly',
-      },
-      parserOptions: {
-        ecmaVersion: 'latest',
-        ecmaFeatures: { jsx: true },
-        sourceType: 'module',
-      },
-    },
-    rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
-      'no-console': 'warn',
-      'no-debugger': 'error',
-      'prefer-const': 'error',
-      'no-var': 'error',
-      'prefer-arrow-callback': 'error',
-      'arrow-spacing': 'error',
-      'no-duplicate-imports': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-    },
+    // 忽略文件
+    ignores: ['node_modules/**', 'dist/**', 'build/**'],
   },
+  
+  // TypeScript 配置
   {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs['recommended-latest'],
-      reactRefresh.configs.vite,
-      prettierConfig,
-    ],
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-        React: 'readonly',
-        NodeJS: 'readonly',
-        process: 'readonly',
-      },
       parser: typescriptParser,
       parserOptions: {
         ecmaVersion: 'latest',
-        ecmaFeatures: { jsx: true },
         sourceType: 'module',
+        project: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      globals: {
+        window: 'readonly',
+        document: 'readonly',
+        global: 'readonly',
       },
     },
     plugins: {
-      '@typescript-eslint': typescriptEslint,
+      '@typescript-eslint': typescriptPlugin,
+      react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
+      'react-refresh': reactRefreshPlugin,
     },
     rules: {
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        { varsIgnorePattern: '^[A-Z_]' },
-      ],
+      // TypeScript 规则
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-empty-function': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      
+      // React 规则
+      'react/prop-types': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-no-target-blank': 'error',
+      
+      // React Hooks 规则
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+      
+      // React Refresh 规则
+      'react-refresh/only-export-components': ['warn', {
+        allowConstantExport: true,
+      }],
+      
+      // 基础规则
       'no-console': 'warn',
       'no-debugger': 'error',
-      'prefer-const': 'error',
-      'no-var': 'error',
-      'prefer-arrow-callback': 'error',
-      'arrow-spacing': 'error',
-      'no-duplicate-imports': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      'no-unused-vars': 'off', // 由 @typescript-eslint/no-unused-vars 代替
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
     },
   },
-]);
+  
+  // Prettier 配置（禁用与 Prettier 冲突的 ESLint 规则）
+  prettierConfig,
+]

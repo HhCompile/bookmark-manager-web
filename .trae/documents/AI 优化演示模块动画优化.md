@@ -1,0 +1,141 @@
+# 项目文件结构优化方案
+
+## 当前结构分析
+
+### 现有目录结构
+
+```
+src/
+  ├── app/
+  │   ├── components/
+  │   │   ├── figma/            # Figma相关组件
+  │   │   ├── home/             # 首页相关组件
+  │   │   ├── ui/               # UI组件
+  │   │   ├── views/            # 视图组件
+  │   │   └── *.tsx             # 多个根级别组件
+  │   ├── contexts/             # 上下文
+  │   └── App.tsx
+  ├── styles/                   # 样式文件
+  ├── main.tsx
+  └── vite-env.d.ts
+```
+
+### 存在的问题
+
+1. **根级别组件过多**：多个组件直接放在components根目录下，缺少分类
+2. **缺少页面/路由结构**：没有专门的pages或routes目录
+3. **缺少工具函数目录**：没有utils或helpers目录
+4. **缺少hooks目录**：没有专门存放自定义hooks的目录
+5. **缺少types目录**：没有专门存放TypeScript类型定义的目录
+6. **缺少services/api目录**：没有专门存放API调用或服务的目录
+7. **组件分类不够清晰**：部分组件的分类逻辑不够明确
+
+## 优化建议
+
+### 建议的目录结构
+
+```
+src/
+  ├── components/           # 组件
+  │   ├── ui/               # 基础UI组件
+  │   ├── home/             # 首页相关组件
+  │   ├── views/            # 视图组件
+  │   └── fallback/         # 替换figma目录，存放备用/错误处理组件
+  ├── layout/               # 布局组件（与components平级）
+  ├── common/               # 通用业务组件（与components平级）
+  ├── pages/                # 页面组件
+  │   ├── home/             # 首页
+  │   ├── bookmark/         # 书签相关页面
+  │   └── settings/         # 设置页面
+  ├── contexts/             # 上下文
+  ├── hooks/                # 自定义Hooks
+  ├── services/             # API服务
+  │   └── api/              # API调用
+  ├── utils/                # 工具函数
+  ├── types/                # TypeScript类型定义
+  ├── styles/               # 样式文件
+  ├── App.tsx
+  ├── main.tsx
+  └── vite-env.d.ts         # 已移动到types目录
+```
+
+### 具体优化措施
+
+1. **创建新目录**
+
+   * `src/layout/`：存放布局组件（与components平级）
+
+   * `src/common/`：存放通用业务组件（与components平级）
+
+   * `src/pages/`：存放页面级组件
+
+   * `src/hooks/`：存放自定义Hooks
+
+   * `src/services/`：存放API服务和调用
+
+   * `src/utils/`：存放工具函数
+
+   * `src/types/`：存放TypeScript类型定义
+
+   * `src/components/fallback/`：替换figma目录，存放备用/错误处理组件
+
+2. **重组现有文件**
+
+   * **去除app/层级**：将所有文件移出app目录，直接放在src目录下
+
+   * **移动vite-env.d.ts**：将其移动到src/types目录
+
+   * **重命名并移动figma目录**：将figma目录重命名为fallback并保持在components目录下
+
+   * **移动根级别组件**：
+
+     * `HomePage.tsx` → `src/pages/home/`
+
+     * `Header.tsx` → `src/layout/`
+
+     * `Sidebar.tsx` → `src/layout/`
+
+     * `BookmarkView.tsx` → `src/pages/bookmark/`
+
+     * `PrivateVault.tsx` → `src/pages/bookmark/`
+
+     * `ReaderSidebar.tsx` → `src/layout/`
+
+     * 各种面板组件 → `src/common/`
+
+   * **移动views目录**：保持在components目录下
+
+3. **明确文件命名和存放规则**
+
+   * 组件文件使用PascalCase命名
+
+   * 工具函数和Hooks使用camelCase命名
+
+   * 类型定义文件使用PascalCase命名并添加`.types`后缀
+
+   * 按功能模块组织文件，保持目录深度合理
+
+4. **保持一致性**
+
+   * 统一目录命名风格（小写+连字符）
+
+   * 统一文件命名规则
+
+   * 统一组件导出方式
+
+## 优化优势
+
+1. **提高代码可维护性**：清晰的目录结构使代码更易于理解和维护
+2. **便于团队协作**：明确的文件组织规则使团队成员更容易找到和修改代码
+3. **提高代码可扩展性**：合理的目录结构为未来功能扩展提供了良好的基础
+4. **减少代码冗余**：按功能模块组织代码可以减少重复代码
+5. **提高开发效率**：清晰的目录结构使开发者能够更快地找到所需的代码
+
+## 实施步骤
+
+1. 创建新的目录结构
+2. 逐步移动和重组现有文件
+3. 更新相关导入路径
+4. 验证项目是否正常构建和运行
+5. 记录文件结构变更，便于团队成员了解
+

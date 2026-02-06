@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "你的扩展名称",
+  "version": "1.0",
+  "permissions": ["bookmarks"], // 必须声明bookmarks权限
+  "action": {
+    "default_popup": "index.html" // 你的React页面入口
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
