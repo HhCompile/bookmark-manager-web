@@ -9,7 +9,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import CustomButton from '../components/ui/custom-button';
 
 interface AIDemoPanelProps {
