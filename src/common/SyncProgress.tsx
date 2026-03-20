@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { X, CheckCircle } from 'lucide-react';
+import { X, CheckCircle, AlertCircle, Chrome, Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { isChromeExtension } from '../components/ChromeExtensionPrompt';
 
 interface SyncProgressProps {
   onClose: () => void;
@@ -10,16 +11,21 @@ export default function SyncProgress({ onClose }: SyncProgressProps) {
   const [progress, setProgress] = useState(0);
   const [currentItem, setCurrentItem] = useState('');
   const [isComplete, setIsComplete] = useState(false);
+  const [isExtensionAvailable, setIsExtensionAvailable] = useState(true);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   useEffect(() => {
+    // 检测是否在 Chrome 扩展环境中
+    if (!isChromeExtension()) {
+      setIsExtensionAvailable(false);
+      return; // 不自动关闭，让用户手动关闭
+    }
+
     const items = [
       '正在连接 Chrome...',
-      '正在抓取书签 (12/150)...',
-      '正在抓取书签 (45/150)...',
-      '正在抓取书签 (89/150)...',
-      '正在抓取书签 (120/150)...',
-      '正在抓取书签 (150/150)...',
-      'AI 预处理中...',
+      '正在抓取书签...',
+      '正在解析书签数据...',
+      '正在同步到本地...',
       '同步完成！',
     ];
 
@@ -32,11 +38,12 @@ export default function SyncProgress({ onClose }: SyncProgressProps) {
       } else {
         setIsComplete(true);
         clearInterval(interval);
+        // 同步成功完成后，1.5秒后自动关闭
         setTimeout(() => {
           onClose();
         }, 1500);
       }
-    }, 500);
+    }, 600);
 
     return () => clearInterval(interval);
   }, [onClose]);
@@ -59,9 +66,10 @@ export default function SyncProgress({ onClose }: SyncProgressProps) {
         >
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">
-              {isComplete ? '同步完成' : 'Chrome 书签同步'}
+              {isComplete ? '同步完成' : isExtensionAvailable ? 'Chrome 书签同步' : '无法同步'}
             </h3>
-            {!isComplete && (
+            {/* 错误状态下显示关闭按钮，同步进行中也可以关闭 */}
+            {(!isExtensionAvailable || !isComplete) && (
               <button
                 onClick={onClose}
                 className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
@@ -71,7 +79,51 @@ export default function SyncProgress({ onClose }: SyncProgressProps) {
             )}
           </div>
 
-          {isComplete ? (
+          {!isExtensionAvailable ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="py-4"
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                  <AlertCircle className="w-8 h-8 text-amber-600" />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                  Chrome 扩展未安装
+                </h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  要使用书签同步功能，需要安装 Chrome 扩展
+                </p>
+                <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left w-full">
+                  <p className="text-xs text-gray-600 mb-2">
+                    <strong>安装步骤：</strong>
+                  </p>
+                  <ol className="text-xs text-gray-600 space-y-1 list-decimal list-inside">
+                    <li>打开 Chrome 扩展管理页面 chrome://extensions/</li>
+                    <li>开启"开发者模式"</li>
+                    <li>点击"加载已解压的扩展程序"</li>
+                    <li>选择项目的 dist 文件夹</li>
+                  </ol>
+                </div>
+                <div className="flex gap-2 w-full">
+                  <button
+                    onClick={() => window.open('chrome://extensions/', '_blank')}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    <Chrome className="w-4 h-4" />
+                    打开扩展管理
+                  </button>
+                  <button
+                    onClick={onClose}
+                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+                  >
+                    稍后再说
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ) : isComplete ? (
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}

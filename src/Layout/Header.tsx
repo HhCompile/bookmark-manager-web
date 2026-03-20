@@ -1,40 +1,21 @@
-import { Search, Upload, RefreshCw, Sparkles, ListOrdered } from 'lucide-react';
+import { Search, RefreshCw, Sparkles } from 'lucide-react';
 import { useBookmarks } from '../contexts/BookmarkContext';
+import { ReactNode } from 'react';
 
 interface HeaderProps {
   onSync: () => void;
   onAIOptimize: () => void;
   onLogoClick?: () => void;
-  onFileUpload?: () => void;
-  onTaskManager?: () => void;
+  importButton?: ReactNode;
 }
 
 export default function Header({
   onSync,
   onAIOptimize,
   onLogoClick,
-  onFileUpload,
-  onTaskManager,
+  importButton,
 }: HeaderProps) {
   const { searchQuery, setSearchQuery } = useBookmarks();
-
-  const handleFileUpload = () => {
-    // 触发文件上传
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.html';
-    input.onchange = e => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        console.log('导入文件:', file.name);
-        // 这里处理 HTML 文件解析
-        if (onFileUpload) {
-          onFileUpload();
-        }
-      }
-    };
-    input.click();
-  };
 
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4" role="banner">
@@ -65,15 +46,8 @@ export default function Header({
         </div>
 
         <div className="flex items-center gap-3" role="toolbar" aria-label="操作工具栏">
-          <button
-            onClick={handleFileUpload}
-            className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            aria-label="导入HTML书签文件"
-            title="导入HTML书签文件"
-          >
-            <Upload className="w-4 h-4" aria-hidden="true" />
-            <span>导入 HTML</span>
-          </button>
+          {/* 导入按钮 - 由 BookmarkImportManager 组件提供 */}
+          {importButton}
 
           <button
             onClick={onSync}
@@ -93,16 +67,6 @@ export default function Header({
           >
             <Sparkles className="w-4 h-4" aria-hidden="true" />
             <span>AI 优化</span>
-          </button>
-
-          <button
-            onClick={onTaskManager}
-            className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            aria-label="任务管理面板"
-            title="任务管理面板"
-          >
-            <ListOrdered className="w-4 h-4" aria-hidden="true" />
-            <span>任务管理</span>
           </button>
         </div>
       </div>

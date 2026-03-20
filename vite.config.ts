@@ -43,16 +43,27 @@ export default defineConfig(({ mode }) => {
       cssCodeSplit: true,
       rollupOptions: {
         output: {
-          manualChunks: {
-            react: ['react', 'react-dom'],
-            ui: [
-              '@mui/material',
-              '@radix-ui/react-dialog',
-              '@radix-ui/react-dropdown-menu',
-            ],
-            charts: ['recharts'],
-            icons: ['lucide-react'],
-            utils: ['date-fns', 'clsx', 'tailwind-merge'],
+          manualChunks: (id) => {
+            // React 核心库
+            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+              return 'react-vendor';
+            }
+            // UI 组件库
+            if (id.includes('@mui') || id.includes('@radix-ui')) {
+              return 'ui';
+            }
+            // 图表库
+            if (id.includes('recharts')) {
+              return 'charts';
+            }
+            // 图标库
+            if (id.includes('lucide-react')) {
+              return 'icons';
+            }
+            // 工具库
+            if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
+              return 'utils';
+            }
           },
           chunkFileNames: 'assets/[name]-[hash].js',
           entryFileNames: 'assets/[name]-[hash].js',

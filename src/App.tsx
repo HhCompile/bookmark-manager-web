@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import Header from './layout/Header';
 import Sidebar from './layout/Sidebar';
 import HomePage from './pages/home/HomePage';
+import ChromeExtensionPrompt from './components/ChromeExtensionPrompt';
+import BookmarkImportManager from './components/BookmarkImportManager';
 
 // 懒加载组件
 const BookmarkView = lazy(() => import('./pages/bookmark/BookmarkView'));
@@ -17,7 +19,7 @@ const PrivateVault = lazy(() => import('./pages/bookmark/PrivateVault'));
 const AIConfirmationPanel = lazy(() => import('./common/AIConfirmationPanel'));
 const SyncProgress = lazy(() => import('./common/SyncProgress'));
 const ReaderSidebar = lazy(() => import('./layout/ReaderSidebar'));
-const TaskManagerPanel = lazy(() => import('./common/TaskManagerPanel'));
+
 
 // 工具导入
 import { initAnalytics, trackPageView, trackEvent } from './utils/analytics';
@@ -37,11 +39,11 @@ function AppContent() {
   const [showSyncProgress, setShowSyncProgress] = useState(false);
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [showReader, setShowReader] = useState(false);
-  const [showTaskManager, setShowTaskManager] = useState(false);
+
   const [activeTab, setActiveTab] = useState<TabType>('home');
 
   // 书签数据
-  const { bookmarks } = useBookmarks();
+  const { bookmarks, syncFromChrome } = useBookmarks();
 
   console.log('bookmarks:', bookmarks);
 
@@ -53,7 +55,13 @@ function AppContent() {
     error: syncError,
   } = useChromeBookmarks();
 
-  console.log('refreshChromeBookmarks:', refreshChromeBookmarks);
+  // 当 Chrome 书签数据变化时，同步到 BookmarkContext
+  useEffect(() => {
+    if (chromeBookmarks && chromeBookmarks.length > 0) {
+      console.log('同步 Chrome 书签到应用:', chromeBookmarks);
+      syncFromChrome(chromeBookmarks);
+    }
+  }, [chromeBookmarks, syncFromChrome]);
 
   // 初始化Google Analytics
   useEffect(() => {
@@ -79,10 +87,10 @@ function AppContent() {
     trackEvent('navigation', 'tab_change', activeTab);
   }, [activeTab]);
 
-  // 优化回调函数，避免不必要的重新渲染
-  const handleFileUpload = useCallback(() => {
-    // 文件上传后，自动显示 AI 优化面板
-    setShowAIPanel(true);
+  // 导入完成后的跳转处理
+  const handleImportComplete = useCallback(() => {
+    // 导入完成后跳转到书签管理页面
+    handleTabChange('bookmarks');
   }, []);
 
   // 处理同步操作
@@ -102,18 +110,11 @@ function AppContent() {
         hasBookmarks: chromeBookmarks.length > 0,
       });
 
-      // 同步完成后，自动显示 AI 优化面板
-      setTimeout(() => {
-        setShowSyncProgress(false);
-        setShowAIPanel(true);
-      }, 1000);
+      // 注意：SyncProgress 组件内部会自动处理成功/失败状态
+      // 成功完成后 1.5 秒自动关闭，失败时需要用户手动关闭
     } catch (error) {
       console.error('同步失败:', error);
-
-      // 同步失败后，仍然关闭同步进度面板
-      setTimeout(() => {
-        setShowSyncProgress(false);
-      }, 1000);
+      // 错误状态由 SyncProgress 组件显示，让用户手动关闭
     }
   }, [refreshChromeBookmarks, chromeBookmarks, isSyncing, syncError]);
 
@@ -275,8 +276,7 @@ function AppContent() {
         onSync={handleSync}
         onAIOptimize={() => setShowAIPanel(true)}
         onLogoClick={() => handleTabChange('home')}
-        onFileUpload={handleFileUpload}
-        onTaskManager={() => setShowTaskManager(true)}
+        importButton={<BookmarkImportManager onImportComplete={handleImportComplete} />}
       />
 
       {/* 主内容区域 */}
@@ -285,6 +285,7 @@ function AppContent() {
         <AnimatePresence>
           {activeTab !== 'home' && (
             <Sidebar
+              activeTab={activeTab}
               onNavigate={(tab) =>
                 handleTabChange(
                   tab as
@@ -311,6 +312,9 @@ function AppContent() {
         </main>
       </div>
 
+      {/* Chrome 扩展安装提示 */}
+      <ChromeExtensionPrompt />
+
       {/* 模态面板 */}
       <AnimatePresence>
         {showSyncProgress && (
@@ -332,11 +336,7 @@ function AppContent() {
             />
           </Suspense>
         )}
-        {showTaskManager && (
-          <Suspense fallback={null}>
-            <TaskManagerPanel onClose={() => setShowTaskManager(false)} />
-          </Suspense>
-        )}
+
       </AnimatePresence>
     </div>
   );

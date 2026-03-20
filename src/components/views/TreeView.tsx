@@ -7,7 +7,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { Bookmark } from '../../contexts/BookmarkContext';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 interface TreeViewProps {
   bookmarks: Bookmark[];
@@ -19,47 +19,54 @@ interface TreeNode {
   type: 'folder' | 'bookmark';
   children?: TreeNode[];
   bookmark?: Bookmark;
-  isExpanded?: boolean;
 }
 
+// 将书签按分类组织成树状结构
+const buildTree = (bookmarks: Bookmark[]): TreeNode[] => {
+  const categoryMap: { [key: string]: Bookmark[] } = {};
+
+  bookmarks.forEach(bookmark => {
+    const category = bookmark.category || '未分类';
+    if (!categoryMap[category]) {
+      categoryMap[category] = [];
+    }
+    categoryMap[category].push(bookmark);
+  });
+
+  return Object.entries(categoryMap).map(([category, items]) => ({
+    id: category,
+    name: category,
+    type: 'folder' as const,
+    children: items.map(bookmark => ({
+      id: bookmark.id,
+      name: bookmark.title,
+      type: 'bookmark' as const,
+      bookmark,
+    })),
+  }));
+};
+
 export default function TreeView({ bookmarks }: TreeViewProps) {
-  // 将书签按分类组织成树状结构
-  const buildTree = (): TreeNode[] => {
-    const categoryMap: { [key: string]: Bookmark[] } = {};
-
-    bookmarks.forEach(bookmark => {
-      const category = bookmark.category || '未分类';
-      if (!categoryMap[category]) {
-        categoryMap[category] = [];
-      }
-      categoryMap[category].push(bookmark);
-    });
-
-    return Object.entries(categoryMap).map(([category, items]) => ({
-      id: category,
-      name: category,
-      type: 'folder' as const,
-      isExpanded: true,
-      children: items.map(bookmark => ({
-        id: bookmark.id,
-        name: bookmark.title,
-        type: 'bookmark' as const,
-        bookmark,
-      })),
-    }));
-  };
-
-  const [tree, setTree] = useState<TreeNode[]>(buildTree());
+  // 使用 useMemo 缓存树结构，只有当 bookmarks 变化时才重新计算
+  const tree = useMemo(() => buildTree(bookmarks), [bookmarks]);
+  
+  // 单独管理展开/折叠状态
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(() => {
+    // 默认展开所有文件夹
+    const initialTree = buildTree(bookmarks);
+    return new Set(initialTree.map(node => node.id));
+  });
 
   const toggleFolder = (folderId: string) => {
-    setTree(prev =>
-      prev.map(node => {
-        if (node.id === folderId) {
-          return { ...node, isExpanded: !node.isExpanded };
-        }
-        return node;
-      })
-    );
+    setExpandedFolders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(folderId)) {
+        newSet.delete(folderId);
+      } else {
+        newSet.add(folderId);
+      }
+      return newSet;
+    });
   };
 
   const handleQuickOpen = (url: string) => {
@@ -76,6 +83,7 @@ export default function TreeView({ bookmarks }: TreeViewProps) {
     const indent = level * 24;
 
     if (node.type === 'folder') {
+      const isExpanded = expandedFolders.has(node.id);
       return (
         <div>
           <button
@@ -83,7 +91,7 @@ export default function TreeView({ bookmarks }: TreeViewProps) {
             className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-colors text-left"
             style={{ paddingLeft: `${indent + 16}px` }}
           >
-            {node.isExpanded ? (
+            {isExpanded ? (
               <ChevronDown className="w-4 h-4 text-gray-500" />
             ) : (
               <ChevronRight className="w-4 h-4 text-gray-500" />
@@ -95,7 +103,7 @@ export default function TreeView({ bookmarks }: TreeViewProps) {
             </span>
           </button>
 
-          {node.isExpanded && node.children && (
+          {isExpanded && node.children && (
             <div>
               {node.children.map(child => (
                 <TreeNodeComponent
