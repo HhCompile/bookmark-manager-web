@@ -1,46 +1,20 @@
 import { Folder, Lock, ChevronRight, Tag } from 'lucide-react';
-import { useBookmarks } from '../contexts/BookmarkContext';
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { useFolders, useBookmarks } from '../hooks';
+import { getTagColor } from '../mocks/data';
 
-interface SidebarProps {
-  onNavigate?: (tab: string) => void;
-}
+export default function Sidebar() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  
+  const { data: folders = [] } = useFolders();
+  const { data: bookmarks = [] } = useBookmarks();
 
-// 标签颜色数组
-const tagColors = [
-  'bg-blue-100 text-blue-700',
-  'bg-green-100 text-green-700',
-  'bg-purple-100 text-purple-700',
-  'bg-yellow-100 text-yellow-700',
-  'bg-red-100 text-red-700',
-  'bg-indigo-100 text-indigo-700',
-  'bg-pink-100 text-pink-700',
-  'bg-teal-100 text-teal-700',
-];
-
-// 根据标签名称获取颜色
-const getTagColor = (tagName: string) => {
-  const hash = tagName
-    .split('')
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return tagColors[hash % tagColors.length];
-};
-
-export default function Sidebar({ onNavigate }: SidebarProps) {
-  const { folders, selectedFolder, setSelectedFolder, bookmarks } =
-    useBookmarks();
-
-  // 使用useMemo缓存计算结果，避免重复计算
-  const getBookmarkCount = useMemo(() => {
-    return (folderId: string) => {
-      const folderName = folders.find((f) => f.id === folderId)?.name;
-      if (!folderName) return 0;
-      return bookmarks.filter((b) => b.category === folderName).length;
-    };
-  }, [bookmarks, folders]);
-
-  // 使用useMemo缓存标签计算结果，避免重复计算
+  // 使用 useMemo 缓存标签计算结果，避免重复计算
   const tagCounts = useMemo(() => {
     const allTags = Array.from(new Set(bookmarks.flatMap((b) => b.tags)));
     return allTags.map((tag) => ({
@@ -49,16 +23,32 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     }));
   }, [bookmarks]);
 
+  // 获取文件夹书签数量
+  const getBookmarkCount = (folderId: string) => {
+    const folder = folders.find((f) => f.id === folderId);
+    if (!folder) return 0;
+    return folder.bookmarks.length;
+  };
+
+  const handleFolderClick = (folderId: string | null) => {
+    setSelectedFolder(folderId);
+    if (folderId) {
+      navigate(`/app/bookmarks?folder=${folderId}`);
+    } else {
+      navigate('/app/bookmarks');
+    }
+  };
+
   return (
     <aside className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
       <div className="p-4">
         <div className="mb-6">
           <h2 className="text-sm font-semibold text-gray-500 uppercase mb-3">
-            书签分组
+            {t('sidebar.folders')}
           </h2>
           <div className="space-y-1">
             <button
-              onClick={() => setSelectedFolder(null)}
+              onClick={() => handleFolderClick(null)}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 selectedFolder === null
                   ? 'bg-blue-50 text-blue-700'
@@ -66,14 +56,14 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
               }`}
             >
               <Folder className="w-4 h-4" />
-              <span className="flex-1 text-left">全部书签</span>
+              <span className="flex-1 text-left">{t('sidebar.allBookmarks')}</span>
               <span className="text-sm text-gray-500">{bookmarks.length}</span>
             </button>
 
             {folders.map((folder) => (
               <button
                 key={folder.id}
-                onClick={() => setSelectedFolder(folder.id)}
+                onClick={() => handleFolderClick(folder.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   selectedFolder === folder.id
                     ? 'bg-blue-50 text-blue-700'
@@ -97,10 +87,10 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
         <div>
           <button
-            onClick={() => onNavigate?.('analytics')}
+            onClick={() => navigate('/app/analytics')}
             className="text-sm font-semibold text-gray-500 uppercase mb-3 hover:text-gray-700 transition-colors flex items-center gap-1 cursor-pointer"
           >
-            标签云
+            {t('sidebar.tagCloud')}
             <Tag className="w-3 h-3" />
           </button>
           <div className="grid grid-cols-2 gap-2">

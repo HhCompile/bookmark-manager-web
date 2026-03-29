@@ -1,51 +1,38 @@
 import { LayoutList, LayoutGrid, Network } from 'lucide-react';
-import { useBookmarks } from '../../contexts/BookmarkContext';
+import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
 import TreeView from '../../components/views/TreeView';
 import ListView from '../../components/views/ListView';
 import CardView from '../../components/views/CardView';
+import { useBookmarks, useFolders } from '../../hooks';
+import type { ViewMode } from '../../types/bookmark';
 
 export default function BookmarkView() {
-  const {
-    viewMode,
-    setViewMode,
-    bookmarks,
-    selectedFolder,
-    folders,
-    searchQuery,
-  } = useBookmarks();
-
-  // 过滤书签
-  const filteredBookmarks = bookmarks.filter((bookmark) => {
-    // 文件夹过滤
-    if (selectedFolder) {
-      const folder = folders.find((f) => f.id === selectedFolder);
-      if (folder && bookmark.category !== folder.name) return false;
-    }
-
-    // 搜索过滤
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      return (
-        bookmark.title.toLowerCase().includes(query) ||
-        bookmark.url.toLowerCase().includes(query) ||
-        bookmark.tags.some((tag) => tag.toLowerCase().includes(query)) ||
-        (bookmark.alias && bookmark.alias.toLowerCase().includes(query))
-      );
-    }
-
-    return true;
+  const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const folderId = searchParams.get('folder');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  
+  const { data: folders = [] } = useFolders();
+  const { data: bookmarks = [] } = useBookmarks({ 
+    folderId: folderId || undefined,
+    search: searchQuery || undefined,
   });
+
+  const currentFolder = folderId 
+    ? folders.find((f) => f.id === folderId)
+    : null;
 
   return (
     <div className="space-y-4">
       {/* 视图切换器 */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">
-          {selectedFolder
-            ? folders.find((f) => f.id === selectedFolder)?.name
-            : '全部书签'}
+          {currentFolder ? currentFolder.name : t('bookmarks.title')}
           <span className="ml-2 text-sm font-normal text-gray-500">
-            ({filteredBookmarks.length})
+            ({bookmarks.length})
           </span>
         </h2>
 
@@ -57,7 +44,7 @@ export default function BookmarkView() {
                 ? 'bg-blue-100 text-blue-700'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
-            title="列表视图"
+            title={t('bookmarks.views.list')}
           >
             <LayoutList className="w-4 h-4" />
           </button>
@@ -68,7 +55,7 @@ export default function BookmarkView() {
                 ? 'bg-blue-100 text-blue-700'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
-            title="卡片视图"
+            title={t('bookmarks.views.card')}
           >
             <LayoutGrid className="w-4 h-4" />
           </button>
@@ -79,7 +66,7 @@ export default function BookmarkView() {
                 ? 'bg-blue-100 text-blue-700'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
-            title="树状视图"
+            title={t('bookmarks.views.tree')}
           >
             <Network className="w-4 h-4" />
           </button>
@@ -88,9 +75,9 @@ export default function BookmarkView() {
 
       {/* 视图内容 */}
       <div>
-        {viewMode === 'list' && <ListView bookmarks={filteredBookmarks} />}
-        {viewMode === 'card' && <CardView bookmarks={filteredBookmarks} />}
-        {viewMode === 'tree' && <TreeView bookmarks={filteredBookmarks} />}
+        {viewMode === 'list' && <ListView bookmarks={bookmarks} />}
+        {viewMode === 'card' && <CardView bookmarks={bookmarks} />}
+        {viewMode === 'tree' && <TreeView bookmarks={bookmarks} />}
       </div>
     </div>
   );

@@ -1,12 +1,14 @@
 import { Lock, Unlock, Eye, EyeOff, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PrivateVaultProps {
-  onUnlock: (password: string) => void;
+  onUnlock?: (password: string) => void;
 }
 
 export default function PrivateVault({ onUnlock }: PrivateVaultProps) {
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLocked, setIsLocked] = useState(true);
@@ -18,10 +20,10 @@ export default function PrivateVault({ onUnlock }: PrivateVaultProps) {
     // 模拟密码验证
     if (password === 'demo') {
       setIsLocked(false);
-      onUnlock(password);
+      onUnlock?.(password);
       setError('');
     } else {
-      setError('密码错误，请重试（提示：输入 "demo"）');
+      setError(t('vault.locked.hint'));
     }
   };
 
@@ -43,8 +45,8 @@ export default function PrivateVault({ onUnlock }: PrivateVaultProps) {
               <Unlock className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold">私密学习库</h3>
-              <p className="text-sm opacity-90">已解锁，内容可见</p>
+              <h3 className="text-lg font-semibold">{t('vault.title')}</h3>
+              <p className="text-sm opacity-90">{t('vault.unlocked.subtitle')}</p>
             </div>
           </div>
           <button
@@ -52,19 +54,19 @@ export default function PrivateVault({ onUnlock }: PrivateVaultProps) {
             className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
           >
             <Lock className="w-4 h-4" />
-            锁定
+            {t('vault.unlocked.lock')}
           </button>
         </div>
 
         <div className="bg-white/10 backdrop-blur rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
             <Shield className="w-5 h-5" />
-            <span className="font-medium">加密状态</span>
+            <span className="font-medium">{t('vault.unlocked.encryptionStatus')}</span>
           </div>
           <div className="space-y-2 text-sm opacity-90">
-            <p>✓ 内容已使用 AES-256 加密</p>
-            <p>✓ 密码保存在本地浏览器</p>
-            <p>✓ 关闭窗口自动锁定</p>
+            {(t('vault.unlocked.features', { returnObjects: true }) as string[]).map((feature, idx) => (
+              <p key={idx}>✓ {feature}</p>
+            ))}
           </div>
         </div>
       </motion.div>
@@ -89,12 +91,12 @@ export default function PrivateVault({ onUnlock }: PrivateVaultProps) {
           </motion.div>
 
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            私密学习库
+            {t('vault.title')}
           </h3>
           <p className="text-sm text-gray-600 mb-6 text-center">
-            此分组已加密保护
+            {t('vault.locked.subtitle')}
             <br />
-            请输入密码以查看内容
+            {t('vault.locked.description')}
           </p>
 
           {/* 密码输入表单 */}
@@ -103,8 +105,8 @@ export default function PrivateVault({ onUnlock }: PrivateVaultProps) {
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="输入密码"
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('vault.locked.passwordPlaceholder')}
                 className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors"
               />
               <button
@@ -135,7 +137,7 @@ export default function PrivateVault({ onUnlock }: PrivateVaultProps) {
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
             >
               <Unlock className="w-5 h-5" />
-              解锁访问
+              {t('vault.locked.unlock')}
             </button>
           </form>
 
@@ -144,11 +146,11 @@ export default function PrivateVault({ onUnlock }: PrivateVaultProps) {
             <div className="flex items-start gap-2 text-sm text-gray-600">
               <Shield className="w-5 h-5 flex-shrink-0 mt-0.5 text-purple-600" />
               <div>
-                <p className="font-medium text-gray-900 mb-1">安全提示</p>
+                <p className="font-medium text-gray-900 mb-1">{t('vault.securityTips.title')}</p>
                 <ul className="space-y-1 text-xs">
-                  <li>• 支持指纹/Face ID 生物识别</li>
-                  <li>• 内容在数据库中加密存储</li>
-                  <li>• 离开页面自动锁定保护</li>
+                  {(t('vault.securityTips.tips', { returnObjects: true }) as string[]).map((tip, idx) => (
+                    <li key={idx}>• {tip}</li>
+                  ))}
                 </ul>
               </div>
             </div>

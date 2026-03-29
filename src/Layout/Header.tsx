@@ -1,10 +1,11 @@
 import { Search, Upload, RefreshCw, Sparkles, ListOrdered } from 'lucide-react';
-import { useBookmarks } from '../contexts/BookmarkContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
 interface HeaderProps {
-  onSync: () => void;
-  onAIOptimize: () => void;
-  onLogoClick?: () => void;
+  onSync?: () => void;
+  onAIOptimize?: () => void;
   onFileUpload?: () => void;
   onTaskManager?: () => void;
 }
@@ -12,25 +13,29 @@ interface HeaderProps {
 export default function Header({
   onSync,
   onAIOptimize,
-  onLogoClick,
   onFileUpload,
   onTaskManager,
 }: HeaderProps) {
-  const { searchQuery, setSearchQuery } = useBookmarks();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const isHomePage = location.pathname === '/';
+
+  const handleLogoClick = () => {
+    navigate('/');
+  };
 
   const handleFileUpload = () => {
-    // 触发文件上传
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.html';
-    input.onchange = e => {
+    input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         console.log('导入文件:', file.name);
-        // 这里处理 HTML 文件解析
-        if (onFileUpload) {
-          onFileUpload();
-        }
+        onFileUpload?.();
       }
     };
     input.click();
@@ -41,68 +46,79 @@ export default function Header({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-6">
           <button
-            onClick={onLogoClick}
+            onClick={handleLogoClick}
             className="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg px-2 py-1"
-            aria-label="返回首页"
+            aria-label={t('nav.backToHome')}
           >
-            📚 智能书签管理
+            📚 {t('header.title')}
           </button>
 
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" />
-            <label htmlFor="search-input" className="sr-only">搜索书签</label>
-            <input
-              id="search-input"
-              type="text"
-              placeholder="搜索书签内容、标题、标签..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-96 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              aria-label="搜索书签内容、标题、标签"
-              role="searchbox"
-            />
-          </div>
+          {!isHomePage && (
+            <div className="relative">
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                aria-hidden="true"
+              />
+              <label htmlFor="search-input" className="sr-only">
+                {t('header.searchPlaceholder')}
+              </label>
+              <input
+                id="search-input"
+                type="text"
+                placeholder={t('header.searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-96 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label={t('header.searchPlaceholder')}
+                role="searchbox"
+              />
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center gap-3" role="toolbar" aria-label="操作工具栏">
+        <div
+          className="flex items-center gap-3"
+          role="toolbar"
+          aria-label={t('header.title')}
+        >
           <button
             onClick={handleFileUpload}
             className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            aria-label="导入HTML书签文件"
-            title="导入HTML书签文件"
+            aria-label={t('header.importHtml')}
+            title={t('header.importHtml')}
           >
             <Upload className="w-4 h-4" aria-hidden="true" />
-            <span>导入 HTML</span>
+            <span>{t('header.importHtml')}</span>
           </button>
 
           <button
             onClick={onSync}
             className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            aria-label="与Chrome同步书签"
-            title="与Chrome同步书签"
+            aria-label={t('header.chromeSync')}
+            title={t('header.chromeSync')}
           >
             <RefreshCw className="w-4 h-4" aria-hidden="true" />
-            <span>Chrome 同步</span>
+            <span>{t('header.chromeSync')}</span>
           </button>
 
           <button
             onClick={onAIOptimize}
             className="flex items-center gap-2 px-4 py-2 text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-            aria-label="使用AI优化书签"
-            title="使用AI优化书签"
+            aria-label={t('header.aiOptimize')}
+            title={t('header.aiOptimize')}
           >
             <Sparkles className="w-4 h-4" aria-hidden="true" />
-            <span>AI 优化</span>
+            <span>{t('header.aiOptimize')}</span>
           </button>
 
           <button
             onClick={onTaskManager}
             className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            aria-label="任务管理面板"
-            title="任务管理面板"
+            aria-label={t('header.taskManager')}
+            title={t('header.taskManager')}
           >
             <ListOrdered className="w-4 h-4" aria-hidden="true" />
-            <span>任务管理</span>
+            <span>{t('header.taskManager')}</span>
           </button>
         </div>
       </div>

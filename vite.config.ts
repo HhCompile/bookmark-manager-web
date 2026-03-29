@@ -46,7 +46,6 @@ export default defineConfig(({ mode }) => {
           manualChunks: {
             react: ['react', 'react-dom'],
             ui: [
-              '@mui/material',
               '@radix-ui/react-dialog',
               '@radix-ui/react-dropdown-menu',
             ],

@@ -1,5 +1,7 @@
 import { AlertTriangle, Copy, Trash2, Merge, ExternalLink } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useTranslation } from 'react-i18next';
+import type { Bookmark } from '../types/bookmark';
 
 interface DuplicateBookmark {
   id: string;
@@ -16,15 +18,17 @@ interface DuplicateGroup {
 }
 
 interface QualityMonitorProps {
-  bookmarks: any[];
+  bookmarks: Bookmark[];
 }
 
 export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
+  const { t } = useTranslation();
+
   // 检测重复书签
   const detectDuplicates = (): DuplicateGroup[] => {
     const urlMap: { [key: string]: DuplicateBookmark[] } = {};
 
-    bookmarks.forEach(bookmark => {
+    bookmarks.forEach((bookmark) => {
       if (!urlMap[bookmark.url]) {
         urlMap[bookmark.url] = [];
       }
@@ -38,7 +42,7 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
 
   // 检测失效链接
   const detectDeadLinks = () => {
-    return bookmarks.filter(b => b.isDead);
+    return bookmarks.filter((b) => b.isDead);
   };
 
   const duplicates = detectDuplicates();
@@ -46,7 +50,6 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
 
   const handleMerge = (group: DuplicateGroup) => {
     console.log('合并书签:', group);
-    // 实际应用中会合并标签和批注
   };
 
   const handleDelete = (bookmarkId: string) => {
@@ -65,18 +68,18 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
           <div className="flex items-center gap-2">
             <Copy className="w-5 h-5 text-orange-600" />
             <h3 className="text-lg font-semibold text-gray-900">
-              重复书签检测
+              {t('quality.duplicateDetection.title')}
             </h3>
           </div>
           <span className="px-3 py-1 bg-orange-100 text-orange-700 text-sm rounded-full">
-            发现 {duplicates.length} 组重复
+            {t('quality.duplicateDetection.count', { count: duplicates.length })}
           </span>
         </div>
 
         {duplicates.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Copy className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-            <p>没有发现重复的书签</p>
+            <p>{t('quality.duplicateDetection.noDuplicates')}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -89,11 +92,11 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
                 className="border border-orange-200 rounded-lg p-4 bg-orange-50"
               >
                 <p className="text-sm text-gray-600 mb-3">
-                  重复 URL: {group.url}
+                  {t('quality.duplicateDetection.duplicateUrl')}: {group.url}
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                  {group.bookmarks.map(bookmark => (
+                  {group.bookmarks.map((bookmark) => (
                     <div
                       key={bookmark.id}
                       className="bg-white border border-gray-200 rounded p-3"
@@ -105,15 +108,15 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
                         <button
                           onClick={() => handleDelete(bookmark.id)}
                           className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-                          title="删除"
+                          title={t('common.delete')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                       <div className="space-y-1 text-xs text-gray-500">
-                        <p>分类: {bookmark.category}</p>
+                        <p>{t('bookmarks.columns.category')}: {bookmark.category}</p>
                         <p>
-                          添加: {bookmark.addedDate.toLocaleDateString('zh-CN')}
+                          {t('bookmarks.columns.date')}: {bookmark.addedDate.toLocaleDateString('zh-CN')}
                         </p>
                         <div className="flex flex-wrap gap-1 mt-2">
                           {bookmark.tags.map((tag, i) => (
@@ -136,10 +139,10 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
                     className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
                   >
                     <Merge className="w-4 h-4" />
-                    合并标签与批注
+                    {t('quality.duplicateDetection.merge')}
                   </button>
                   <p className="text-xs text-gray-500">
-                    建议：保留最新的书签，合并所有标签和批注
+                    {t('quality.duplicateDetection.mergeTip')}
                   </p>
                 </div>
               </motion.div>
@@ -153,17 +156,19 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-red-600" />
-            <h3 className="text-lg font-semibold text-gray-900">失效链接</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              {t('quality.deadLinks.title')}
+            </h3>
           </div>
           <span className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-full">
-            {deadLinks.length} 个失效
+            {t('quality.deadLinks.count', { count: deadLinks.length })}
           </span>
         </div>
 
         {deadLinks.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <AlertTriangle className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-            <p>所有书签链接正常</p>
+            <p>{t('quality.deadLinks.noDeadLinks')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -188,15 +193,15 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
                   <button
                     onClick={() => handleWaybackMachine(bookmark.url)}
                     className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
-                    title="从 Wayback Machine 恢复"
+                    title="Wayback Machine"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    时光机
+                    {t('quality.deadLinks.waybackMachine')}
                   </button>
                   <button
                     onClick={() => handleDelete(bookmark.id)}
                     className="p-2 text-red-600 hover:bg-red-100 rounded transition-colors"
-                    title="删除"
+                    title={t('common.delete')}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -212,7 +217,7 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">重复率</p>
+              <p className="text-sm text-gray-600">{t('quality.stats.duplicateRate')}</p>
               <p className="text-2xl font-bold text-orange-600">
                 {((duplicates.length / bookmarks.length) * 100).toFixed(1)}%
               </p>
@@ -224,7 +229,7 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">失效率</p>
+              <p className="text-sm text-gray-600">{t('quality.stats.deadRate')}</p>
               <p className="text-2xl font-bold text-red-600">
                 {((deadLinks.length / bookmarks.length) * 100).toFixed(1)}%
               </p>
@@ -236,7 +241,7 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">健康度</p>
+              <p className="text-sm text-gray-600">{t('quality.stats.healthScore')}</p>
               <p className="text-2xl font-bold text-green-600">
                 {(
                   100 -
