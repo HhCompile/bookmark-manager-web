@@ -1,8 +1,8 @@
-import { motion, MotionProps } from 'motion/react'
+import { motion, type Transition } from 'motion/react'
 import { useMemo } from 'react'
 
 
-interface StatsCardProps extends Omit<MotionProps, 'children'> {
+interface StatsCardProps {
   value: number | string
   label: string
   subtitle?: React.ReactNode
@@ -11,6 +11,16 @@ interface StatsCardProps extends Omit<MotionProps, 'children'> {
   labelClassName?: string
   subtitleClassName?: string
   testId?: string
+}
+
+const easeOutTransition: Transition = {
+  duration: 0.2,
+  ease: [0, 0, 0.2, 1]
+}
+
+const easeOutTransitionSlow: Transition = {
+  duration: 0.5,
+  ease: [0, 0, 0.2, 1]
 }
 
 /**
@@ -27,8 +37,6 @@ export default function StatsCard({
   labelClassName = '',
   subtitleClassName = '',
   testId = 'stats-card',
-  whileHover = { scale: 1.05 },
-  ...motionProps
 }: StatsCardProps) {
   // 优化动画配置，确保流畅的过渡效果
   const animationConfig = useMemo(() => ({
@@ -36,16 +44,9 @@ export default function StatsCard({
       scale: 1.05,
       y: -5,
       boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-      transition: {
-        duration: 0.2,
-        ease: 'easeOut'
-      }
     },
     whileTap: {
       scale: 0.98,
-      transition: {
-        duration: 0.1
-      }
     },
     initial: {
       opacity: 0,
@@ -54,17 +55,17 @@ export default function StatsCard({
     animate: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.5,
-        ease: 'easeOut'
-      }
-    }
+    },
+    transition: easeOutTransitionSlow
   }), [])
   
   return (
     <motion.div
-      {...animationConfig}
-      {...motionProps}
+      initial={animationConfig.initial}
+      animate={animationConfig.animate}
+      whileHover={animationConfig.whileHover}
+      whileTap={animationConfig.whileTap}
+      transition={animationConfig.transition}
       className={`bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-blue-100 ${className}`}
       data-testid={testId}
       role="group"
@@ -73,21 +74,23 @@ export default function StatsCard({
       <motion.div 
         className={`text-4xl font-bold mb-2 ${valueClassName}`}
         whileHover={{ scale: 1.1 }}
+        transition={easeOutTransition}
       >
         {value}
       </motion.div>
       <motion.div 
         className={`text-sm text-gray-600 ${labelClassName}`}
         whileHover={{ x: 2 }}
+        transition={easeOutTransition}
       >
         {label}
       </motion.div>
       {subtitle && (
         <motion.div 
-          className={`flex items-center justify-center gap-1 text-sm mt-1 ${subtitleClassName}`}
+          className={`flex items-center justify-center gap-1 text-sm mt-1 whitespace-nowrap ${subtitleClassName}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.3, duration: 0.3 }}
         >
           {subtitle}
         </motion.div>

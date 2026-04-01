@@ -4,7 +4,6 @@
 
 import { api, useApiQuery, useApiMutation } from './client';
 import type { Bookmark, BookmarkFolder } from '../types/bookmark';
-import type { ApiResponse } from './client';
 
 // 书签列表查询
 export function useBookmarksQuery(params?: { 

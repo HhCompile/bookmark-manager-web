@@ -6,8 +6,8 @@ import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 
 // Layouts
-import Header from '../layout/Header';
-import Sidebar from '../layout/Sidebar';
+import Header from '../Layout/Header';
+import Sidebar from '../Layout/Sidebar';
 
 // Pages
 import HomePage from '../pages/home/HomePage';

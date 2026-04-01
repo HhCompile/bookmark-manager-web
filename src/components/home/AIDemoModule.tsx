@@ -26,7 +26,7 @@ export default function AIDemoModule({ onShowDemo, onShowRegularDemo }: AIDemoMo
         className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 shadow-md border-2 border-blue-200"
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        transition={{ duration: 0.6, ease: "spring", delay: 0.2 }}
+        transition={{ type: "spring", duration: 0.6, delay: 0.2 }}
         whileHover={{ boxShadow: "0 20px 25px -5px rgba(59, 130, 246, 0.1), 0 10px 10px -5px rgba(59, 130, 246, 0.04)" }}
         onHoverStart={() => setIsVisible(true)}
       >
@@ -36,7 +36,7 @@ export default function AIDemoModule({ onShowDemo, onShowRegularDemo }: AIDemoMo
             className="p-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl shrink-0"
             initial={{ scale: 0, rotate: -10 }}
             animate={{ scale: 1, rotate: 0 }}
-            transition={{ duration: 0.5, ease: "spring", delay: 0.4 }}
+            transition={{ type: "spring", duration: 0.5, delay: 0.4 }}
             whileHover={{ scale: 1.1 }}
           >
             <motion.div

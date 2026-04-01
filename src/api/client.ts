@@ -3,7 +3,7 @@
  * 统一处理请求、响应、错误处理
  */
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 
 // API 基础配置
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -136,7 +136,7 @@ export function useApiQuery<T>(
   key: string[],
   endpoint: string,
   config?: RequestConfig,
-  options?: Parameters<typeof useQuery>[2]
+  options?: Omit<UseQueryOptions<ApiResponse<T>, ApiError>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery<ApiResponse<T>, ApiError>({
     queryKey: key,

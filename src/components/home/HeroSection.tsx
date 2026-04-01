@@ -59,7 +59,7 @@ export default function HeroSection({
             </p>
 
             {/* 统计数据 */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
               <StatsCard
                 value={totalOrganizations}
                 label={t('home.stats.totalOrganizations')}

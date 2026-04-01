@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useBookmarks } from '../../contexts/BookmarkContext';
+import { useBookmarks } from '../../hooks';
 import ListView from './ListView';
-import CardView from './CardView';
 import TreeView from './TreeView';
+import type { Bookmark, ViewMode } from '../../types/bookmark';
 
 interface ViewModeDemoProps {
   // 可选属性
@@ -10,10 +10,11 @@ interface ViewModeDemoProps {
 }
 
 export default function ViewModeDemo({ showTitle = true }: ViewModeDemoProps) {
-  const { bookmarks, viewMode, setViewMode } = useBookmarks();
+  const { data: bookmarks = [] } = useBookmarks();
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleViewModeChange = (mode: 'list' | 'card' | 'tree') => {
+  const handleViewModeChange = (mode: ViewMode) => {
     setViewMode(mode);
   };
 
@@ -88,7 +89,7 @@ export default function ViewModeDemo({ showTitle = true }: ViewModeDemoProps) {
           {viewMode === 'list' && <ListView bookmarks={bookmarks} />}
           {viewMode === 'card' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {bookmarks.map(bookmark => (
+              {bookmarks.map((bookmark: Bookmark) => (
                 <div key={bookmark.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow group">
                   <div className="h-24 bg-gradient-to-br from-blue-500 to-purple-600 relative">
                     <div className="absolute inset-0 flex items-center justify-center text-4xl">
@@ -104,7 +105,7 @@ export default function ViewModeDemo({ showTitle = true }: ViewModeDemoProps) {
                     </p>
                     {bookmark.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
-                        {bookmark.tags.slice(0, 2).map((tag, index) => (
+                        {bookmark.tags.slice(0, 2).map((tag: string, index: number) => (
                           <span key={index} className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">
                             {tag}
                           </span>

@@ -5,8 +5,8 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import {
-  useBookmarks,
-  useFolders,
+  useBookmarks as useBookmarksQuery,
+  useFolders as useFoldersQuery,
   useCreateBookmark,
   useUpdateBookmark,
   useDeleteBookmark,
@@ -26,6 +26,11 @@ interface BookmarkContextType {
   updateBookmark: (id: string, updates: Partial<Bookmark>) => void;
   deleteBookmark: (id: string) => void;
   filteredBookmarks: Bookmark[];
+  // 导入的书签相关
+  importedBookmarks: Bookmark[];
+  setImportedBookmarks: (bookmarks: Bookmark[]) => void;
+  clearImportedBookmarks: () => void;
+  hasImportedBookmarks: boolean;
 }
 
 const BookmarkContext = createContext<BookmarkContextType | undefined>(undefined);
@@ -38,16 +43,13 @@ export const useBookmarkContext = () => {
   return context;
 };
 
-// 为了向后兼容
-export const useBookmarks = useBookmarkContext;
-
 interface BookmarkProviderProps {
   children: ReactNode;
 }
 
 export const BookmarkProvider: React.FC<BookmarkProviderProps> = ({ children }) => {
-  const { data: bookmarks = [] } = useBookmarks();
-  const { data: folders = [] } = useFolders();
+  const { data: bookmarks = [] } = useBookmarksQuery();
+  const { data: folders = [] } = useFoldersQuery();
   const createBookmark = useCreateBookmark();
   const updateBookmark = useUpdateBookmark();
   const deleteBookmark = useDeleteBookmark();
@@ -56,16 +58,27 @@ export const BookmarkProvider: React.FC<BookmarkProviderProps> = ({ children }) 
   const [viewMode, setViewMode] = React.useState<ViewMode>('list');
   const [searchQuery, setSearchQuery] = React.useState('');
   const [selectedFolder, setSelectedFolder] = React.useState<string | null>(null);
+  
+  // 导入的书签状态（临时展示用）
+  const [importedBookmarks, setImportedBookmarks] = React.useState<Bookmark[]>([]);
+
+  // 合并书签：如果有导入的书签，优先显示导入的
+  const displayBookmarks = React.useMemo(() => {
+    if (importedBookmarks.length > 0) {
+      return importedBookmarks;
+    }
+    return bookmarks;
+  }, [importedBookmarks, bookmarks]);
 
   // 过滤书签
   const filteredBookmarks = React.useMemo(() => {
-    let result = bookmarks;
+    let result = displayBookmarks;
 
     // 按文件夹过滤
     if (selectedFolder) {
-      const folder = folders.find((f) => f.id === selectedFolder);
+      const folder = folders.find((f: BookmarkFolder) => f.id === selectedFolder);
       if (folder) {
-        result = result.filter((b) => folder.bookmarks.includes(b.id));
+        result = result.filter((b: Bookmark) => folder.bookmarks.includes(b.id));
       }
     }
 
@@ -73,19 +86,24 @@ export const BookmarkProvider: React.FC<BookmarkProviderProps> = ({ children }) 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
-        (b) =>
+        (b: Bookmark) =>
           b.title.toLowerCase().includes(query) ||
           b.url.toLowerCase().includes(query) ||
           b.alias?.toLowerCase().includes(query) ||
-          b.tags.some((tag) => tag.toLowerCase().includes(query))
+          b.tags.some((tag: string) => tag.toLowerCase().includes(query))
       );
     }
 
     return result;
-  }, [bookmarks, folders, selectedFolder, searchQuery]);
+  }, [displayBookmarks, folders, selectedFolder, searchQuery]);
+
+  // 清除导入的书签
+  const clearImportedBookmarks = React.useCallback(() => {
+    setImportedBookmarks([]);
+  }, []);
 
   const contextValue: BookmarkContextType = {
-    bookmarks,
+    bookmarks: displayBookmarks,
     folders,
     viewMode,
     setViewMode,
@@ -97,6 +115,10 @@ export const BookmarkProvider: React.FC<BookmarkProviderProps> = ({ children }) 
     updateBookmark: (id, updates) => updateBookmark.mutate({ id, data: updates }),
     deleteBookmark: (id) => deleteBookmark.mutate(id),
     filteredBookmarks,
+    importedBookmarks,
+    setImportedBookmarks,
+    clearImportedBookmarks,
+    hasImportedBookmarks: importedBookmarks.length > 0,
   };
 
   return (

@@ -130,14 +130,16 @@ function parseHtmlBookmarks(content: string): Bookmark[] {
   dtElements.forEach((dt) => {
     const aElement = dt.querySelector('A');
     if (aElement) {
+      const addDateAttr = aElement.getAttribute('ADD_DATE');
       const bookmark: Bookmark = {
         id: `html-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         title: aElement.textContent || '',
         url: aElement.getAttribute('HREF') || '',
-        dateAdded: aElement.getAttribute('ADD_DATE') || Date.now(),
-        icon: aElement.getAttribute('ICON') || undefined,
+        addedDate: new Date(addDateAttr ? parseInt(addDateAttr) * 1000 : Date.now()),
+        favicon: aElement.getAttribute('ICON') || undefined,
         tags: aElement.getAttribute('TAGS')?.split(',') || [],
         category: getParentFolderName(dt),
+        isLocked: false,
       };
       bookmarks.push(bookmark);
     }
@@ -169,14 +171,16 @@ function processFolder(
   dtElements.forEach((dt) => {
     const aElement = dt.querySelector('A');
     if (aElement) {
+      const addDateAttr = aElement.getAttribute('ADD_DATE');
       const bookmark: Bookmark = {
         id: `html-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         title: aElement.textContent || '',
         url: aElement.getAttribute('HREF') || '',
-        dateAdded: aElement.getAttribute('ADD_DATE') || Date.now(),
-        icon: aElement.getAttribute('ICON') || undefined,
+        addedDate: new Date(addDateAttr ? parseInt(addDateAttr) * 1000 : Date.now()),
+        favicon: aElement.getAttribute('ICON') || undefined,
         tags: aElement.getAttribute('TAGS')?.split(',') || [],
         category: folderName,
+        isLocked: false,
       };
       bookmarks.push(bookmark);
     }
@@ -214,28 +218,36 @@ function getParentFolderName(dtElement: Element): string {
  * @param data JSON 数据
  * @returns 书签数组
  */
-function parseJsonBookmarks(data: any): Bookmark[] {
+function parseJsonBookmarks(data: unknown): Bookmark[] {
   const bookmarks: Bookmark[] = [];
 
-  function processNode(node: any, category: string = '未分类') {
-    if (node.url) {
+  function processNode(node: unknown, category: string = '未分类') {
+    if (typeof node !== 'object' || node === null) return;
+    
+    const nodeObj = node as Record<string, unknown>;
+    
+    if (nodeObj.url) {
       // 是书签
+      const dateAdded = nodeObj.dateAdded || nodeObj.addedDate;
       const bookmark: Bookmark = {
         id:
-          node.id ||
+          (typeof nodeObj.id === 'string' ? nodeObj.id : undefined) ||
           `json-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        title: node.title || '',
-        url: node.url,
-        dateAdded: node.dateAdded || Date.now(),
-        icon: node.icon,
-        tags: node.tags || [],
+        title: typeof nodeObj.title === 'string' ? nodeObj.title : '',
+        url: typeof nodeObj.url === 'string' ? nodeObj.url : '',
+        addedDate: dateAdded instanceof Date 
+          ? dateAdded 
+          : new Date(typeof dateAdded === 'number' ? dateAdded : Date.now()),
+        favicon: typeof nodeObj.icon === 'string' ? nodeObj.icon : undefined,
+        tags: Array.isArray(nodeObj.tags) ? nodeObj.tags : [],
         category,
+        isLocked: false,
       };
       bookmarks.push(bookmark);
-    } else if (node.children && Array.isArray(node.children)) {
+    } else if (Array.isArray(nodeObj.children)) {
       // 是文件夹
-      const folderName = node.title || '未命名文件夹';
-      node.children.forEach((child: any) => {
+      const folderName = typeof nodeObj.title === 'string' ? nodeObj.title : '未命名文件夹';
+      nodeObj.children.forEach((child: unknown) => {
         processNode(child, folderName);
       });
     }
@@ -243,10 +255,13 @@ function parseJsonBookmarks(data: any): Bookmark[] {
 
   if (Array.isArray(data)) {
     data.forEach((node) => processNode(node));
-  } else if (data.children && Array.isArray(data.children)) {
-    data.children.forEach((node: any) => processNode(node));
-  } else {
-    processNode(data);
+  } else if (typeof data === 'object' && data !== null) {
+    const dataObj = data as Record<string, unknown>;
+    if (Array.isArray(dataObj.children)) {
+      dataObj.children.forEach((node: unknown) => processNode(node));
+    } else {
+      processNode(data);
+    }
   }
 
   return bookmarks;
@@ -257,18 +272,26 @@ function parseJsonBookmarks(data: any): Bookmark[] {
  * @param bookmarks 原始书签数据
  * @returns 清理后的书签数据
  */
-export function cleanBookmarks(bookmarks: any[]): Bookmark[] {
+export function cleanBookmarks(bookmarks: unknown[]): Bookmark[] {
   return bookmarks
-    .map((bookmark) => ({
-      id:
-        bookmark.id ||
-        `bookmark-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      title: bookmark.title || '未命名书签',
-      url: bookmark.url || '',
-      dateAdded: bookmark.dateAdded || Date.now(),
-      icon: bookmark.icon,
-      tags: bookmark.tags || [],
-      category: bookmark.category || '未分类',
-    }))
-    .filter((bookmark) => bookmark.url); // 过滤掉没有 URL 的项
+    .map((bookmark): Bookmark | null => {
+      if (typeof bookmark !== 'object' || bookmark === null) return null;
+      const b = bookmark as Record<string, unknown>;
+      const dateAdded = b.dateAdded || b.addedDate;
+      return {
+        id:
+          (typeof b.id === 'string' ? b.id : undefined) ||
+          `bookmark-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        title: typeof b.title === 'string' ? b.title : '未命名书签',
+        url: typeof b.url === 'string' ? b.url : '',
+        addedDate: dateAdded instanceof Date 
+          ? dateAdded 
+          : new Date(typeof dateAdded === 'number' ? dateAdded : Date.now()),
+        favicon: typeof b.icon === 'string' ? b.icon : undefined,
+        tags: Array.isArray(b.tags) ? b.tags : [],
+        category: typeof b.category === 'string' ? b.category : '未分类',
+        isLocked: false,
+      };
+    })
+    .filter((bookmark): bookmark is Bookmark => bookmark !== null && !!bookmark.url); // 过滤掉没有 URL 的项
 }

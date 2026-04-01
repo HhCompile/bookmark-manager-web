@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
+    publicDir: 'public',
     plugins: [
       // Code Inspector plugin (must come before react plugin)
       ViteCodeInspectorPlugin({

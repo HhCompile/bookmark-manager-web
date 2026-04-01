@@ -10,7 +10,7 @@ interface UploadProgressProps {
 
 export default function UploadProgress({
   progress,
-  status,
+  status: _status, // eslint-disable-line @typescript-eslint/no-unused-vars
   onCancel,
   fileName
 }: UploadProgressProps) {

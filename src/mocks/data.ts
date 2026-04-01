@@ -6,8 +6,32 @@
 import type { Bookmark, BookmarkFolder } from '../types/bookmark';
 import type { AISuggestion } from '../api/ai';
 
+// 用户类型
+export interface MockUser {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: 'user' | 'admin';
+  avatar: string | null;
+  createdAt: string;
+}
+
 // 生成唯一 ID
-const generateId = () => Math.random().toString(36).substring(2, 15);
+export const generateId = () => Math.random().toString(36).substring(2, 15);
+
+// 用户 Mock 数据
+export const mockUsers: MockUser[] = [
+  {
+    id: 'user_1',
+    name: '演示用户',
+    email: 'demo@example.com',
+    password: 'password123',
+    role: 'user',
+    avatar: null,
+    createdAt: new Date('2024-01-01').toISOString(),
+  },
+];
 
 // 书签 Mock 数据
 export const mockBookmarks: Bookmark[] = [

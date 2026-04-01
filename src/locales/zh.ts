@@ -25,6 +25,7 @@ export default {
     error: '错误',
     warning: '警告',
     info: '提示',
+    times: '次',
   },
   
   // 导航

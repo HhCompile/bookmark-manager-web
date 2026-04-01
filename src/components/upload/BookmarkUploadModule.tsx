@@ -31,6 +31,16 @@ export default function BookmarkUploadModule({
   // 引用
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 重置状态 - 放在前面避免循环依赖
+  const resetState = useCallback(() => {
+    setUploading(false);
+    setUploadStatus('idle');
+    setUploadProgress(0);
+    setSelectedFile(null);
+    setErrorMessage('');
+    setValidationResult({ valid: false, message: '' });
+  }, []);
+
   // 处理上传开始
   const handleUploadStart = useCallback((file: File) => {
     // 检查文件大小
@@ -72,7 +82,7 @@ export default function BookmarkUploadModule({
         setUploading(false);
       }
     },
-    [onUploadComplete]
+    [onUploadComplete, resetState]
   );
 
   // 处理上传取消
@@ -94,16 +104,6 @@ export default function BookmarkUploadModule({
     },
     [handleUploadStart]
   );
-
-  // 重置状态
-  const resetState = useCallback(() => {
-    setUploading(false);
-    setUploadStatus('idle');
-    setUploadProgress(0);
-    setSelectedFile(null);
-    setErrorMessage('');
-    setValidationResult({ valid: false, message: '' });
-  }, []);
 
   // 处理关闭
   const handleClose = useCallback(() => {
@@ -128,199 +128,112 @@ export default function BookmarkUploadModule({
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl p-6 cursor-pointer shadow-lg hover:shadow-xl transition-shadow"
           onClick={() => setIsExpanded(true)}
-          className="bg-white rounded-xl p-5 shadow-md hover:shadow-xl transition-all duration-300 border border-blue-100 h-full flex flex-col cursor-pointer group"
         >
-          <div className="inline-flex p-3 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 mb-3 group-hover:scale-110 transition-transform duration-300">
-            <Upload className="w-6 h-6 text-white" />
-          </div>
-          <h3 className="text-lg font-bold text-gray-900 mb-1">HTML 导入</h3>
-          <p className="text-sm text-gray-600 mb-4 flex-1">
-            支持从浏览器导出的 HTML 文件快速导入
-          </p>
-          <div className="flex items-center gap-2 text-sm font-medium transition-all text-gray-400 group-hover:text-blue-600">
-            开始使用
-            <motion.div
-              animate={{ x: [0, 4, 0] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                repeatType: 'reverse',
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-4 h-4"
-              >
-                <path d="M5 12h14"></path>
-                <path d="m12 5 7 7-7 7"></path>
-              </svg>
-            </motion.div>
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/20 rounded-lg">
+              <Upload className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-white">导入书签</h3>
+              <p className="text-blue-100 text-sm">支持 HTML/JSON 格式文件</p>
+            </div>
+            <div className="p-2 bg-white/20 rounded-lg">
+              <FileText className="w-5 h-5 text-white" />
+            </div>
           </div>
         </motion.div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="bg-white rounded-xl shadow-xl border border-blue-100 w-full max-w-2xl mx-auto"
-        >
-          {/* 头部 */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">书签导入</h2>
-                <p className="text-sm text-gray-600">
-                  上传浏览器书签文件或粘贴书签内容
-                </p>
-              </div>
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden"
+          >
+            {/* 头部 */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-900">导入书签</h3>
+              <button
+                onClick={handleClose}
+                disabled={uploading}
+                className="p-2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <button
-              onClick={handleClose}
-              disabled={uploading}
-              className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
 
-          {/* 主要内容 */}
-          <div className="p-6">
-            <AnimatePresence mode="wait">
-              {uploadStatus === 'idle' ? (
-                <motion.div
-                  key="upload-area"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
+            {/* 内容区域 */}
+            <div className="p-4">
+              {uploadStatus === 'idle' && (
+                <>
                   <UploadArea
                     onUploadStart={handleUploadStart}
                     onUploadProgress={handleUploadProgress}
                     onUploadComplete={handleUploadComplete}
                   />
-                </motion.div>
-              ) : uploadStatus === 'uploading' ? (
-                <motion.div
-                  key="upload-progress"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <UploadProgress
-                    progress={uploadProgress}
-                    status={uploadStatus}
-                    onCancel={handleUploadCancel}
-                    fileName={selectedFile?.name || ''}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".html,.htm,.json"
+                    onChange={handleFileInputChange}
+                    className="hidden"
                   />
-                </motion.div>
-              ) : uploadStatus === 'success' ? (
-                <motion.div
-                  key="upload-success"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center p-8 bg-green-50 rounded-xl"
-                >
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4"
-                  >
-                    <CheckCircle className="w-8 h-8 text-green-600" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    上传成功
-                  </h3>
-                  <p className="text-gray-600 text-center mb-6">
-                    书签文件已成功上传并验证通过
-                  </p>
-                  <p className="text-sm text-gray-500 mb-6">
-                    {validationResult.bookmarks?.length
-                      ? `共导入 ${validationResult.bookmarks.length} 个书签`
-                      : ''}
-                  </p>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="flex gap-3"
-                  >
-                    <button
-                      onClick={handleClose}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      完成
-                    </button>
-                  </motion.div>
-                </motion.div>
-              ) : uploadStatus === 'error' ? (
-                <motion.div
-                  key="upload-error"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center p-8 bg-red-50 rounded-xl"
-                >
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4"
-                  >
-                    <AlertCircle className="w-8 h-8 text-red-600" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    上传失败
-                  </h3>
-                  <p className="text-gray-600 text-center mb-6">
-                    {errorMessage || '书签文件验证失败'}
-                  </p>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="flex gap-3"
-                  >
-                    <button
-                      onClick={handleRetry}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      重试
-                    </button>
-                    <button
-                      onClick={handleClose}
-                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-                    >
-                      取消
-                    </button>
-                  </motion.div>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-          </div>
+                </>
+              )}
 
-          {/* 隐藏的文件输入 */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".html,.json,.htm"
-            className="hidden"
-            onChange={handleFileInputChange}
-          />
-        </motion.div>
+              {uploadStatus === 'uploading' && selectedFile && (
+                <UploadProgress
+                  progress={uploadProgress}
+                  status={uploadStatus}
+                  onCancel={handleUploadCancel}
+                  fileName={selectedFile.name}
+                />
+              )}
+
+              {uploadStatus === 'success' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-8"
+                >
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    上传成功
+                  </h4>
+                  <p className="text-gray-600">
+                    成功导入 {validationResult.bookmarks?.length || 0} 个书签
+                  </p>
+                </motion.div>
+              )}
+
+              {uploadStatus === 'error' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-8"
+                >
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <AlertCircle className="w-8 h-8 text-red-600" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    上传失败
+                  </h4>
+                  <p className="text-gray-600 mb-4">{errorMessage}</p>
+                  <button
+                    onClick={handleRetry}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    重试
+                  </button>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
       )}
     </div>
   );

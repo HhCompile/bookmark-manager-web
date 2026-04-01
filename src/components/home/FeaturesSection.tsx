@@ -13,7 +13,7 @@ interface Feature {
   action: () => void
 }
 
-interface DetailedFeature {
+export interface DetailedFeature {
   icon: React.ElementType
   title: string
   description: string

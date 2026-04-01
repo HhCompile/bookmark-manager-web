@@ -7,7 +7,7 @@ interface DuplicateBookmark {
   id: string;
   title: string;
   url: string;
-  category: string;
+  category?: string;
   addedDate: Date;
   tags: string[];
 }
@@ -36,7 +36,7 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
     });
 
     return Object.entries(urlMap)
-      .filter(([_, items]) => items.length > 1)
+      .filter(([, items]) => items.length > 1)
       .map(([url, items]) => ({ url, bookmarks: items }));
   };
 

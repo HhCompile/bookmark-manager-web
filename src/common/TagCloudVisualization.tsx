@@ -3,21 +3,21 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  Legend,
   Tooltip,
 } from 'recharts';
-import { TrendingUp, Tag } from 'lucide-react';
+  import { TrendingUp, Tag } from 'lucide-react';
+  import type { Bookmark } from '../types/bookmark';
 
 interface TagCloudVisualizationProps {
-  bookmarks: any[];
+  bookmarks: Bookmark[];
 }
 
 export default function TagCloudVisualization({
   bookmarks,
 }: TagCloudVisualizationProps) {
   // 统计标签分布
-  const tagStats = bookmarks.reduce((acc: any, bookmark) => {
-    bookmark.tags.forEach((tag: string) => {
+  const tagStats = bookmarks.reduce((acc: Record<string, number>, bookmark) => {
+    bookmark.tags?.forEach((tag: string) => {
       acc[tag] = (acc[tag] || 0) + 1;
     });
     return acc;
@@ -30,7 +30,7 @@ export default function TagCloudVisualization({
   }));
 
   // 统计分类分布
-  const categoryStats = bookmarks.reduce((acc: any, bookmark) => {
+  const categoryStats = bookmarks.reduce((acc: Record<string, number>, bookmark) => {
     const category = bookmark.category || '未分类';
     acc[category] = (acc[category] || 0) + 1;
     return acc;
@@ -75,7 +75,7 @@ export default function TagCloudVisualization({
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {categoryData.map((entry, index) => (
+                  {categoryData.map((_entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}

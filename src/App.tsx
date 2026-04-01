@@ -3,21 +3,28 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'motion/react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
+// Providers
+import { AuthProvider } from './contexts/AuthContext';
+import { BookmarkProvider } from './contexts/BookmarkContext';
+
 // 布局组件
-import Header from './layout/Header';
-import Sidebar from './layout/Sidebar';
+import Header from './Layout/Header';
+import Sidebar from './Layout/Sidebar';
 
 // 页面组件
 import HomePage from './pages/home/HomePage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // 懒加载组件
 const BookmarkView = lazy(() => import('./pages/bookmark/BookmarkView'));
 const TagCloudVisualization = lazy(() => import('./common/TagCloudVisualization'));
 const QualityMonitor = lazy(() => import('./common/QualityMonitor'));
 const PrivateVault = lazy(() => import('./pages/bookmark/PrivateVault'));
-const AIConfirmationPanel = lazy(() => import('./common/AIConfirmationPanel'));
 const SyncProgress = lazy(() => import('./common/SyncProgress'));
 const TaskManagerPanel = lazy(() => import('./common/TaskManagerPanel'));
+const AIConfirmationPanel = lazy(() => import('./common/AIConfirmationPanel'));
 
 // 加载中组件
 const PageLoader = () => (
@@ -62,27 +69,49 @@ function AppContent() {
             }
           />
           
-          {/* 功能页面 - 带侧边栏 */}
+          {/* 登录页面 - 公开访问 */}
+          <Route
+            path="/login"
+            element={
+              <ProtectedRoute requireAuth={false} layout="none">
+                <LoginPage />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* 注册页面 - 公开访问 */}
+          <Route
+            path="/register"
+            element={
+              <ProtectedRoute requireAuth={false} layout="none">
+                <RegisterPage />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* 功能页面 - 需要登录 */}
           <Route
             path="/app/*"
             element={
-              <>
-                <Header {...headerProps} />
-                <div className="flex-1 flex overflow-hidden">
-                  <Sidebar />
-                  <main className="flex-1 overflow-auto p-6">
-                    <Suspense fallback={<PageLoader />}>
-                      <Routes>
-                        <Route path="bookmarks" element={<BookmarkView />} />
-                        <Route path="analytics" element={<TagCloudVisualization bookmarks={[]} />} />
-                        <Route path="quality" element={<QualityMonitor bookmarks={[]} />} />
-                        <Route path="private" element={<PrivateVault onUnlock={() => {}} />} />
-                        <Route path="*" element={<Navigate to="/app/bookmarks" replace />} />
-                      </Routes>
-                    </Suspense>
-                  </main>
-                </div>
-              </>
+              <ProtectedRoute requireAuth layout="none">
+                <>
+                  <Header {...headerProps} />
+                  <div className="flex-1 flex overflow-hidden">
+                    <Sidebar />
+                    <main className="flex-1 overflow-auto p-6">
+                      <Suspense fallback={<PageLoader />}>
+                        <Routes>
+                          <Route path="bookmarks" element={<BookmarkView />} />
+                          <Route path="analytics" element={<TagCloudVisualization bookmarks={[]} />} />
+                          <Route path="quality" element={<QualityMonitor bookmarks={[]} />} />
+                          <Route path="private" element={<PrivateVault onUnlock={() => {/* TODO: 实现解锁逻辑 */}} />} />
+                          <Route path="*" element={<Navigate to="/app/bookmarks" replace />} />
+                        </Routes>
+                      </Suspense>
+                    </main>
+                  </div>
+                </>
+              </ProtectedRoute>
             }
           />
           
@@ -90,7 +119,7 @@ function AppContent() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 
-        {/* 模态面板 */}
+        {/* 模态面板 - 只在登录后显示 */}
         <AnimatePresence>
           {showSyncProgress && (
             <Suspense fallback={null}>
@@ -116,7 +145,11 @@ function AppContent() {
 export default function App() {
   return (
     <Tooltip.Provider>
-      <AppContent />
+      <AuthProvider>
+        <BookmarkProvider>
+          <AppContent />
+        </BookmarkProvider>
+      </AuthProvider>
     </Tooltip.Provider>
   );
 }

@@ -138,13 +138,43 @@ src/
 └── utils/                # 工具函数
 ```
 
+## 已完成的改进（补充）
+
+### 7. ✅ 用户认证系统
+
+**新增文件：**
+- `src/contexts/AuthContext.tsx` - 认证状态管理（登录/注册/登出）
+- `src/pages/auth/LoginPage.tsx` - 登录页面
+- `src/pages/auth/RegisterPage.tsx` - 注册页面
+- `src/components/auth/ProtectedRoute.tsx` - 受保护路由组件
+- `src/components/auth/UserMenu.tsx` - 用户菜单（Header 集成）
+
+**特性：**
+- JWT Token 本地存储（支持记住我）
+- 演示账户：demo@example.com / password123
+- 密码强度检查
+- 受保护路由自动重定向
+- 已登录用户访问登录页自动跳转
+
+### 8. ✅ Service Worker 离线支持
+
+**新增文件：**
+- `public/sw.js` - Service Worker（缓存策略）
+- `public/offline.html` - 离线页面
+- `src/utils/serviceWorker.ts` - SW 管理工具
+
+**特性：**
+- 网络优先策略（API 请求）
+- 缓存优先策略（静态资源、图片）
+- 后台同步支持
+- 更新检测和提示
+- 离线页面回退
+
 ## 待后续改进项
 
 1. **更多组件国际化** - TaskManagerPanel, AIDemoPanel 等组件还需要国际化
 2. **真实 API 集成** - 将 MSW 切换到真实后端 API
-3. **用户认证** - 添加登录/注册功能
-4. **离线支持** - 使用 Service Worker 实现离线访问
-5. **单元测试** - 为 Hooks 和组件添加测试
+3. **单元测试** - 为 Hooks 和组件添加测试
 
 ## 如何运行
 

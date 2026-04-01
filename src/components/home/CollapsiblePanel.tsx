@@ -10,6 +10,7 @@ interface CollapsiblePanelProps {
   isActive: boolean;
   onHover: (id: string) => void;
   onLeave: () => void;
+  items?: string[];
   showViewModeSelector?: boolean;
   selectedViewMode?: 'list' | 'card' | 'tree';
   onViewModeChange?: (mode: 'list' | 'card' | 'tree') => void;
@@ -24,6 +25,7 @@ export default function CollapsiblePanel({
   isActive,
   onHover,
   onLeave,
+  items: _items, // eslint-disable-line @typescript-eslint/no-unused-vars
   showViewModeSelector = false,
   selectedViewMode = 'list',
   onViewModeChange
@@ -93,7 +95,7 @@ export default function CollapsiblePanel({
             >
               {title}
             </h3>
-            <p className="text-sm text-gray-600">{description}</p>
+            <div className="text-sm text-gray-600">{description}</div>
           </div>
         </div>
         <motion.div

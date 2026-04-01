@@ -8,8 +8,7 @@ import {
   mockBookmarks,
   mockFolders,
   mockAISuggestions,
-  mockStats,
-  mockTasks,
+  mockUsers,
 } from './data';
 
 // 模拟延迟
@@ -237,7 +236,7 @@ export const handlers = [
     }, {} as Record<string, typeof mockBookmarks>);
     
     const duplicates = Object.entries(urlMap)
-      .filter(([_, items]) => items.length > 1)
+      .filter(([, items]) => items.length > 1)
       .map(([url, items]) => ({
         url,
         bookmarks: items.map((b) => ({
@@ -318,5 +317,104 @@ export const handlers = [
     await delay();
     const vaultBookmarks = mockBookmarks.filter((b) => b.isLocked);
     return HttpResponse.json(createResponse(vaultBookmarks));
+  }),
+  
+  // ===== 认证 API =====
+  
+  // 登录
+  http.post('/api/auth/login', async ({ request }) => {
+    await delay(800);
+    const data = await request.json() as { email: string; password: string };
+    const user = mockUsers.find((u) => u.email === data.email);
+    
+    if (!user || user.password !== data.password) {
+      return HttpResponse.json(
+        { success: false, message: '邮箱或密码错误', timestamp: new Date().toISOString() },
+        { status: 401 }
+      );
+    }
+    
+    const { password: _, ...userWithoutPassword } = user;
+    return HttpResponse.json(
+      createResponse({
+        user: userWithoutPassword,
+        token: `mock_token_${Date.now()}`,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      }, '登录成功')
+    );
+  }),
+  
+  // 注册
+  http.post('/api/auth/register', async ({ request }) => {
+    await delay(1000);
+    const data = await request.json() as { name: string; email: string; password: string };
+    
+    // 检查邮箱是否已存在
+    if (mockUsers.find((u) => u.email === data.email)) {
+      return HttpResponse.json(
+        { success: false, message: '该邮箱已被注册', timestamp: new Date().toISOString() },
+        { status: 409 }
+      );
+    }
+    
+    // 创建新用户
+    const newUser = {
+      id: `user_${Date.now()}`,
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      role: 'user' as const,
+      avatar: null,
+      createdAt: new Date().toISOString(),
+    };
+    
+    mockUsers.push(newUser);
+    
+    const { password: _, ...userWithoutPassword } = newUser;
+    return HttpResponse.json(
+      createResponse({
+        user: userWithoutPassword,
+        token: `mock_token_${Date.now()}`,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      }, '注册成功')
+    );
+  }),
+  
+  // 获取当前用户信息
+  http.get('/api/auth/me', async ({ request }) => {
+    await delay();
+    const authHeader = request.headers.get('Authorization');
+    
+    if (!authHeader?.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, message: '未授权', timestamp: new Date().toISOString() },
+        { status: 401 }
+      );
+    }
+    
+    // 简化处理：返回第一个用户
+    const user = mockUsers[0];
+    const { password: _, ...userWithoutPassword } = user;
+    
+    return HttpResponse.json(createResponse(userWithoutPassword));
+  }),
+  
+  // 登出
+  http.post('/api/auth/logout', async () => {
+    await delay();
+    return HttpResponse.json(createResponse(null, '登出成功'));
+  }),
+  
+  // 更新用户信息
+  http.put('/api/auth/profile', async ({ request }) => {
+    await delay();
+    const data = await request.json() as Partial<{ name: string; avatar: string }>;
+    
+    const user = mockUsers[0];
+    if (data.name) user.name = data.name;
+    if (data.avatar) user.avatar = data.avatar;
+    
+    const { password: _, ...userWithoutPassword } = user;
+    return HttpResponse.json(createResponse(userWithoutPassword, '更新成功'));
   }),
 ];

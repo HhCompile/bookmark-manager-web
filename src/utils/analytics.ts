@@ -3,7 +3,8 @@
 // 声明 Window 接口扩展
 declare global {
   interface Window {
-    dataLayer?: any[];
+    dataLayer?: unknown[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     gtag?: (...args: any[]) => void;
   }
 }
@@ -24,8 +25,8 @@ const initAnalytics = () => {
     // 加载 Google Analytics 脚本
     if (!window.gtag) {
       window.dataLayer = window.dataLayer || [];
-      window.gtag = function () {
-        window.dataLayer?.push(arguments);
+      window.gtag = function (...args: unknown[]) {
+        window.dataLayer?.push(...args);
       };
 
       const script = document.createElement('script');
@@ -84,7 +85,7 @@ const trackEvent = (
 // 跟踪用户交互
 const trackUserInteraction = (
   action: string,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ) => {
   if (typeof window !== 'undefined' && !isDevelopment && window.gtag) {
     window.gtag('event', action, {

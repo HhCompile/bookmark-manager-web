@@ -138,7 +138,7 @@ export default function TreeView({ bookmarks }: TreeViewProps) {
             </p>
           </div>
           <button
-            onClick={() => handleQuickOpen(node.bookmark!.url)}
+            onClick={() => node.bookmark && handleQuickOpen(node.bookmark.url)}
             className="p-2 opacity-0 group-hover:opacity-100 text-blue-600 hover:bg-blue-50 rounded transition-all"
             title="快速打开"
           >

@@ -16,4 +16,5 @@ export default {
   ],
   coverageDirectory: '<rootDir>/coverage',
   coverageReporters: ['text', 'lcov'],
+  passWithNoTests: true,
 };

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>离线模式 - 书签管理器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      text-align: center;
+      max-width: 480px;
+      background: white;
+      padding: 48px;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    }
+    
+    .icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+    }
+    
+    h1 {
+      font-size: 28px;
+      color: #1a202c;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+    
+    p {
+      font-size: 16px;
+      color: #718096;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #edf2f7;
+      color: #4a5568;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+    
+    .tips {
+      margin-top: 32px;
+      padding: 20px;
+      background: #f7fafc;
+      border-radius: 12px;
+      text-align: left;
+    }
+    
+    .tips h3 {
+      font-size: 14px;
+      color: #4a5568;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    
+    .tips ul {
+      list-style: none;
+      font-size: 14px;
+      color: #718096;
+    }
+    
+    .tips li {
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+    
+    .tips li::before {
+      content: "•";
+      color: #667eea;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+    
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #fed7d7;
+      color: #c53030;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+    
+    .status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #c53030;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 32px 24px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      .icon {
+        width: 100px;
+        height: 100px;
+        font-size: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    
+    <div class="status">您目前处于离线状态</div>
+    
+    <h1>无法连接到网络</h1>
+    <p>看起来您失去了网络连接。请检查您的网络设置，或者尝试刷新页面。</p>
+    
+    <div class="actions">
+      <button class="btn btn-primary" onclick="location.reload()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+        </svg>
+        刷新页面
+      </button>
+      <a href="/" class="btn btn-secondary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        返回首页
+      </a>
+    </div>
+    
+    <div class="tips">
+      <h3>离线时您可以：</h3>
+      <ul>
+        <li>查看已缓存的书签</li>
+        <li>浏览本地收藏的页面</li>
+        <li>使用已加载的功能模块</li>
+        <li>添加的书签将在联网后同步</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script>
+    // 监听网络状态变化
+    window.addEventListener('online', () => {
+      location.reload();
+    });
+    
+    // 检查是否真的离线
+    if (navigator.onLine) {
+      // 如果在在线状态但显示此页面，可能是服务器问题
+      console.log('Actually online, trying to reload...');
+      setTimeout(() => location.reload(), 3000);
+    }
+  </script>
+</body>
+</html>

@@ -1,13 +1,17 @@
 import { motion } from 'motion/react'
-import { ReactNode, ButtonHTMLAttributes } from 'react'
+import { ReactNode } from 'react'
 
-interface CustomButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface CustomButtonProps {
   children: ReactNode
   variant?: 'primary' | 'secondary' | 'outline'
   size?: 'sm' | 'md' | 'lg'
   fullWidth?: boolean
   icon?: ReactNode
   endIcon?: ReactNode
+  disabled?: boolean
+  type?: 'button' | 'submit' | 'reset'
+  onClick?: () => void
+  className?: string
 }
 
 export default function CustomButton({
@@ -18,7 +22,9 @@ export default function CustomButton({
   icon,
   endIcon,
   className = '',
-  ...props
+  disabled = false,
+  type = 'button',
+  onClick,
 }: CustomButtonProps) {
   // 变体样式
   const variantStyles = {
@@ -39,8 +45,11 @@ export default function CustomButton({
 
   return (
     <motion.button
-      className={`inline-flex items-center justify-center gap-3 ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyles} rounded-xl shadow-lg border-2 border-transparent transition-all ${className}`}
-      whileHover={{
+      type={type}
+      disabled={disabled}
+      onClick={onClick}
+      className={`inline-flex items-center justify-center gap-3 ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyles} rounded-xl shadow-lg border-2 border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      whileHover={disabled ? undefined : {
         scale: 1.05,
         boxShadow: variant === 'primary'
           ? '0 25px 50px -12px rgba(59, 130, 246, 0.25)'
@@ -48,11 +57,10 @@ export default function CustomButton({
           ? '0 25px 50px -12px rgba(75, 85, 99, 0.25)'
           : '0 25px 50px -12px rgba(59, 130, 246, 0.1)'
       }}
-      whileTap={{
+      whileTap={disabled ? undefined : {
         scale: 0.98,
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
       }}
-      {...props}
     >
       {icon && (
         <motion.div

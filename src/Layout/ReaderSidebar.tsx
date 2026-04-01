@@ -2,7 +2,6 @@ import {
   X,
   Highlighter,
   MessageSquare,
-  BookmarkPlus,
   ExternalLink,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
