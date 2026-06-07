@@ -44,7 +44,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['前端', 'React', '开源', 'JavaScript'],
     favicon: '⚛️',
     isLocked: false,
-    addedDate: new Date('2024-01-15'),
+    addedDate: new Date('2024-01-15').toISOString(),
     summary: 'React 官方仓库，用于构建用户界面的 JavaScript 库',
   },
   {
@@ -55,7 +55,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['Web', '文档', '前端', '参考'],
     favicon: '📚',
     isLocked: false,
-    addedDate: new Date('2024-02-01'),
+    addedDate: new Date('2024-02-01').toISOString(),
     summary: 'Mozilla 开发者网络，提供 Web 技术的完整文档',
   },
   {
@@ -67,7 +67,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['CSS', '框架', '前端', 'UI'],
     favicon: '🎨',
     isLocked: false,
-    addedDate: new Date('2024-02-10'),
+    addedDate: new Date('2024-02-10').toISOString(),
     summary: '实用优先的 CSS 框架',
   },
   {
@@ -78,7 +78,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['TypeScript', '文档', '编程'],
     favicon: '📘',
     isLocked: false,
-    addedDate: new Date('2024-02-15'),
+    addedDate: new Date('2024-02-15').toISOString(),
     summary: 'TypeScript 官方文档',
   },
   {
@@ -90,7 +90,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['设计', '灵感', 'UI', 'UX'],
     favicon: '🏀',
     isLocked: false,
-    addedDate: new Date('2024-03-01'),
+    addedDate: new Date('2024-03-01').toISOString(),
     summary: '设计师分享作品的社区',
   },
   {
@@ -101,7 +101,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['设计', '工具', '协作', 'UI'],
     favicon: '🎭',
     isLocked: false,
-    addedDate: new Date('2024-03-05'),
+    addedDate: new Date('2024-03-05').toISOString(),
     summary: '协作设计工具',
   },
   {
@@ -113,7 +113,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['问答', '编程', '社区'],
     favicon: '💬',
     isLocked: false,
-    addedDate: new Date('2024-03-10'),
+    addedDate: new Date('2024-03-10').toISOString(),
     summary: '程序员问答社区',
   },
   {
@@ -124,7 +124,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['构建工具', '前端', '开发'],
     favicon: '⚡',
     isLocked: false,
-    addedDate: new Date('2024-03-15'),
+    addedDate: new Date('2024-03-15').toISOString(),
     summary: '下一代前端构建工具',
   },
   {
@@ -135,7 +135,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['React', '组件库', 'UI', '开源'],
     favicon: '🧩',
     isLocked: false,
-    addedDate: new Date('2024-03-20'),
+    addedDate: new Date('2024-03-20').toISOString(),
     summary: '基于 Radix UI 和 Tailwind CSS 的组件库',
   },
   {
@@ -147,7 +147,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['笔记', '生产力', '个人'],
     favicon: '📝',
     isLocked: true,
-    addedDate: new Date('2024-03-25'),
+    addedDate: new Date('2024-03-25').toISOString(),
     annotations: ['这是我的个人笔记', '包含学习心得'],
   },
   {
@@ -158,7 +158,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['React', '性能', '优化'],
     favicon: '🚀',
     isLocked: false,
-    addedDate: new Date('2024-03-28'),
+    addedDate: new Date('2024-03-28').toISOString(),
     summary: 'React 性能优化最佳实践',
   },
   {
@@ -169,7 +169,7 @@ export const mockBookmarks: Bookmark[] = [
     tags: ['博客', '旧链接'],
     favicon: '🔗',
     isLocked: false,
-    addedDate: new Date('2023-01-01'),
+    addedDate: new Date('2023-01-01').toISOString(),
     isDead: true,
   },
 ];

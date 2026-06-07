@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
 import { Sparkles, ArrowRight, Lightbulb } from 'lucide-react'
-import CustomButton from '../ui/custom-button'
+import CustomButton from '@/components/ui/custom-button'
 import { useState } from 'react'
 
 interface AIDemoModuleProps {

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
-import CustomButton from '../components/ui/custom-button';
+import CustomButton from '@/components/ui/custom-button';
 
 interface RegularDemoPanelProps {
   onClose: () => void;

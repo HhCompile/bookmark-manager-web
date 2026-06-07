@@ -36,22 +36,8 @@ export default function CollapsiblePanel({
     onHover(id);
   };
 
-  const handleMouseLeave = (event: React.MouseEvent) => {
-    // 延迟调用 onLeave，确保用户有足够的时间移动到其他面板
-    setTimeout(() => {
-      if (panelRef.current) {
-        const rect = panelRef.current.getBoundingClientRect();
-        const { clientX, clientY } = event;
-        if (
-          clientX < rect.left ||
-          clientX > rect.right ||
-          clientY < rect.top ||
-          clientY > rect.bottom
-        ) {
-          onLeave();
-        }
-      }
-    }, 100);
+  const handleMouseLeave = () => {
+    onLeave();
   };
 
   return (
@@ -60,7 +46,7 @@ export default function CollapsiblePanel({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={`
-        rounded-xl overflow-hidden border transition-all duration-300
+        rounded-xl overflow-hidden border transition-all duration-300 self-start
         ${
           isActive
             ? 'border-blue-400 shadow-lg bg-white'

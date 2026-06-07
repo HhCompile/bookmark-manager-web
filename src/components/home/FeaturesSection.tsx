@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import { Target, FileText, CheckCircle } from 'lucide-react'
 import CollapsiblePanel from './CollapsiblePanel'
 import MoreFeatureCard from './MoreFeatureCard'
-import ViewModeDemo from '../views/ViewModeDemo'
+import ViewModeDemo from '@/components/views/ViewModeDemo'
 
 interface Feature {
   id: string
@@ -37,7 +37,7 @@ export default function FeaturesSection({ features, detailedFeatures }: Features
   };
 
   const handlePanelLeave = () => {
-    // 不立即关闭面板，保持展开状态
+    setActivePanel(null);
   };
 
   // 为每个面板创建对应的示例内容
@@ -393,7 +393,7 @@ export default function FeaturesSection({ features, detailedFeatures }: Features
           全面的书签管理解决方案，从导入到优化，从搜索到分析，一站式解决你的知识管理需求
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start auto-rows-min">
           {detailedFeatures.map((feature, index) => (
             <CollapsiblePanel
               key={index}

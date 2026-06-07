@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import BackgroundAnimation from '../../common/BackgroundAnimation';
+import BackgroundAnimation from '@/common/BackgroundAnimation';
 import StatsCard from './StatsCard';
 
 interface HeroSectionProps {

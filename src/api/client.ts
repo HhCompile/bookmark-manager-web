@@ -6,7 +6,7 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 
 // API 基础配置
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL || '/api/v1';
 const API_TIMEOUT = 30000;
 
 // 请求配置类型
@@ -136,32 +136,38 @@ export function useApiQuery<T>(
   key: string[],
   endpoint: string,
   config?: RequestConfig,
-  options?: Omit<UseQueryOptions<ApiResponse<T>, ApiError>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<T, ApiError>, 'queryKey' | 'queryFn'>
 ) {
-  return useQuery<ApiResponse<T>, ApiError>({
+  return useQuery<T, ApiError>({
     queryKey: key,
-    queryFn: () => request<T>(endpoint, config),
+    queryFn: async () => {
+      const response = await request<T>(endpoint, config);
+      return response.data;
+    },
     ...options,
   });
 }
 
 export function useApiMutation<T, D = unknown>(
-  endpoint: string,
+  endpoint: string | ((data: D) => string),
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' = 'POST',
   options?: {
     invalidateKeys?: string[][];
-    onSuccess?: (data: ApiResponse<T>) => void;
+    onSuccess?: (data: T) => void;
     onError?: (error: ApiError) => void;
   }
 ) {
   const queryClient = useQueryClient();
-  
-  return useMutation<ApiResponse<T>, ApiError, D>({
-    mutationFn: (data) =>
-      request<T>(endpoint, {
+
+  return useMutation<T, ApiError, D>({
+    mutationFn: async (data) => {
+      const url = typeof endpoint === 'function' ? endpoint(data) : endpoint;
+      const response = await request<T>(url, {
         method,
         body: data ? JSON.stringify(data) : undefined,
-      }),
+      });
+      return response.data;
+    },
     onSuccess: (data) => {
       // 自动刷新相关查询
       if (options?.invalidateKeys) {

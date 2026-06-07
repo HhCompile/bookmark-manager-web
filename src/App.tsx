@@ -104,7 +104,7 @@ function AppContent() {
                           <Route path="bookmarks" element={<BookmarkView />} />
                           <Route path="analytics" element={<TagCloudVisualization bookmarks={[]} />} />
                           <Route path="quality" element={<QualityMonitor bookmarks={[]} />} />
-                          <Route path="private" element={<PrivateVault onUnlock={() => {/* TODO: 实现解锁逻辑 */}} />} />
+                          <Route path="private" element={<PrivateVault />} />
                           <Route path="*" element={<Navigate to="/app/bookmarks" replace />} />
                         </Routes>
                       </Suspense>

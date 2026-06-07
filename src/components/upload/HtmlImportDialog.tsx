@@ -106,26 +106,31 @@ export default function HtmlImportDialog({
       const content = e.target?.result as string;
       
       if (content) {
-        setTimeout(() => {
-          try {
-            const result = validateBookmarkFile(content, file.name);
-            setUploadProgress(100);
-            
-            if (result.valid && 'bookmarks' in result && result.bookmarks) {
-              setUploadStatus('success');
-              setImportedBookmarksLocal(result.bookmarks);
-              // 设置到 Context 中
-              setImportedBookmarks(result.bookmarks);
-              onUploadComplete?.(result.bookmarks);
-            } else {
+        // 使用 requestAnimationFrame 确保 UI 更新
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            try {
+              setUploadProgress(90); // 验证进行中
+              
+              const result = validateBookmarkFile(content, file.name);
+              
+              if (result.valid && 'bookmarks' in result && result.bookmarks) {
+                setUploadProgress(100);
+                setUploadStatus('success');
+                setImportedBookmarksLocal(result.bookmarks);
+                // 设置到 Context 中
+                setImportedBookmarks(result.bookmarks);
+                onUploadComplete?.(result.bookmarks);
+              } else {
+                setUploadStatus('error');
+                setErrorMessage(result.message);
+              }
+            } catch (error) {
               setUploadStatus('error');
-              setErrorMessage(result.message);
+              setErrorMessage(`验证过程中发生错误: ${error instanceof Error ? error.message : '未知错误'}`);
             }
-          } catch (error) {
-            setUploadStatus('error');
-            setErrorMessage(`验证过程中发生错误: ${error instanceof Error ? error.message : '未知错误'}`);
-          }
-        }, 300);
+          }, 100);
+        });
       } else {
         setUploadStatus('error');
         setErrorMessage('文件读取失败');
@@ -194,8 +199,9 @@ export default function HtmlImportDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-lg w-[calc(100%-2rem)] max-h-[85vh] overflow-hidden flex flex-col p-4 sm:p-6">
+        {/* 动态标题 - 根据状态变化 */}
+        <DialogHeader className={uploadStatus === 'success' ? 'hidden' : ''}>
           <DialogTitle className="flex items-center gap-2">
             <FolderOpen className="w-5 h-5 text-blue-600" />
             导入书签文件
@@ -205,7 +211,8 @@ export default function HtmlImportDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <AnimatePresence mode="wait">
+        <div className="flex-1 min-h-0 overflow-hidden relative">
+          <AnimatePresence mode="wait">
           {/* 初始状态 - 拖拽上传区域 */}
           {uploadStatus === 'idle' && (
             <motion.div
@@ -290,7 +297,7 @@ export default function HtmlImportDialog({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="space-y-6 py-4"
+              className="space-y-6 py-4 overflow-y-auto max-h-[60vh]"
             >
               {/* 文件信息 */}
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -354,49 +361,67 @@ export default function HtmlImportDialog({
           {uploadStatus === 'success' && (
             <motion.div
               key="success"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="text-center py-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col h-full"
             >
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-green-600" />
-              </div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                导入成功
-              </h4>
-              <p className="text-gray-600 mb-6">
-                成功导入 <span className="font-semibold text-green-600">{importedBookmarks.length}</span> 个书签
-              </p>
-              
-              {/* 书签预览 */}
-              {importedBookmarks.length > 0 && (
-                <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left max-h-40 overflow-y-auto">
-                  <p className="text-xs text-gray-500 mb-2">预览前 5 个书签：</p>
-                  <ul className="space-y-2">
-                    {importedBookmarks.slice(0, 5).map((bookmark, index) => (
-                      <li key={index} className="flex items-center gap-2 text-sm">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
-                          {index + 1}
-                        </span>
-                        <span className="truncate text-gray-700" title={bookmark.title}>
-                          {bookmark.title}
-                        </span>
-                      </li>
-                    ))}
-                    {importedBookmarks.length > 5 && (
-                      <li className="text-xs text-gray-500 text-center">
-                        还有 {importedBookmarks.length - 5} 个书签...
-                      </li>
-                    )}
-                  </ul>
+              {/* 成功内容 - 可滚动区域 */}
+              <div className="text-center py-4 sm:py-6 overflow-y-auto flex-1 min-h-0">
+                {/* 成功图标和标题 */}
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <CheckCircle className="w-7 h-7 sm:w-8 sm:h-8 text-green-600" />
                 </div>
-              )}
+                <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+                  导入成功
+                </h4>
+                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+                  成功导入 <span className="font-semibold text-green-600">{importedBookmarks.length}</span> 个书签
+                </p>
+                
+                {/* 书签预览 */}
+                {importedBookmarks.length > 0 && (
+                  <div className="mx-4 sm:mx-0 text-left">
+                    {/* 提示文字 - 固定在列表上方 */}
+                    <p className="text-xs text-gray-500 mb-2 sm:mb-3 px-3 sm:px-4 py-2 bg-gray-50 rounded-t-lg border-b border-gray-200">
+                      预览前 10 个书签（共 {importedBookmarks.length} 个）：
+                    </p>
+                    {/* 书签列表 - 独立滚动区域 */}
+                    <div className="bg-gray-50 rounded-b-lg px-3 sm:px-4 pb-3 sm:pb-4 max-h-[30vh] overflow-y-auto">
+                      <ul className="space-y-2">
+                        {importedBookmarks.slice(0, 10).map((bookmark, index) => (
+                          <li key={index} className="flex items-start gap-2 sm:gap-3 text-sm py-1">
+                            <span className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-medium flex-shrink-0 mt-0.5">
+                              {index + 1}
+                            </span>
+                            <div className="flex-1 min-w-0 overflow-hidden">
+                              <p className="truncate text-gray-700 font-medium text-sm leading-tight" title={bookmark.title}>
+                                {bookmark.title}
+                              </p>
+                              <p className="truncate text-gray-400 text-[10px] sm:text-xs leading-tight mt-0.5" title={bookmark.url}>
+                                {bookmark.url}
+                              </p>
+                            </div>
+                          </li>
+                        ))}
+                        {importedBookmarks.length > 10 && (
+                          <li className="text-xs text-gray-500 text-center py-2 bg-gray-100 rounded mt-2">
+                            还有 {importedBookmarks.length - 10} 个书签...
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
               
-              <Button onClick={handleDone} className="w-full bg-green-600 hover:bg-green-700">
-                查看书签
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+              {/* 固定底部按钮 */}
+              <div className="p-4 sm:p-6 border-t bg-background flex-shrink-0">
+                <Button onClick={handleDone} className="w-full bg-green-600 hover:bg-green-700 h-11 sm:h-12 text-base">
+                  查看书签
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </div>
             </motion.div>
           )}
 
@@ -427,6 +452,7 @@ export default function HtmlImportDialog({
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
       </DialogContent>
     </Dialog>
   );

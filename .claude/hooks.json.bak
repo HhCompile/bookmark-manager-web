@@ -1,0 +1,11 @@
+{
+  "hooks": [
+    {
+      "name": "post-edit-verification",
+      "trigger": "after_file_edit",
+      "command": "cd bookmark-manager-web && echo '🔍 运行验证循环...' && pnpm typecheck 2>&1 | tail -10 && echo '---' && pnpm test 2>&1 | tail -15",
+      "auto_run": false,
+      "description": "文件修改后提示运行验证"
+    }
+  ]
+}

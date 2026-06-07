@@ -3,7 +3,7 @@
  */
 
 import { api, useApiQuery, useApiMutation } from './client';
-import type { Bookmark } from '../types/bookmark';
+import type { Bookmark } from '@/types/bookmark';
 
 // 解锁响应
 export interface UnlockResponse {

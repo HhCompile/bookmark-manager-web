@@ -6,7 +6,7 @@ import {
   Tooltip,
 } from 'recharts';
   import { TrendingUp, Tag } from 'lucide-react';
-  import type { Bookmark } from '../types/bookmark';
+  import type { Bookmark } from '@/types/bookmark';
 
 interface TagCloudVisualizationProps {
   bookmarks: Bookmark[];

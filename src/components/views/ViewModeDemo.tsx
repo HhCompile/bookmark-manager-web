@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useBookmarks } from '../../hooks';
+import { useBookmarks } from '@/hooks';
 import ListView from './ListView';
 import TreeView from './TreeView';
-import type { Bookmark, ViewMode } from '../../types/bookmark';
+import type { Bookmark, ViewMode } from '@/types/bookmark';
 
 interface ViewModeDemoProps {
   // 可选属性

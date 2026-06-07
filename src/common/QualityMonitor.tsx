@@ -1,14 +1,14 @@
 import { AlertTriangle, Copy, Trash2, Merge, ExternalLink } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
-import type { Bookmark } from '../types/bookmark';
+import type { Bookmark } from '@/types/bookmark';
 
 interface DuplicateBookmark {
-  id: string;
+  id?: string;
   title: string;
   url: string;
   category?: string;
-  addedDate: Date;
+  addedDate?: string;
   tags: string[];
 }
 
@@ -48,12 +48,12 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
   const duplicates = detectDuplicates();
   const deadLinks = detectDeadLinks();
 
-  const handleMerge = (group: DuplicateGroup) => {
-    console.log('合并书签:', group);
+  const handleMerge = (_group: DuplicateGroup) => {
+    // TODO: 实现合并书签逻辑
   };
 
-  const handleDelete = (bookmarkId: string) => {
-    console.log('删除书签:', bookmarkId);
+  const handleDelete = (_bookmarkId: string) => {
+    // TODO: 实现删除书签逻辑
   };
 
   const handleWaybackMachine = (url: string) => {
@@ -106,7 +106,7 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
                           {bookmark.title}
                         </h4>
                         <button
-                          onClick={() => handleDelete(bookmark.id)}
+                          onClick={() => bookmark.id && handleDelete(bookmark.id)}
                           className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
                           title={t('common.delete')}
                         >
@@ -116,7 +116,7 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
                       <div className="space-y-1 text-xs text-gray-500">
                         <p>{t('bookmarks.columns.category')}: {bookmark.category}</p>
                         <p>
-                          {t('bookmarks.columns.date')}: {bookmark.addedDate.toLocaleDateString('zh-CN')}
+                          {t('bookmarks.columns.date')}: {bookmark.addedDate ? new Date(bookmark.addedDate).toLocaleDateString('zh-CN') : '-'}
                         </p>
                         <div className="flex flex-wrap gap-1 mt-2">
                           {bookmark.tags.map((tag, i) => (
@@ -199,8 +199,9 @@ export default function QualityMonitor({ bookmarks }: QualityMonitorProps) {
                     {t('quality.deadLinks.waybackMachine')}
                   </button>
                   <button
-                    onClick={() => handleDelete(bookmark.id)}
-                    className="p-2 text-red-600 hover:bg-red-100 rounded transition-colors"
+                    onClick={() => bookmark.id && handleDelete(bookmark.id)}
+                    disabled={!bookmark.id}
+                    className="p-2 text-red-600 hover:bg-red-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     title={t('common.delete')}
                   >
                     <Trash2 className="w-4 h-4" />

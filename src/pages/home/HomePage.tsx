@@ -14,18 +14,18 @@ import {
   Brain,
   BarChart,
 } from 'lucide-react';
-import AIDemoPanel from '../../common/AIDemoPanel';
-import RegularDemoPanel from '../../common/RegularDemoPanel';
+import AIDemoPanel from '@/common/AIDemoPanel';
+import RegularDemoPanel from '@/common/RegularDemoPanel';
 import { motion } from 'motion/react';
 
 // 导入拆分的组件
-import HeroSection from '../../components/home/HeroSection';
-import FeatureCard from '../../components/home/FeatureCard';
-import AIDemoModule from '../../components/home/AIDemoModule';
-import UsageTips from '../../components/home/UsageTips';
-import FeaturesSection from '../../components/home/FeaturesSection';
+import HeroSection from '@/components/home/HeroSection';
+import FeatureCard from '@/components/home/FeatureCard';
+import AIDemoModule from '@/components/home/AIDemoModule';
+import UsageTips from '@/components/home/UsageTips';
+import FeaturesSection from '@/components/home/FeaturesSection';
 import { mockStats } from '../../mocks/data';
-import type { DetailedFeature } from '../../components/home/FeaturesSection';
+import type { DetailedFeature } from '@/components/home/FeaturesSection';
 
 interface HomePageProps {
   onNavigate?: (tab: string) => void;

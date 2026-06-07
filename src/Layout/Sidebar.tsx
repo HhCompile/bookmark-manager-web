@@ -3,8 +3,8 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useFolders, useBookmarks } from '../hooks';
-import { getTagColor } from '../mocks/data';
+import { useFolders, useBookmarks } from '@/hooks';
+import { getTagColor } from '@/utils';
 
 export default function Sidebar() {
   const { t } = useTranslation();
@@ -27,7 +27,7 @@ export default function Sidebar() {
   const getBookmarkCount = (folderId: string) => {
     const folder = folders.find((f) => f.id === folderId);
     if (!folder) return 0;
-    return folder.bookmarks.length;
+    return folder.bookmarks?.length || 0;
   };
 
   const handleFolderClick = (folderId: string | null) => {
@@ -85,14 +85,22 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <div>
-          <button
-            onClick={() => navigate('/app/analytics')}
-            className="text-sm font-semibold text-gray-500 uppercase mb-3 hover:text-gray-700 transition-colors flex items-center gap-1 cursor-pointer"
-          >
-            {t('sidebar.tagCloud')}
-            <Tag className="w-3 h-3" />
-          </button>
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <button
+              onClick={() => navigate('/app/analytics')}
+              className="text-sm font-semibold text-gray-500 uppercase hover:text-gray-700 transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              {t('sidebar.tagCloud')}
+              <Tag className="w-3 h-3" />
+            </button>
+            <button
+              onClick={() => navigate('/app/tags')}
+              className="text-xs text-blue-600 hover:text-blue-700"
+            >
+              管理
+            </button>
+          </div>
           <div className="grid grid-cols-2 gap-2">
             {tagCounts.map((tag) => (
               <Tooltip.Root key={tag.name}>

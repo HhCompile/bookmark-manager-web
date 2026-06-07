@@ -1,0 +1,6 @@
+{
+  "_comment": "⚠️ 配置已迁移到 .kimi/hooks.json",
+  "_migration": "2026-04-06",
+  "_new_location": "bookmark-manager-web/.kimi/hooks.json",
+  "hooks": []
+}

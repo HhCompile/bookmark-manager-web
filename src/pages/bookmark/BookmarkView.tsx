@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import TreeView from '../../components/views/TreeView';
-import ListView from '../../components/views/ListView';
-import CardView from '../../components/views/CardView';
-import { useBookmarks, useFolders, useCreateBookmark } from '../../hooks';
-import { useBookmarkContext } from '../../contexts/BookmarkContext';
-import type { ViewMode } from '../../types/bookmark';
+import TreeView from '@/components/views/TreeView';
+import ListView from '@/components/views/ListView';
+import CardView from '@/components/views/CardView';
+import { useBookmarks, useFolders, useCreateBookmark } from '@/hooks';
+import { useBookmarkContext } from '@/contexts/BookmarkContext';
+import type { ViewMode } from '@/types/bookmark';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -63,9 +63,8 @@ export default function BookmarkView() {
       await Promise.all(savePromises);
       toast.success(`成功保存 ${importedBookmarks.length} 个书签到您的收藏`);
       clearImportedBookmarks();
-    } catch (error) {
+    } catch {
       toast.error('保存书签失败，请重试');
-      console.error('Save bookmarks error:', error);
     } finally {
       setIsSaving(false);
     }
@@ -187,7 +186,7 @@ export default function BookmarkView() {
       </div>
 
       {/* 视图内容 */}
-      <div>
+      <div className="h-[calc(100vh-280px)] overflow-auto">
         {viewMode === 'list' && <ListView bookmarks={displayBookmarks} />}
         {viewMode === 'card' && <CardView bookmarks={displayBookmarks} />}
         {viewMode === 'tree' && <TreeView bookmarks={displayBookmarks} />}

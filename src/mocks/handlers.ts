@@ -38,8 +38,8 @@ export const handlers = [
     // 按文件夹筛选
     if (folderId) {
       const folder = mockFolders.find((f) => f.id === folderId);
-      if (folder) {
-        filtered = filtered.filter((b) => folder.bookmarks.includes(b.id));
+      if (folder?.bookmarks) {
+        filtered = filtered.filter((b) => b.id && folder.bookmarks?.includes(b.id));
       }
     }
     
@@ -79,7 +79,7 @@ export const handlers = [
     const newBookmark = {
       ...data,
       id: Math.random().toString(36).substring(2, 15),
-      addedDate: new Date(),
+      addedDate: new Date().toISOString(),
     };
     mockBookmarks.push(newBookmark);
     return HttpResponse.json(createResponse(newBookmark, '书签创建成功'));
@@ -334,7 +334,8 @@ export const handlers = [
       );
     }
     
-    const { password: _, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = user;
     return HttpResponse.json(
       createResponse({
         user: userWithoutPassword,
@@ -370,7 +371,8 @@ export const handlers = [
     
     mockUsers.push(newUser);
     
-    const { password: _, ...userWithoutPassword } = newUser;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = newUser;
     return HttpResponse.json(
       createResponse({
         user: userWithoutPassword,
@@ -394,7 +396,8 @@ export const handlers = [
     
     // 简化处理：返回第一个用户
     const user = mockUsers[0];
-    const { password: _, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = user;
     
     return HttpResponse.json(createResponse(userWithoutPassword));
   }),
@@ -414,7 +417,8 @@ export const handlers = [
     if (data.name) user.name = data.name;
     if (data.avatar) user.avatar = data.avatar;
     
-    const { password: _, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = user;
     return HttpResponse.json(createResponse(userWithoutPassword, '更新成功'));
   }),
 ];

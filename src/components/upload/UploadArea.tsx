@@ -1,8 +1,15 @@
-import { useState, useCallback, useRef } from 'react';
+/**
+ * 上传区域组件
+ * 使用 ahooks 的 useSetState 和 useToggle 优化
+ */
+
+import { useRef, useCallback, useState } from 'react';
+import { useSetState } from 'ahooks';
 import { motion } from 'motion/react';
 import { Upload, FileText, Copy, AlertCircle } from 'lucide-react';
 import { validateBookmarkFile } from './BookmarkValidator';
-import { Bookmark } from '../../types/bookmark';
+import { Bookmark } from '@/types/bookmark';
+import { UPLOAD_CONFIG, ERROR_MESSAGES } from '@/utils';
 
 interface UploadAreaProps {
   onUploadStart: (file: File) => void;
@@ -14,17 +21,25 @@ interface UploadAreaProps {
   }) => void;
 }
 
+interface UploadState {
+  pastedContent: string;
+  fileInputValue: string;
+}
+
 export default function UploadArea({
   onUploadStart,
   onUploadProgress,
   onUploadComplete,
 }: UploadAreaProps) {
-  const [isDragging, setIsDragging] = useState(false);
-  const [pastedContent, setPastedContent] = useState('');
+  // 使用 ahooks 管理状态
   const [pasteMode, setPasteMode] = useState(false);
-  const [fileInputValue, setFileInputValue] = useState('');
+  const [state, setState] = useSetState<UploadState>({
+    pastedContent: '',
+    fileInputValue: '',
+  });
+  const [isDragging, setIsDragging] = useState(false);
 
-  // 引用
+  // Refs
   const dropZoneRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -48,53 +63,6 @@ export default function UploadArea({
     e.stopPropagation();
   }, []);
 
-  // 处理文件上传
-  const handleFileUpload = useCallback(
-    (file: File) => {
-      onUploadStart(file);
-
-      // 读取文件
-      const reader = new FileReader();
-
-      reader.onprogress = (e) => {
-        if (e.lengthComputable) {
-          const progress = Math.round((e.loaded / e.total) * 70); // 70% 是文件读取进度
-          onUploadProgress(progress);
-        }
-      };
-
-      reader.onload = (e) => {
-        onUploadProgress(80); // 80% 是文件读取完成
-
-        const content = e.target?.result as string;
-        if (content) {
-          // 验证文件内容
-          setTimeout(() => {
-            try {
-              const result = validateBookmarkFile(content, file.name);
-              onUploadProgress(100); // 100% 是验证完成
-              onUploadComplete(result);
-            } catch (error) {
-              onUploadComplete({
-                valid: false,
-                message: `验证过程中发生错误: ${error instanceof Error ? error.message : '未知错误'}`,
-              });
-            }
-          }, 300);
-        } else {
-          onUploadComplete({ valid: false, message: '文件读取失败' });
-        }
-      };
-
-      reader.onerror = () => {
-        onUploadComplete({ valid: false, message: '文件读取错误' });
-      };
-
-      reader.readAsText(file);
-    },
-    [onUploadStart, onUploadProgress, onUploadComplete]
-  );
-
   // 处理拖拽放下
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -104,21 +72,76 @@ export default function UploadArea({
 
       const files = e.dataTransfer.files;
       if (files.length > 0) {
-        const file = files[0];
-        // 检查文件类型
-        const allowedTypes = ['.html', '.htm', '.json'];
-        const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-        if (!allowedTypes.includes(fileExtension)) {
-          onUploadComplete({
-            valid: false,
-            message: '不支持的文件类型，请上传 HTML 或 JSON 格式的书签文件',
-          });
-          return;
-        }
-        handleFileUpload(file);
+        handleFileUpload(files[0]);
       }
     },
-    [handleFileUpload, onUploadComplete]
+    []
+  );
+
+  // 验证和上传文件
+  const handleFileUpload = useCallback(
+    (file: File) => {
+      // 检查文件类型
+      const fileExtension = ('.' + file.name.split('.').pop()?.toLowerCase()) as '.html' | '.htm' | '.json';
+      if (!UPLOAD_CONFIG.allowedTypes.includes(fileExtension)) {
+        onUploadComplete({
+          valid: false,
+          message: ERROR_MESSAGES.invalidFileType,
+        });
+        return;
+      }
+
+      // 检查文件大小
+      if (file.size > UPLOAD_CONFIG.maxSize) {
+        onUploadComplete({
+          valid: false,
+          message: ERROR_MESSAGES.fileTooLarge,
+        });
+        return;
+      }
+
+      onUploadStart(file);
+
+      // 读取文件
+      const reader = new FileReader();
+
+      reader.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const progress = Math.round((e.loaded / e.total) * 30);
+          onUploadProgress(progress);
+        }
+      };
+
+      reader.onload = (e) => {
+        onUploadProgress(30);
+
+        const content = e.target?.result as string;
+        if (content) {
+          setTimeout(() => {
+            try {
+              onUploadProgress(40);
+              const result = validateBookmarkFile(content, file.name);
+              onUploadProgress(50);
+              onUploadComplete(result);
+            } catch (error) {
+              onUploadComplete({
+                valid: false,
+                message: `${ERROR_MESSAGES.validationError}: ${error instanceof Error ? error.message : '未知错误'}`,
+              });
+            }
+          }, 100);
+        } else {
+          onUploadComplete({ valid: false, message: ERROR_MESSAGES.fileReadError });
+        }
+      };
+
+      reader.onerror = () => {
+        onUploadComplete({ valid: false, message: ERROR_MESSAGES.fileReadError });
+      };
+
+      reader.readAsText(file);
+    },
+    [onUploadStart, onUploadProgress, onUploadComplete]
   );
 
   // 处理文件选择
@@ -126,68 +149,57 @@ export default function UploadArea({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files;
       if (files && files.length > 0) {
-        const file = files[0];
-        handleFileUpload(file);
-        // 重置文件输入值，以便可以重新选择同一个文件
-        setFileInputValue('');
+        handleFileUpload(files[0]);
+        setState({ fileInputValue: '' });
       }
     },
-    [handleFileUpload]
+    [handleFileUpload, setState]
   );
 
-  // 处理粘贴
-  const handlePaste = useCallback((e: React.ClipboardEvent) => {
-    const clipboardData = e.clipboardData;
-    const text = clipboardData.getData('text');
-    if (text) {
-      setPastedContent(text);
-      setPasteMode(true);
-    }
-  }, []);
-
-  // 处理粘贴内容上传
+  // 处理粘贴上传
   const handlePasteUpload = useCallback(() => {
-    if (pastedContent) {
-      // 检查粘贴内容大小
-      if (pastedContent.length > 10 * 1024 * 1024) {
-        // 10MB
+    if (!state.pastedContent) return;
+
+    // 检查粘贴内容大小
+    if (state.pastedContent.length > UPLOAD_CONFIG.maxSize) {
+      onUploadComplete({
+        valid: false,
+        message: ERROR_MESSAGES.fileTooLarge,
+      });
+      return;
+    }
+
+    onUploadStart(
+      new File([state.pastedContent], 'pasted-bookmarks.html', {
+        type: 'text/html',
+      })
+    );
+    onUploadProgress(80);
+
+    setTimeout(() => {
+      try {
+        const result = validateBookmarkFile(
+          state.pastedContent,
+          'pasted-bookmarks.html'
+        );
+        onUploadProgress(100);
+        onUploadComplete(result);
+      } catch (error) {
         onUploadComplete({
           valid: false,
-          message: '粘贴内容超过限制（最大 10MB）',
+          message: `${ERROR_MESSAGES.validationError}: ${error instanceof Error ? error.message : '未知错误'}`,
         });
-        return;
       }
+    }, 300);
+  }, [state.pastedContent, onUploadStart, onUploadProgress, onUploadComplete]);
 
-      onUploadStart(
-        new File([pastedContent], 'pasted-bookmarks.html', {
-          type: 'text/html',
-        })
-      );
-      onUploadProgress(80);
-
-      setTimeout(() => {
-        try {
-          const result = validateBookmarkFile(
-            pastedContent,
-            'pasted-bookmarks.html'
-          );
-          onUploadProgress(100);
-          onUploadComplete(result);
-        } catch (error) {
-          onUploadComplete({
-            valid: false,
-            message: `验证过程中发生错误: ${error instanceof Error ? error.message : '未知错误'}`,
-          });
-        }
-      }, 300);
-    }
-  }, [pastedContent, onUploadStart, onUploadProgress, onUploadComplete]);
-
-  // 处理取消粘贴模式
+  // 取消粘贴模式
   const handleCancelPaste = useCallback(() => {
     setPasteMode(false);
-    setPastedContent('');
-  }, []);
+    setState({ pastedContent: '' });
+  }, [setState]);
+
+
 
   return (
     <div className="space-y-6">
@@ -199,7 +211,6 @@ export default function UploadArea({
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          onPaste={handlePaste}
           className={`
             border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300
             ${
@@ -251,7 +262,7 @@ export default function UploadArea({
               type="file"
               accept=".html,.json,.htm"
               className="hidden"
-              value={fileInputValue}
+              value={state.fileInputValue}
               onChange={handleFileSelect}
             />
             <p className="text-xs text-gray-500">
@@ -278,8 +289,8 @@ export default function UploadArea({
 
           <textarea
             ref={textAreaRef}
-            value={pastedContent}
-            onChange={(e) => setPastedContent(e.target.value)}
+            value={state.pastedContent}
+            onChange={(e) => setState({ pastedContent: e.target.value })}
             placeholder="粘贴书签内容到此处..."
             className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors min-h-[200px] resize-y"
           />
@@ -287,7 +298,7 @@ export default function UploadArea({
           <div className="flex gap-3 mt-4">
             <button
               onClick={handlePasteUpload}
-              disabled={!pastedContent}
+              disabled={!state.pastedContent}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               上传粘贴内容

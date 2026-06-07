@@ -6,11 +6,11 @@ import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 
 // Layouts
-import Header from '../Layout/Header';
-import Sidebar from '../Layout/Sidebar';
+import Header from '@/Layout/Header';
+import Sidebar from '@/Layout/Sidebar';
 
 // Pages
-import HomePage from '../pages/home/HomePage';
+import HomePage from '@/pages/home/HomePage';
 
 // Lazy loaded pages
 const BookmarkView = lazy(() => import('../pages/bookmark/BookmarkView'));
@@ -18,6 +18,7 @@ const TagCloudVisualization = lazy(() => import('../common/TagCloudVisualization
 const QualityMonitor = lazy(() => import('../common/QualityMonitor'));
 const PrivateVault = lazy(() => import('../pages/bookmark/PrivateVault'));
 const AIConfirmationPanel = lazy(() => import('../common/AIConfirmationPanel'));
+const TagManagementPage = lazy(() => import('../pages/tags/TagManagementPage'));
 
 // 加载中组件
 const PageLoader = () => (
@@ -82,11 +83,15 @@ export const router = createBrowserRouter([
       },
       {
         path: 'private',
-        element: <PrivateVault onUnlock={() => console.log('Unlocked')} />,
+        element: <PrivateVault onUnlock={() => {}} />,
       },
       {
         path: 'ai',
         element: <AIConfirmationPanel onClose={() => window.history.back()} />,
+      },
+      {
+        path: 'tags',
+        element: <TagManagementPage />,
       },
     ],
   },
@@ -104,6 +109,7 @@ export const ROUTES = {
   QUALITY: '/app/quality',
   PRIVATE: '/app/private',
   AI: '/app/ai',
+  TAGS: '/app/tags',
 } as const;
 
 export type RoutePath = typeof ROUTES[keyof typeof ROUTES];

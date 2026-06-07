@@ -5,6 +5,7 @@ import App from './App.tsx';
 import './styles/index.css';
 import './locales'; // 初始化 i18n
 import { initOfflineSupport } from './utils/serviceWorker';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // 创建 Query Client
 const queryClient = new QueryClient({
@@ -43,15 +44,15 @@ async function initApp() {
   if (import.meta.env.PROD) {
     initOfflineSupport({
       onSuccess: () => {
-        console.log('[App] App is ready for offline use');
+        // App is ready for offline use
       },
       onOffline: () => {
         // 可以在这里显示离线提示
-        console.log('[App] You are offline');
+        // User is offline
       },
       onOnline: () => {
         // 可以在这里显示在线提示
-        console.log('[App] You are back online');
+        // User is back online
         // 重新获取数据
         queryClient.invalidateQueries();
       },
@@ -65,10 +66,12 @@ async function initApp() {
   }
   
   createRoot(rootElement).render(
-    <QueryClientProvider client={queryClient}>
-      <App />
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <App />
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

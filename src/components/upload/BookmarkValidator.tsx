@@ -1,4 +1,4 @@
-import { Bookmark } from '../../types/bookmark';
+import { Bookmark } from '@/types/bookmark';
 
 /**
  * 验证书签文件格式
@@ -116,6 +116,31 @@ function validateJsonBookmarkFile(content: string) {
 }
 
 /**
+ * 清理标题中的 base64 图片数据
+ * @param title 原始标题
+ * @returns 清理后的标题
+ */
+function cleanTitle(title: string): string {
+  if (!title) return '';
+  
+  // 移除 base64 图片数据 (data:image/png;base64,...)
+  let cleaned = title.replace(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/g, '');
+  
+  // 移除其他可能的 data URI
+  cleaned = cleaned.replace(/data:[^;]+;[^,]+,.+/g, '');
+  
+  // 清理多余空格
+  cleaned = cleaned.trim();
+  
+  // 如果标题过长，截断
+  if (cleaned.length > 200) {
+    cleaned = cleaned.substring(0, 200) + '...';
+  }
+  
+  return cleaned;
+}
+
+/**
  * 解析 HTML 书签文件
  * @param content 文件内容
  * @returns 书签数组
@@ -131,17 +156,36 @@ function parseHtmlBookmarks(content: string): Bookmark[] {
     const aElement = dt.querySelector('A');
     if (aElement) {
       const addDateAttr = aElement.getAttribute('ADD_DATE');
+      
+      // 获取原始标题并清洗
+      const rawTitle = aElement.textContent || '';
+      const cleanedTitle = cleanTitle(rawTitle);
+      
+      // 获取 URL 并清洗
+      let url = aElement.getAttribute('HREF') || '';
+      url = cleanUrl(url);
+      
+      // 获取 favicon，如果是 base64 则不保存
+      let favicon = aElement.getAttribute('ICON') || undefined;
+      if (favicon && favicon.startsWith('data:')) {
+        favicon = undefined; // 不保存 base64 图片
+      }
+      
       const bookmark: Bookmark = {
         id: `html-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        title: aElement.textContent || '',
-        url: aElement.getAttribute('HREF') || '',
-        addedDate: new Date(addDateAttr ? parseInt(addDateAttr) * 1000 : Date.now()),
-        favicon: aElement.getAttribute('ICON') || undefined,
+        title: cleanedTitle,
+        url: url,
+        addedDate: new Date(addDateAttr ? parseInt(addDateAttr) * 1000 : Date.now()).toISOString(),
+        favicon: favicon,
         tags: aElement.getAttribute('TAGS')?.split(',') || [],
         category: getParentFolderName(dt),
         isLocked: false,
       };
-      bookmarks.push(bookmark);
+      
+      // 只添加有效的书签
+      if (bookmark.url && bookmark.title) {
+        bookmarks.push(bookmark);
+      }
     }
 
     // 处理文件夹
@@ -154,6 +198,32 @@ function parseHtmlBookmarks(content: string): Bookmark[] {
   });
 
   return bookmarks;
+}
+
+/**
+ * 清理 URL
+ * @param url 原始 URL
+ * @returns 清理后的 URL
+ */
+function cleanUrl(url: string): string {
+  if (!url) return '';
+  
+  // 移除可能的 base64 数据
+  if (url.startsWith('data:')) {
+    return '';
+  }
+  
+  // 清理空格
+  url = url.trim();
+  
+  // 确保是有效的 URL
+  try {
+    new URL(url);
+    return url;
+  } catch {
+    // 如果不是完整 URL，可能是相对路径或其他格式
+    return url;
+  }
 }
 
 /**
@@ -172,17 +242,36 @@ function processFolder(
     const aElement = dt.querySelector('A');
     if (aElement) {
       const addDateAttr = aElement.getAttribute('ADD_DATE');
+      
+      // 获取原始标题并清洗
+      const rawTitle = aElement.textContent || '';
+      const cleanedTitle = cleanTitle(rawTitle);
+      
+      // 获取 URL 并清洗
+      let url = aElement.getAttribute('HREF') || '';
+      url = cleanUrl(url);
+      
+      // 获取 favicon，如果是 base64 则不保存
+      let favicon = aElement.getAttribute('ICON') || undefined;
+      if (favicon && favicon.startsWith('data:')) {
+        favicon = undefined;
+      }
+      
       const bookmark: Bookmark = {
         id: `html-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        title: aElement.textContent || '',
-        url: aElement.getAttribute('HREF') || '',
-        addedDate: new Date(addDateAttr ? parseInt(addDateAttr) * 1000 : Date.now()),
-        favicon: aElement.getAttribute('ICON') || undefined,
+        title: cleanedTitle,
+        url: url,
+        addedDate: new Date(addDateAttr ? parseInt(addDateAttr) * 1000 : Date.now()).toISOString(),
+        favicon: favicon,
         tags: aElement.getAttribute('TAGS')?.split(',') || [],
         category: folderName,
         isLocked: false,
       };
-      bookmarks.push(bookmark);
+      
+      // 只添加有效的书签
+      if (bookmark.url && bookmark.title) {
+        bookmarks.push(bookmark);
+      }
     }
 
     // 处理子文件夹
@@ -235,9 +324,9 @@ function parseJsonBookmarks(data: unknown): Bookmark[] {
           `json-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         title: typeof nodeObj.title === 'string' ? nodeObj.title : '',
         url: typeof nodeObj.url === 'string' ? nodeObj.url : '',
-        addedDate: dateAdded instanceof Date 
+        addedDate: (dateAdded instanceof Date 
           ? dateAdded 
-          : new Date(typeof dateAdded === 'number' ? dateAdded : Date.now()),
+          : new Date(typeof dateAdded === 'number' ? dateAdded : Date.now())).toISOString(),
         favicon: typeof nodeObj.icon === 'string' ? nodeObj.icon : undefined,
         tags: Array.isArray(nodeObj.tags) ? nodeObj.tags : [],
         category,
@@ -284,9 +373,9 @@ export function cleanBookmarks(bookmarks: unknown[]): Bookmark[] {
           `bookmark-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         title: typeof b.title === 'string' ? b.title : '未命名书签',
         url: typeof b.url === 'string' ? b.url : '',
-        addedDate: dateAdded instanceof Date 
+        addedDate: (dateAdded instanceof Date 
           ? dateAdded 
-          : new Date(typeof dateAdded === 'number' ? dateAdded : Date.now()),
+          : new Date(typeof dateAdded === 'number' ? dateAdded : Date.now())).toISOString(),
         favicon: typeof b.icon === 'string' ? b.icon : undefined,
         tags: Array.isArray(b.tags) ? b.tags : [],
         category: typeof b.category === 'string' ? b.category : '未分类',

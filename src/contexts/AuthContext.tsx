@@ -91,8 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const parsedUser = JSON.parse(storedUser);
           setUser(parsedUser);
         }
-      } catch (err) {
-        console.error('Failed to restore auth state:', err);
+      } catch {
+        // Failed to restore auth state - user will need to log in again
       } finally {
         setIsLoading(false);
       }

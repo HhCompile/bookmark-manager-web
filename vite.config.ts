@@ -36,6 +36,12 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       open: true,
       host: true,
+      proxy: {
+        '/api/v1': {
+          target: 'http://localhost:9001',
+          changeOrigin: true,
+        },
+      },
     },
     build: {
       outDir: 'dist',

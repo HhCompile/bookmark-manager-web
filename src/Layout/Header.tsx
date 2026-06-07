@@ -36,8 +36,7 @@ export default function Header({
     setImportDialogOpen(true);
   };
 
-  const handleUploadComplete = (bookmarks: unknown[]) => {
-    console.log('导入完成:', bookmarks.length, '个书签');
+  const handleUploadComplete = (_bookmarks: unknown[]) => {
     onFileUpload?.();
   };
 
