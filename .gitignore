@@ -1,4 +1,3 @@
-cat > .gitignore << 'EOF'
 # Logs
 logs
 *.log
@@ -44,4 +43,57 @@ dist-ssr
 # Temporary files
 *.tmp
 *.temp
-EOF
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Backups
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+
+# IDE / Tools
+.cache
+.parcel-cache
+.eslintcache
+.stylelintcache
+.history
+.vscode-test
+
+# Test artifacts
+coverage/
+junit.xml
+test-results/
+playwright-report/
+.playwright-mcp/
+
+# AI 工具数据（避免大文件）
+.kimi/
+.reasonix/
+.codegraph/
+.playwright-mcp/
+
+# Python（如果混用）
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env.python
+
+# 本地配置
+.local-config/
